@@ -101,6 +101,10 @@ func makeDatabaseURI(host, user, pass, db string) string {
 		databaseURI string
 	)
 
+	if user == "" && pass != "" {
+		panic("Password is set but no is user specified")
+	}
+
 	if user != "" {
 		databaseURI += user
 	}
