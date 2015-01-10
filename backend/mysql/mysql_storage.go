@@ -25,15 +25,16 @@ const (
 	loadStateQuery = "select repo, sha1, ts from state"
 )
 
-func New() *MysqlStorage {
+func New(host, user, pass, db string) *MysqlStorage {
 	var (
 		s = &MysqlStorage{
 			state: map[string]*steward.State{},
 		}
-		err error
+		err         error
+		databaseURI = makeDatabaseURI(host, user, pass, db)
 	)
 
-	if s.db, err = sql.Open("mysql", "root@/steward?parseTime=true"); err != nil {
+	if s.db, err = sql.Open("mysql", databaseURI); err != nil {
 		panic(err)
 	}
 	if s.importStmt, err = s.db.Prepare(importQuery); err != nil {
@@ -93,4 +94,26 @@ func (ms *MysqlStorage) loadGlobalState() {
 			Timestamp: ts,
 		}
 	}
+}
+
+func makeDatabaseURI(host, user, pass, db string) string {
+	var (
+		databaseURI string
+	)
+
+	if user != "" {
+		databaseURI += user
+	}
+	if pass != "" {
+		databaseURI += ":" + pass
+	}
+	if user != "" {
+		databaseURI += "@"
+	}
+	if host != "" {
+		databaseURI += host
+	}
+	databaseURI += "/" + db + "?parseTime=true"
+
+	return databaseURI
 }
