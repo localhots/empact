@@ -2,7 +2,6 @@ package mysql
 
 import (
 	"database/sql"
-	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/localhots/steward/steward"
@@ -10,26 +9,20 @@ import (
 
 type (
 	MysqlStorage struct {
-		db    *sql.DB
-		State map[string]*steward.State
-
-		importStmt    *sql.Stmt
-		saveStateStmt *sql.Stmt
-		loadStateStmt *sql.Stmt
+		db         *sql.DB
+		importStmt *sql.Stmt
 	}
 )
 
 const (
-	importQuery    = "replace into commits (sha1, author, repo, ts) values (?, ?, ?, ?)"
-	saveStateQuery = "replace into state (repo, sha1, ts) values (?, ?, ?)"
-	loadStateQuery = "select repo, sha1, ts from state"
+	importQuery = "" +
+		"replace into contributions (author, repo, week, commits, additions, deletions) " +
+		"values (?, ?, ?, ?, ?, ?)"
 )
 
 func New(host, user, pass, db string) *MysqlStorage {
 	var (
-		s = &MysqlStorage{
-			State: map[string]*steward.State{},
-		}
+		s           = &MysqlStorage{}
 		err         error
 		databaseURI = makeDatabaseURI(host, user, pass, db)
 	)
@@ -40,67 +33,21 @@ func New(host, user, pass, db string) *MysqlStorage {
 	if s.importStmt, err = s.db.Prepare(importQuery); err != nil {
 		panic(err)
 	}
-	if s.saveStateStmt, err = s.db.Prepare(saveStateQuery); err != nil {
-		panic(err)
-	}
-
-	s.loadGlobalState()
 
 	return s
 }
 
-func (ms *MysqlStorage) Import(repo string, hist map[string]*steward.Commit) {
-	var (
-		lastTimestamp *time.Time
-		lastSha1      string
-	)
-
-	// fmt.Println("saving", len(hist), "commits")
-	// pretty.Println(hist)
-
-	for sha1, c := range hist {
-		if _, err := ms.importStmt.Exec(sha1, c.Author, repo, c.Timestamp); err != nil {
+func (ms *MysqlStorage) ImportContributions(contrib []*steward.Contribution) {
+	for _, c := range contrib {
+		if _, err := ms.importStmt.Exec(
+			c.Author,
+			c.Repo,
+			c.Week,
+			c.Commits,
+			c.Additions,
+			c.Deletions,
+		); err != nil {
 			panic(err)
-		}
-		if lastTimestamp == nil || lastTimestamp.After(c.Timestamp) {
-			lastTimestamp = &c.Timestamp
-			lastSha1 = sha1
-		}
-	}
-
-	if len(hist) > 0 {
-		ms.saveRepoState(repo, lastSha1, *lastTimestamp)
-	}
-}
-
-func (ms *MysqlStorage) saveRepoState(repo string, sha1 string, ts time.Time) {
-	ms.State[repo] = &steward.State{
-		Sha1:      sha1,
-		Timestamp: ts,
-	}
-	if _, err := ms.saveStateStmt.Exec(repo, sha1, ts); err != nil {
-		panic(err)
-	}
-}
-
-func (ms *MysqlStorage) loadGlobalState() {
-	var (
-		repo string
-		sha1 string
-		ts   time.Time
-	)
-
-	rows, err := ms.db.Query(loadStateQuery)
-	if err != nil {
-		panic(err)
-	}
-	for rows.Next() {
-		if err := rows.Scan(&repo, &sha1, &ts); err != nil {
-			panic(err)
-		}
-		ms.State[repo] = &steward.State{
-			Sha1:      sha1,
-			Timestamp: ts,
 		}
 	}
 }

@@ -6,7 +6,6 @@ import (
 
 	"code.google.com/p/goauth2/oauth"
 	gh "github.com/google/go-github/github"
-	"github.com/kr/pretty"
 	"github.com/localhots/steward/steward"
 )
 
@@ -16,8 +15,11 @@ const (
 
 type (
 	GithubClient struct {
-		owner  string
-		client *gh.Client
+		owner     string
+		client    *gh.Client
+		limit     int
+		remaining int
+		limitEnds time.Time
 	}
 )
 
@@ -46,9 +48,7 @@ func (c *GithubClient) ListRepos() []string {
 		}
 	)
 
-	fmt.Print("Loading repositories ")
 	for {
-		fmt.Print(".")
 		opt.Page++
 		repos, _, err := c.client.Repositories.ListByOrg(c.owner, opt)
 		if err != nil {
@@ -63,71 +63,50 @@ func (c *GithubClient) ListRepos() []string {
 			break
 		}
 	}
-	fmt.Print("\n")
 
 	return names
 }
 
-func (c *GithubClient) ListCommits(repo string, until *time.Time) (hist map[string]*steward.Commit, hasMore bool) {
-	hist = map[string]*steward.Commit{}
+func (c *GithubClient) ListContributors(repo string) []*steward.Contribution {
+	var (
+		contrib = []*steward.Contribution{}
+	)
 
-	opt := &gh.CommitsListOptions{}
-	if until != nil {
-		opt.Until = *until
-	}
-
-	commits, _, err := c.client.Repositories.ListCommits(c.owner, repo, opt)
+	cslist, resp, err := c.client.Repositories.ListContributorsStats(c.owner, repo)
+	c.saveResponseMeta(resp)
 	if err != nil {
-		fmt.Println("Error fetching commits: ", err.Error())
-		return
-	}
-
-	// fmt.Println("Fetched", len(commits), "commits until", opt.Until)
-	hasMore = (len(commits) == DefaultPerPage)
-	for _, c := range commits {
-		commit, err := makeCommit(&c)
-		if err != nil {
-			fmt.Println("Error:", err.Error())
-			continue
+		if err.Error() == "EOF" {
+			// Empty repository, not an actual error
+			return contrib
 		}
-		hist[commit.Sha1] = commit
+
+		fmt.Println("Error loading contributors stats for repo", repo)
+		fmt.Println(err.Error())
+		return contrib
 	}
 
-	return
+	for _, cs := range cslist {
+		for _, week := range cs.Weeks {
+			if *week.Commits == 0 {
+				continue
+			}
+
+			contrib = append(contrib, &steward.Contribution{
+				Author:    *cs.Author.Login,
+				Repo:      repo,
+				Week:      week.Week.Time.Unix(),
+				Commits:   *week.Commits,
+				Additions: *week.Additions,
+				Deletions: *week.Deletions,
+			})
+		}
+	}
+
+	return contrib
 }
 
-func makeCommit(c *gh.RepositoryCommit) (commit *steward.Commit, err error) {
-	defer func() {
-		if err := recover(); err != nil {
-			fmt.Print("\n\n\nTroubles with commit:")
-			pretty.Println(c)
-			fmt.Println("")
-			panic(err)
-		}
-	}()
-
-	commit = &steward.Commit{}
-	if c.SHA != nil {
-		commit.Sha1 = *c.SHA
-	} else {
-		return nil, fmt.Errorf("Missing commit SHA1 field")
-	}
-
-	if c.Author != nil {
-		commit.Author = *c.Author.Login
-	} else {
-		return nil, fmt.Errorf("Missing author field")
-	}
-
-	if c.Commit != nil {
-		if c.Commit.Author != nil {
-			commit.Timestamp = *c.Commit.Author.Date
-		} else {
-			return nil, fmt.Errorf("Missing commit author field")
-		}
-	} else {
-		return nil, fmt.Errorf("Missing commit field")
-	}
-
-	return
+func (c *GithubClient) saveResponseMeta(res *gh.Response) {
+	c.limit = res.Limit
+	c.remaining = res.Remaining
+	c.limitEnds = res.Reset.Time
 }
