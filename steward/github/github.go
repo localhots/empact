@@ -50,7 +50,8 @@ func (c *GithubClient) ListRepos() []string {
 
 	for {
 		opt.Page++
-		repos, _, err := c.client.Repositories.ListByOrg(c.owner, opt)
+		repos, resp, err := c.client.Repositories.ListByOrg(c.owner, opt)
+		c.saveResponseMeta(resp)
 		if err != nil {
 			panic(err)
 		}
