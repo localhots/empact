@@ -2,14 +2,16 @@ package github
 
 import (
 	"fmt"
+	"time"
 
 	"code.google.com/p/goauth2/oauth"
 	gh "github.com/google/go-github/github"
+	"github.com/kr/pretty"
 	"github.com/localhots/steward/steward"
 )
 
 const (
-	DEFAULT_PER_PAGE = 30
+	DefaultPerPage = 30
 )
 
 type (
@@ -57,7 +59,7 @@ func (c *GithubClient) ListRepos() []string {
 			names = append(names, *repo.Name)
 		}
 
-		if len(repos) < DEFAULT_PER_PAGE {
+		if len(repos) < DefaultPerPage {
 			break
 		}
 	}
@@ -66,34 +68,66 @@ func (c *GithubClient) ListRepos() []string {
 	return names
 }
 
-func (c *GithubClient) ListCommits(repo string) map[string]*steward.Commit {
-	var (
-		history = map[string]*steward.Commit{}
-		opt     = &gh.CommitsListOptions{}
-	)
+func (c *GithubClient) ListCommits(repo string, until *time.Time) (hist map[string]*steward.Commit, hasMore bool) {
+	hist = map[string]*steward.Commit{}
 
-	fmt.Print(repo, " ")
-	for {
-		fmt.Print(".")
-		commits, _, err := c.client.Repositories.ListCommits(c.owner, repo, opt)
+	opt := &gh.CommitsListOptions{}
+	if until != nil {
+		opt.Until = *until
+	}
+
+	commits, _, err := c.client.Repositories.ListCommits(c.owner, repo, opt)
+	if err != nil {
+		fmt.Println("Error fetching commits: ", err.Error())
+		return
+	}
+
+	// fmt.Println("Fetched", len(commits), "commits until", opt.Until)
+	hasMore = (len(commits) == DefaultPerPage)
+	for _, c := range commits {
+		commit, err := makeCommit(&c)
 		if err != nil {
+			fmt.Println("Error:", err.Error())
+			continue
+		}
+		hist[commit.Sha1] = commit
+	}
+
+	return
+}
+
+func makeCommit(c *gh.RepositoryCommit) (commit *steward.Commit, err error) {
+	defer func() {
+		if err := recover(); err != nil {
+			fmt.Print("\n\n\nTroubles with commit:")
+			pretty.Println(c)
+			fmt.Println("")
 			panic(err)
 		}
+	}()
 
-		for _, c := range commits {
-			history[*c.SHA] = &steward.Commit{
-				Repo:      repo,
-				Author:    *c.Author.Login,
-				Timestamp: *c.Commit.Author.Date,
-			}
-			opt.Until = *c.Commit.Author.Date
-		}
-
-		if len(commits) < DEFAULT_PER_PAGE {
-			break
-		}
+	commit = &steward.Commit{}
+	if c.SHA != nil {
+		commit.Sha1 = *c.SHA
+	} else {
+		return nil, fmt.Errorf("Missing commit SHA1 field")
 	}
-	fmt.Print("\n")
 
-	return history
+	if c.Author != nil {
+		commit.Author = *c.Author.Login
+	} else {
+		return nil, fmt.Errorf("Missing author field")
+	}
+
+	if c.Commit != nil {
+		if c.Commit.Author != nil {
+			commit.Timestamp = *c.Commit.Author.Date
+		} else {
+			return nil, fmt.Errorf("Missing commit author field")
+		}
+	} else {
+		return nil, fmt.Errorf("Missing commit field")
+	}
+
+	return
 }

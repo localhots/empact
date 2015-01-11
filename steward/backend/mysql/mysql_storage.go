@@ -11,7 +11,7 @@ import (
 type (
 	MysqlStorage struct {
 		db    *sql.DB
-		state map[string]*steward.State
+		State map[string]*steward.State
 
 		importStmt    *sql.Stmt
 		saveStateStmt *sql.Stmt
@@ -28,7 +28,7 @@ const (
 func New(host, user, pass, db string) *MysqlStorage {
 	var (
 		s = &MysqlStorage{
-			state: map[string]*steward.State{},
+			State: map[string]*steward.State{},
 		}
 		err         error
 		databaseURI = makeDatabaseURI(host, user, pass, db)
@@ -55,6 +55,9 @@ func (ms *MysqlStorage) Import(repo string, hist map[string]*steward.Commit) {
 		lastSha1      string
 	)
 
+	// fmt.Println("saving", len(hist), "commits")
+	// pretty.Println(hist)
+
 	for sha1, c := range hist {
 		if _, err := ms.importStmt.Exec(sha1, c.Author, repo, c.Timestamp); err != nil {
 			panic(err)
@@ -65,10 +68,16 @@ func (ms *MysqlStorage) Import(repo string, hist map[string]*steward.Commit) {
 		}
 	}
 
-	ms.saveRepoState(repo, lastSha1, *lastTimestamp)
+	if len(hist) > 0 {
+		ms.saveRepoState(repo, lastSha1, *lastTimestamp)
+	}
 }
 
 func (ms *MysqlStorage) saveRepoState(repo string, sha1 string, ts time.Time) {
+	ms.State[repo] = &steward.State{
+		Sha1:      sha1,
+		Timestamp: ts,
+	}
 	if _, err := ms.saveStateStmt.Exec(repo, sha1, ts); err != nil {
 		panic(err)
 	}
@@ -89,7 +98,7 @@ func (ms *MysqlStorage) loadGlobalState() {
 		if err := rows.Scan(&repo, &sha1, &ts); err != nil {
 			panic(err)
 		}
-		ms.state[repo] = &steward.State{
+		ms.State[repo] = &steward.State{
 			Sha1:      sha1,
 			Timestamp: ts,
 		}
