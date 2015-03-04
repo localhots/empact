@@ -12,6 +12,13 @@ CREATE TABLE `contributions` (
   UNIQUE KEY `week_author_repo` (`week`,`author`,`owner`,`repo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `hooks`;
+CREATE TABLE `hooks` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `owner` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 DROP TABLE IF EXISTS `members`;
 CREATE TABLE `members` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -33,19 +40,20 @@ DROP TABLE IF EXISTS `repos`;
 CREATE TABLE `repos` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `owner` varchar(255) NOT NULL DEFAULT '',
-  `repo` varchar(255) NOT NULL DEFAULT '',
+  `name` varchar(255) NOT NULL DEFAULT '',
   `updated_at` datetime DEFAULT NULL,
   `is_private` tinyint(1) NOT NULL,
   `is_fork` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `owner_repo` (`owner`,`repo`)
+  UNIQUE KEY `owner_repo` (`owner`,`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 DROP TABLE IF EXISTS `teams`;
 CREATE TABLE `teams` (
   `id` int(11) unsigned NOT NULL,
   `owner` varchar(255) NOT NULL DEFAULT '',
-  `team` varchar(255) NOT NULL DEFAULT '',
+  `name` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `owner` (`owner`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -61,4 +69,18 @@ CREATE TABLE `tokens` (
   `created_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `owner` (`owner`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `tasks`;
+CREATE TABLE `tasks` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `token` varchar(255) NOT NULL,
+  `owner` varchar(255) NOT NULL DEFAULT '',
+  `job` varchar(255) NOT NULL DEFAULT '',
+  `worker` varchar(36) NOT NULL DEFAULT '',
+  `duration` int(11) unsigned NOT NULL,
+  `error` varchar(255) DEFAULT NULL,
+  `created_at` datetime NOT NULL,
+  `started_at` datetime NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
