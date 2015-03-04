@@ -2,14 +2,18 @@ package job
 
 import (
 	"sync"
+	"time"
+
+	"github.com/fatih/structs"
+	"github.com/localhots/steward/db"
 )
 
 type (
 	Job struct {
 		Name    string
-		actor   func(Task)
+		actor   func(*db.Task)
 		workers map[string]*worker
-		tasks   chan Task
+		tasks   chan *db.Task
 		wg      sync.WaitGroup
 	}
 )
@@ -19,11 +23,13 @@ func New(name string, actor func()) *Job {
 		Name:    name,
 		actor:   actor,
 		workers: make(map[string]*worker),
-		tasks:   make(chan Task),
+		tasks:   make(chan *db.Task, 1000),
 	}
 }
 
-func (j *Job) Perform(t Task) {
+func (j *Job) Perform(t *db.Task) {
+	t.Job = structs.Name(t)
+	t.CreatedAt = time.Now()
 	j.tasks <- t
 }
 

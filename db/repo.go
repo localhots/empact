@@ -12,11 +12,11 @@ type (
 )
 
 const (
-	repoImportQuery = "replace into repos (owner, name, updated_at) values (?, ?, now())"
+	saveRepoQuery = "replace into repos (owner, name, updated_at) values (?, ?, now())"
 )
 
-func ImportRepo(r *Repo) {
-	if _, err := stmt(repoImportQuery).Exec(structs.Values(r)); err != nil {
+func (r *Repo) Save() {
+	if _, err := stmt(saveRepoQuery).Exec(structs.Values(r)); err != nil {
 		panic(err)
 	}
 }

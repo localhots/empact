@@ -17,13 +17,13 @@ type (
 )
 
 const (
-	importContribQuery = "" +
+	saveContribQuery = "" +
 		"replace into contributions (week, author, owner, repo, commits, additions, deletions) " +
 		"values (?, ?, ?, ?, ?, ?, ?)"
 )
 
-func ImportContrib(c *Contrib) {
-	if _, err := stmt(importContribQuery).Exec(structs.Values(c)); err != nil {
+func (c *Contrib) Save() {
+	if _, err := stmt(saveContribQuery).Exec(structs.Values(c)); err != nil {
 		panic(err)
 	}
 }

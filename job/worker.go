@@ -2,6 +2,9 @@ package job
 
 import (
 	"time"
+
+	"code.google.com/p/go-uuid/uuid"
+	"github.com/localhots/steward/db"
 )
 
 type (
@@ -24,15 +27,19 @@ func (w *worker) workHard() {
 	}
 }
 
-func (w *worker) perform(t Task) {
-	start := time.Now()
+func (w *worker) perform(t *db.Task) {
+	t.Worker = w.id
+	t.StartedAt = time.Now()
 	defer func() {
 		err := recover()
-		t.report(report{
-			duration: time.Since(start),
-			success:  err,
-		})
+		t.Duration = time.Since(t.StartedAt).Nanoseconds()
+		t.Error = err.String()
+		t.Save()
 	}()
 
 	w.job.actor(t)
+}
+
+func newID() string {
+	return uuid.New()
 }
