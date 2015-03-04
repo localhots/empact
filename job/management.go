@@ -4,20 +4,23 @@ import (
 	"time"
 
 	"code.google.com/p/go-uuid/uuid"
+	"github.com/fatih/structs"
 )
 
 type (
-	order  byte
+	Task   struct{}
 	report struct {
 		duration time.Duration
-		success  bool
+		err      error
 	}
-)
-
-const (
-	stop order = iota
 )
 
 func newID() string {
 	return uuid.New()
+}
+
+func (t *Task) report(rep report) {
+	meta := structs.Map(t)
+	meta["duration"] = rep.duration
+	meta["error"] = rep.err
 }

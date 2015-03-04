@@ -7,9 +7,9 @@ import (
 type (
 	Job struct {
 		Name    string
-		actor   func()
+		actor   func(Task)
 		workers map[string]*worker
-		orders  chan order
+		tasks   chan Task
 		wg      sync.WaitGroup
 	}
 )
@@ -19,28 +19,41 @@ func New(name string, actor func()) *Job {
 		Name:    name,
 		actor:   actor,
 		workers: make(map[string]*worker),
-		orders:  make(chan order),
+		tasks:   make(chan Task),
 	}
 }
 
-func (j *Job) Workers(n int) {
+func (j *Job) Perform(t Task) {
+	j.tasks <- t
+}
+
+func (j *Job) Size() int {
+	return len(j.workers)
+}
+
+func (j *Job) Stop() {
+	j.Resize(0)
+	j.wg.Wait()
+}
+
+func (j *Job) Resize(n int) {
 	if n < 0 {
 		n = 0
 	}
 	if del := n - len(j.workers); del > 0 {
 		for i := 0; i < del; i++ {
 			w := &worker{
-				id:    newID(),
-				job:   j.Name,
-				wg:    j.wg,
-				actor: j.actor,
+				id:       newID(),
+				job:      j,
+				shutdown: make(<-chan struct{}, 1),
 			}
 			go w.workHard()
+			j.workers[w.id] = w
 		}
 		j.wg.Add(del)
 	} else {
 		for i := 0; i > del; i-- {
-			j.orders <- stop
+			j.shutdown <- struct{}{}
 		}
 	}
 }

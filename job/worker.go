@@ -1,18 +1,14 @@
 package job
 
 import (
-	"sync"
 	"time"
 )
 
 type (
 	worker struct {
-		id      string
-		job     string
-		wg      *sync.WaitGroup
-		actor   func()
-		reports chan<- report
-		orders  <-chan order
+		id       string
+		job      *Job
+		shutdown <-chan struct{}
 	}
 )
 
@@ -20,28 +16,23 @@ func (w *worker) workHard() {
 	defer w.wg.Done()
 	for {
 		select {
-		case o := <-w.orders:
-			switch o {
-			case stop:
-				return
-			default:
-				panic("Confused")
-			}
-		default:
-			action()
+		case <-w.shutdown:
+			return
+		case t := <-w.job.tasks:
+			w.perform(t)
 		}
 	}
 }
 
-func (w *worker) action() {
+func (w *worker) perform(t Task) {
 	start := time.Now()
 	defer func() {
 		err := recover()
-		w.reports <- report{
+		t.report(report{
 			duration: time.Since(start),
-			success:  (err == nil),
-		}
+			success:  err,
+		})
 	}()
 
-	w.actor()
+	w.job.actor(t)
 }
