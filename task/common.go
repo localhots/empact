@@ -3,6 +3,7 @@ package task
 import (
 	"code.google.com/p/goauth2/oauth"
 	"github.com/google/go-github/github"
+	"github.com/localhots/steward/db"
 )
 
 func newGithubClient(token string) *github.Client {
@@ -12,8 +13,14 @@ func newGithubClient(token string) *github.Client {
 	return github.NewClient(trans.Client())
 }
 
-// func (c *GithubClient) saveResponseMeta(res *gh.Response) {
-//     c.limit = res.Limit
-//     c.remaining = res.Remaining
-//     c.limitEnds = res.Reset.Time
-// }
+func saveResponseMeta(token string, res *github.Response) {
+	if res == nil {
+		return
+	}
+	db.UpdateToken(&db.Token{
+		Token:     token,
+		Limit:     res.Limit,
+		Remaining: res.Remaining,
+		ResetAt:   res.Reset.Time,
+	})
+}

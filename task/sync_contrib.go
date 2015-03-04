@@ -1,7 +1,6 @@
 package task
 
 import (
-	"github.com/google/go-github/github"
 	"github.com/localhots/steward/db"
 	"github.com/localhots/steward/job"
 )
@@ -16,15 +15,16 @@ type (
 )
 
 func SyncContrib(t SyncContribTask) {
-	contribs := fetchContrib(newGithubClient(t.Token), t.Owner, t.Repo)
+	contribs := fetchContrib(t.Token, t.Owner, t.Repo)
 	for _, c := range contribs {
 		db.ImportRepo(c)
 	}
 }
 
-func fetchContrib(client *github.Client, owner, repo string) (res []*db.Contrib) {
+func fetchContrib(token, owner, repo string) (res []*db.Contrib) {
+	client := newGithubClient(token)
 	contribs, resp, err := client.Repositories.ListContributorsStats(owner, repo)
-	// c.saveResponseMeta(resp)
+	saveResponseMeta(token, resp)
 	if err != nil {
 		if err.Error() == "EOF" {
 			// Empty repository, not an actual error

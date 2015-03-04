@@ -15,7 +15,7 @@ type (
 )
 
 func SyncRepos(t SyncReposTask) {
-	repos := fetchRepos(newGithubClient(t.Token), t.Owner)
+	repos := fetchRepos(t.Token, t.Owner)
 	for _, repo := range repos {
 		db.ImportRepo(&db.Repo{
 			Owner: t.Owner,
@@ -24,10 +24,11 @@ func SyncRepos(t SyncReposTask) {
 	}
 }
 
-func fetchRepos(client *github.Client, owner string) {
+func fetchRepos(token, owner string) {
 	var (
-		names = []string{}
-		opt   = &github.RepositoryListByOrgOptions{
+		client = newGithubClient(token)
+		names  = []string{}
+		opt    = &github.RepositoryListByOrgOptions{
 			ListOptions: github.ListOptions{},
 		}
 	)
@@ -35,7 +36,7 @@ func fetchRepos(client *github.Client, owner string) {
 	for {
 		opt.Page++
 		repos, resp, err := client.Repositories.ListByOrg(owner, opt)
-		// c.saveResponseMeta(resp) // Save current usage/limits
+		saveResponseMeta(token, resp)
 		if err != nil {
 			panic(err)
 		}
