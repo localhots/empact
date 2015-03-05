@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"fmt"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -28,9 +29,10 @@ func stmt(query string) *sql.Stmt {
 }
 
 func prepareStatement(query string) *sql.Stmt {
-	if stmt, err = conn.Prepare(query); err == nil {
+	if stmt, err := conn.Prepare(query); err == nil {
 		return stmt
 	} else {
+		fmt.Println(query)
 		panic(err)
 	}
 }

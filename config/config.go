@@ -9,9 +9,13 @@ import (
 
 type (
 	Config struct {
-		ClientID     string `json:"github_client_id"`
-		ClientSecret string `json:"github_client_secret"`
-		RedirectURI  string `json:"github_redirect_uri"`
+		Domain         string `json:"app_domain"`
+		DatabaseURI    string `json:"database_uri"`
+		AuthURL        string `json:"github_auth_url"`
+		AccessTokenURL string `json:"github_access_token_url"`
+		ClientID       string `json:"github_client_id"`
+		ClientSecret   string `json:"github_client_secret"`
+		RedirectURI    string `json:"github_redirect_uri"`
 	}
 )
 
