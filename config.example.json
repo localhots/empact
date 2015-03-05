@@ -1,4 +1,8 @@
 {
+    "app_domain": "localhost",
+    "database_uri": "root@/empact",
+    "github_auth_url": "https://github.com/login/oauth/authorize",
+    "github_access_token_url": "https://github.com/login/oauth/access_token",
     "github_client_id": "XXXXXXXXXXXXXXXXXXXX",
     "github_client_secret": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
     "github_redirect_uri": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"

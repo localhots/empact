@@ -7,13 +7,13 @@ import (
 
 type (
 	SyncReposTask struct {
-		db.Task
+		*db.Task
 	}
 )
 
-func SyncRepos(t SyncReposTask) {
-	client := newGithubClient(token)
-	names := []string{}
+func SyncRepos(tk Tasker) {
+	t := tk.(*SyncReposTask)
+	client := newGithubClient(t.Token)
 	opt := &github.RepositoryListByOrgOptions{
 		ListOptions: github.ListOptions{},
 	}

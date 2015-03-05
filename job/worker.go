@@ -1,17 +1,17 @@
 package job
 
 import (
+	"sync"
 	"time"
 
-	"code.google.com/p/go-uuid/uuid"
-	"github.com/localhots/empact/db"
+	"github.com/localhots/empact/task"
 )
 
 type (
 	worker struct {
-		id       string
-		job      *Job
-		shutdown <-chan struct{}
+		id  string
+		job *Job
+		wg  *sync.WaitGroup
 	}
 )
 
@@ -19,7 +19,7 @@ func (w *worker) workHard() {
 	defer w.wg.Done()
 	for {
 		select {
-		case <-w.shutdown:
+		case <-w.job.orders:
 			return
 		case t := <-w.job.tasks:
 			w.perform(t)
@@ -27,19 +27,17 @@ func (w *worker) workHard() {
 	}
 }
 
-func (w *worker) perform(t *db.Task) {
-	t.Worker = w.id
-	t.StartedAt = time.Now()
+func (w *worker) perform(t task.Tasker) {
+	dt := t.T()
+	dt.Worker = w.id
+	dt.StartedAt = time.Now()
 	defer func() {
-		err := recover()
-		t.Duration = time.Since(t.StartedAt).Nanoseconds()
-		t.Error = err.String()
-		t.Save()
+		if err := recover(); err != nil {
+			// dt.Error = err.(string)
+		}
+		dt.Duration = time.Since(dt.StartedAt).Nanoseconds()
+		dt.Save()
 	}()
 
 	w.job.actor(t)
-}
-
-func newID() string {
-	return uuid.New()
 }

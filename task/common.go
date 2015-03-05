@@ -6,6 +6,13 @@ import (
 	"github.com/localhots/empact/db"
 )
 
+type (
+	Tasker interface {
+		Save()
+		T() *db.Task
+	}
+)
+
 func newGithubClient(token string) *github.Client {
 	trans := &oauth.Transport{
 		Token: &oauth.Token{AccessToken: token},

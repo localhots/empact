@@ -15,3 +15,7 @@ type (
 		CreatedAt time.Time
 	}
 )
+
+func UpdateToken(t *Token) {
+
+}

@@ -7,11 +7,12 @@ import (
 type (
 	SyncContribTask struct {
 		Repo string
-		db.Task
+		*db.Task
 	}
 )
 
-func SyncContrib(t SyncContribTask) {
+func SyncContrib(tk Tasker) {
+	t := tk.(*SyncContribTask)
 	client := newGithubClient(t.Token)
 	contribs, resp, err := client.Repositories.ListContributorsStats(t.Owner, t.Repo)
 	saveResponseMeta(t.Token, resp)
