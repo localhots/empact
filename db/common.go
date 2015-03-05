@@ -1,24 +1,28 @@
 package db
 
 import (
-	"database/sql"
 	"fmt"
+	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/jmoiron/sqlx"
+	"github.com/jmoiron/sqlx/reflectx"
 )
 
 var (
-	conn  *sql.DB
-	stmts map[string]*sql.Stmt
+	conn  *sqlx.DB
+	stmts map[string]*sqlx.Stmt
 )
 
-func Connect(uri string) (err error) {
-	conn, err = sql.Open("mysql", uri)
-	stmts = map[string]*sql.Stmt{}
+func Connect(params string) (err error) {
+	conn, err = sqlx.Connect("mysql", params)
+
+	conn.Mapper = reflectx.NewMapperFunc("json", strings.ToLower)
+	stmts = map[string]*sqlx.Stmt{}
 	return
 }
 
-func stmt(query string) *sql.Stmt {
+func stmt(query string) *sqlx.Stmt {
 	if stmt, ok := stmts[query]; ok {
 		return stmt
 	} else {
@@ -28,8 +32,8 @@ func stmt(query string) *sql.Stmt {
 	}
 }
 
-func prepareStatement(query string) *sql.Stmt {
-	if stmt, err := conn.Prepare(query); err == nil {
+func prepareStatement(query string) *sqlx.Stmt {
+	if stmt, err := conn.Preparex(query); err == nil {
 		return stmt
 	} else {
 		fmt.Println(query)
