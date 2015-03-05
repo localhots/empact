@@ -29,7 +29,7 @@ func SyncContrib(t SyncContribTask) {
 				continue
 			}
 
-			res = append(res, &db.Contrib{
+			contrib := &db.Contrib{
 				Week:      week.Week.Time.Unix(),
 				Author:    *c.Author.Login,
 				Owner:     t.Owner,
@@ -37,7 +37,8 @@ func SyncContrib(t SyncContribTask) {
 				Commits:   *week.Commits,
 				Additions: *week.Additions,
 				Deletions: *week.Deletions,
-			})
+			}
+			contrib.Save()
 		}
 	}
 }
