@@ -2,8 +2,6 @@ package db
 
 import (
 	"time"
-
-	"github.com/fatih/structs"
 )
 
 type (
@@ -26,7 +24,16 @@ const (
 )
 
 func (t *Task) Save() {
-	if _, err := stmt(saveTaskQuery).Exec(structs.Values(t)); err != nil {
+	if _, err := stmt(saveTaskQuery).Exec(
+		t.Token, t.Owner,
+		t.Job, t.Worker,
+		t.Duration, t.Error,
+		t.CreatedAt, t.StartedAt,
+	); err != nil {
 		panic(err)
 	}
+}
+
+func (t *Task) T() *Task {
+	return t
 }
