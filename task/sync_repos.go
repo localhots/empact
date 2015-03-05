@@ -2,7 +2,7 @@ package task
 
 import (
 	"github.com/google/go-github/github"
-	"github.com/localhots/steward/db"
+	"github.com/localhots/empact/db"
 )
 
 type (

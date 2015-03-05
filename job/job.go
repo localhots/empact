@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/fatih/structs"
-	"github.com/localhots/steward/db"
+	"github.com/localhots/empact/db"
 )
 
 type (

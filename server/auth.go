@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/localhots/steward/config"
+	"github.com/localhots/empact/config"
 )
 
 const (

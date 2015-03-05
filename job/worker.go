@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"code.google.com/p/go-uuid/uuid"
-	"github.com/localhots/steward/db"
+	"github.com/localhots/empact/db"
 )
 
 type (

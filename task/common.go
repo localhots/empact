@@ -3,7 +3,7 @@ package task
 import (
 	"code.google.com/p/goauth2/oauth"
 	"github.com/google/go-github/github"
-	"github.com/localhots/steward/db"
+	"github.com/localhots/empact/db"
 )
 
 func newGithubClient(token string) *github.Client {

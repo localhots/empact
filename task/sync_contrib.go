@@ -1,7 +1,7 @@
 package task
 
 import (
-	"github.com/localhots/steward/db"
+	"github.com/localhots/empact/db"
 )
 
 type (
