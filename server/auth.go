@@ -12,10 +12,6 @@ import (
 )
 
 func authHelloHandler(w http.ResponseWriter, r *http.Request) {
-	if currentUser(r) != "" {
-		http.Redirect(w, r, "/app", 302)
-		return
-	}
 	w.Header().Set("Content-Type", "text/html; charset=utf8")
 	helloTmpl.ExecuteTemplate(w, "hello", map[string]interface{}{})
 }
@@ -47,5 +43,11 @@ func authCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		} else {
 			panic("Failed to access token or user info")
 		}
+	}
+}
+
+func authHandler(w http.ResponseWriter, r *http.Request) {
+	if currentUser(r) == "" {
+		http.Redirect(w, r, "/auth/hello", 302)
 	}
 }
