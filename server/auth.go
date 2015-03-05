@@ -11,6 +11,11 @@ import (
 	"github.com/localhots/empact/task"
 )
 
+func authHelloHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html; charset=utf8")
+	helloTmpl.ExecuteTemplate(w, "hello", map[string]interface{}{})
+}
+
 func authSigninHandler(w http.ResponseWriter, r *http.Request) {
 	params := url.Values{}
 	params.Set("client_id", config.C().ClientID)
