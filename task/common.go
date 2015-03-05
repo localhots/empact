@@ -24,10 +24,11 @@ func saveResponseMeta(token string, res *github.Response) {
 	if res == nil {
 		return
 	}
-	db.UpdateToken(&db.Token{
+	tok := &db.Token{
 		Token:     token,
 		Limit:     res.Limit,
 		Remaining: res.Remaining,
 		ResetAt:   res.Reset.Time,
-	})
+	}
+	tok.Save()
 }
