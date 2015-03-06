@@ -10,8 +10,8 @@ type Token struct {
 	Token     string    `json:"token"`
 	Quota     uint64    `json:"quota"`
 	Remaining uint64    `json:"remaining"`
-	ResetAt   time.Time `json:"reset_at"`
-	CreatedAt time.Time `json:"created_at"`
+	ResetAt   time.Time `json:"reset_at" db:"reset_at"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
 }
 
 const saveTokenQuery = `

@@ -2,8 +2,8 @@ package server
 
 import (
 	"encoding/json"
-	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 
 	"github.com/GeertJohan/go.rice"
@@ -34,7 +34,7 @@ func init() {
 }
 
 func Start() {
-	fmt.Println("Starting server at http://localhost:8080")
+	log.Println("Starting server at http://localhost:8080")
 	http.ListenAndServe(":8080", nil)
 }
 

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"flag"
 	"io/ioutil"
+	"log"
 	"os"
 )
 
@@ -29,23 +30,23 @@ func C() Config {
 }
 
 func init() {
-	var (
-		path     string
-		fd       *os.File
-		contents []byte
-		err      error
-	)
-
+	var err error
+	var path string
 	flag.StringVar(&path, "config", "config.json", "Path to configuration file")
 	flag.Parse()
 
+	var fd *os.File
 	if fd, err = os.Open(path); err != nil {
 		panic(err)
 	}
+	var contents []byte
 	if contents, err = ioutil.ReadAll(fd); err != nil {
 		panic(err)
 	}
 	if err = json.Unmarshal(contents, &conf); err != nil {
 		panic(err)
 	}
+
+	log.SetOutput(os.Stderr)
+	log.SetFlags(log.Ltime | log.Lshortfile)
 }

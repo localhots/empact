@@ -4,7 +4,7 @@ type User struct {
 	Login     string `json:"login"`
 	Name      string `json:"name"`
 	ID        uint64 `json:"id"`
-	AvatarURL string `json:"avatar_url"`
+	AvatarURL string `json:"avatar_url" db:"avatar_url"`
 }
 
 const saveUserQuery = `

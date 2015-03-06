@@ -1,11 +1,14 @@
 package task
 
 import (
+	"time"
+
 	"github.com/google/go-github/github"
 	"github.com/localhots/empact/db"
 )
 
 func SyncRepos(token, owner string) {
+	report("SyncRepos", time.Now())
 	client := newGithubClient(token)
 	opt := &github.RepositoryListByOrgOptions{
 		ListOptions: github.ListOptions{},
@@ -32,6 +35,7 @@ func SyncRepos(token, owner string) {
 }
 
 func SyncContrib(token, owner, repo string) {
+	report("SyncContrib", time.Now())
 	client := newGithubClient(token)
 	contribs, resp, err := client.Repositories.ListContributorsStats(owner, repo)
 	saveResponseMeta(token, resp)

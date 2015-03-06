@@ -24,7 +24,7 @@ func authCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	code := r.FormValue("code")
-	log.Println("Got code: ", code)
+	log.Printf("Got code %q\n", code)
 	if _, login, err := task.Authenticate(code); err == nil {
 		createSession(r, login)
 	} else {

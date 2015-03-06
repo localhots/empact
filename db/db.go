@@ -1,8 +1,6 @@
 package db
 
 import (
-	"strings"
-
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"github.com/jmoiron/sqlx/reflectx"
@@ -14,7 +12,7 @@ var (
 
 func Connect(params string) (err error) {
 	db, err = sqlx.Connect("mysql", params)
-	db.Mapper = reflectx.NewMapperFunc("json", strings.ToLower)
+	db.Mapper = reflectx.NewMapper("json")
 	return
 }
 
