@@ -1,29 +1,21 @@
 package db
 
-import (
-	"github.com/fatih/structs"
-)
+type Contrib struct {
+	Week      int64  `json:"week"`
+	Author    string `json:"author"`
+	Owner     string `json:"owner"`
+	Repo      string `json:"repo"`
+	Commits   int64  `json:"commits"`
+	Additions int64  `json:"additions"`
+	Deletions int64  `json:"deletions"`
+}
 
-type (
-	Contrib struct {
-		Week      int64
-		Author    string
-		Owner     string
-		Repo      string
-		Commits   int
-		Additions int
-		Deletions int
-	}
-)
-
-const (
-	saveContribQuery = "" +
-		"replace into contributions (week, author, owner, repo, commits, additions, deletions) " +
-		"values (?, ?, ?, ?, ?, ?, ?)"
-)
+const saveContribQuery = `
+insert into contributions (week, author, owner, repo, commits, additions, deletions)
+values (?, ?, ?, ?, ?, ?, ?)
+on duplicate key update
+commits=values(commits), additions=values(additions), deletions=values(deletions)`
 
 func (c *Contrib) Save() {
-	if _, err := stmt(saveContribQuery).Exec(structs.Values(c)); err != nil {
-		panic(err)
-	}
+	conn.MustExec(saveContribQuery, c.Week, c.Author, c.Owner, c.Repo, c.Commits, c.Additions, c.Deletions)
 }
