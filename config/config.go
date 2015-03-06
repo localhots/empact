@@ -11,7 +11,7 @@ import (
 type (
 	Config struct {
 		Domain         string `json:"app_domain"`
-		DatabaseURI    string `json:"database_uri"`
+		DatabaseURI    string `json:"app_database_uri"`
 		AuthURL        string `json:"github_auth_url"`
 		AccessTokenURL string `json:"github_access_token_url"`
 		ClientID       string `json:"github_client_id"`

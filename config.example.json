@@ -1,6 +1,6 @@
 {
     "app_domain": "localhost",
-    "database_uri": "root@/empact?parseTime=true",
+    "app_database_uri": "root@/empact?parseTime=true",
     "github_auth_url": "https://github.com/login/oauth/authorize",
     "github_access_token_url": "https://github.com/login/oauth/access_token",
     "github_client_id": "XXXXXXXXXXXXXXXXXXXX",
