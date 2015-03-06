@@ -23,13 +23,14 @@ func init() {
 	http.Handle("/app/", http.StripPrefix("/app/", http.FileServer(box.HTTPBox())))
 
 	http.HandleFunc("/", sessionHandler)
+	http.HandleFunc("/hello", appHelloHandler)
+	http.HandleFunc("/app", appAppHandler)
+	http.HandleFunc("/auth/signin", authSigninHandler)
+	http.HandleFunc("/auth/callback", authCallbackHandler)
 	http.HandleFunc("/api/", authHandler)
 	http.HandleFunc("/api/orgs", apiOrgsHandler)
 	http.HandleFunc("/api/teams", apiTeamsHandler)
 	http.HandleFunc("/api/repos", apiReposHandler)
-	http.HandleFunc("/auth/hello", authHelloHandler)
-	http.HandleFunc("/auth/signin", authSigninHandler)
-	http.HandleFunc("/auth/callback", authCallbackHandler)
 }
 
 func Start() {

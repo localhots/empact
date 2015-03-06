@@ -9,23 +9,23 @@ import (
 )
 
 var (
-	conn *sqlx.DB
+	db *sqlx.DB
 )
 
 func Connect(params string) (err error) {
-	conn, err = sqlx.Connect("mysql", params)
-	conn.Mapper = reflectx.NewMapperFunc("json", strings.ToLower)
+	db, err = sqlx.Connect("mysql", params)
+	db.Mapper = reflectx.NewMapperFunc("json", strings.ToLower)
 	return
 }
 
 func mustExecN(query string, arg interface{}) {
-	if _, err := conn.NamedExec(query, arg); err != nil {
+	if _, err := db.NamedExec(query, arg); err != nil {
 		panic(err)
 	}
 }
 
 func mustSelect(dest interface{}, query string, args ...interface{}) {
-	if err := conn.Select(dest, query, args...); err != nil {
+	if err := db.Select(dest, query, args...); err != nil {
 		panic(err)
 	}
 }

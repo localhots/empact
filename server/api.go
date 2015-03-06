@@ -7,7 +7,7 @@ import (
 )
 
 func apiOrgsHandler(w http.ResponseWriter, r *http.Request) {
-	login := currentUser(r)
+	login := sessionUser(r)
 	orgs := db.UserOrgs(login)
 	respondWith(w, orgs)
 }

@@ -1,18 +1,13 @@
 package server
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 	"net/url"
 
 	"github.com/localhots/empact/config"
 	"github.com/localhots/empact/task"
 )
-
-func authHelloHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html; charset=utf8")
-	helloTmpl.ExecuteTemplate(w, "hello", map[string]interface{}{})
-}
 
 func authSigninHandler(w http.ResponseWriter, r *http.Request) {
 	params := url.Values{}
@@ -25,20 +20,20 @@ func authSigninHandler(w http.ResponseWriter, r *http.Request) {
 func authCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	if r.FormValue("error") != "" {
 		w.Write([]byte(r.FormValue("error_description")))
-	} else {
-		code := r.FormValue("code")
-		fmt.Println("Got code: ", code)
+		return
+	}
 
-		if _, login, err := task.Authenticate(code); err == nil {
-			authorize(r, login)
-		} else {
-			panic(err)
-		}
+	code := r.FormValue("code")
+	log.Println("Got code: ", code)
+	if _, login, err := task.Authenticate(code); err == nil {
+		createSession(r, login)
+	} else {
+		panic(err)
 	}
 }
 
 func authHandler(w http.ResponseWriter, r *http.Request) {
-	if currentUser(r) == "" {
+	if sessionUser(r) == "" {
 		http.Redirect(w, r, "/auth/hello", 302)
 	}
 }

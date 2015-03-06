@@ -9,21 +9,17 @@ import (
 )
 
 const (
-	sessionCookie = "session_id"
+	cookieName = "session_id"
 )
 
 var (
-	redisC = redis.NewPool(dialRedis, 10)
+	redisPool = redis.NewPool(dialRedis, 10)
 )
 
-func dialRedis() (redis.Conn, error) {
-	return redis.Dial("tcp", ":6379")
-}
-
 func sessionHandler(w http.ResponseWriter, r *http.Request) {
-	if cook, err := r.Cookie(sessionCookie); err != nil {
+	if cook, err := r.Cookie(cookieName); err != nil {
 		cook = &http.Cookie{
-			Name:     sessionCookie,
+			Name:     cookieName,
 			Value:    uuid.New(),
 			Path:     "/",
 			Expires:  time.Now().Add(365 * 24 * time.Hour),
@@ -33,16 +29,20 @@ func sessionHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func createSession(r *http.Request, login string) {
+	redisPool.Get().Do("HSET", "sessions", sessionID(r), login)
+}
+
 func sessionID(r *http.Request) string {
-	cook, _ := r.Cookie(sessionCookie)
+	cook, _ := r.Cookie(cookieName)
 	return cook.Value
 }
 
-func currentUser(r *http.Request) (login string) {
-	login, _ = redis.String(redisC.Get().Do("HGET", "sessions", sessionID(r)))
+func sessionUser(r *http.Request) (login string) {
+	login, _ = redis.String(redisPool.Get().Do("HGET", "sessions", sessionID(r)))
 	return
 }
 
-func authorize(r *http.Request, login string) {
-	redisC.Get().Do("HSET", "sessions", sessionID(r), login)
+func dialRedis() (redis.Conn, error) {
+	return redis.Dial("tcp", ":6379")
 }
