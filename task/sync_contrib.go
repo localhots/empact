@@ -4,22 +4,13 @@ import (
 	"github.com/localhots/empact/db"
 )
 
-type (
-	SyncContribTask struct {
-		Repo string
-		*db.Task
-	}
-)
-
-func SyncContrib(tk Tasker) {
-	t := tk.(*SyncContribTask)
-	client := newGithubClient(t.Token)
-	contribs, resp, err := client.Repositories.ListContributorsStats(t.Owner, t.Repo)
-	saveResponseMeta(t.Token, resp)
+func SyncContrib(token, owner, repo string) {
+	client := newGithubClient(token)
+	contribs, resp, err := client.Repositories.ListContributorsStats(owner, repo)
+	saveResponseMeta(token, resp)
 	if err != nil {
 		if err.Error() == "EOF" {
-			// Empty repository, not an actual error
-			return
+			return // Empty repository, not an actual error
 		}
 		panic(err)
 	}

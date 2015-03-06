@@ -12,20 +12,11 @@ import (
 	"github.com/localhots/empact/db"
 )
 
-type (
-	FetchAccessTokenTask struct {
-		Code   string
-		Result chan string
-		*db.Task
-	}
-)
-
-func FetchAccessToken(tk Tasker) {
-	t := tk.(*FetchAccessTokenTask)
+func FetchAccessToken(code string, result chan string) {
 	payload := url.Values{}
 	payload.Set("client_id", config.C().ClientID)
 	payload.Set("client_secret", config.C().ClientSecret)
-	payload.Set("code", t.Code)
+	payload.Set("code", code)
 	payload.Set("redirect_uri", config.C().RedirectURI)
 
 	buf := bytes.NewBuffer([]byte(payload.Encode()))
@@ -72,5 +63,5 @@ func FetchAccessToken(tk Tasker) {
 	fmt.Println("Saving token", tok)
 	tok.Save()
 
-	t.Result <- user.Login
+	result <- user.Login
 }
