@@ -6,8 +6,7 @@ import (
 	"net/url"
 
 	"github.com/localhots/empact/config"
-	"github.com/localhots/empact/db"
-	"github.com/localhots/empact/job"
+
 	"github.com/localhots/empact/task"
 )
 
@@ -31,17 +30,10 @@ func authCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		code := r.FormValue("code")
 		fmt.Println("Got code: ", code)
 
-		res := make(chan string)
-		job.Enqueue(&task.FetchAccessTokenTask{
-			Code:   code,
-			Result: res,
-			Task:   &db.Task{},
-		})
-
-		if login, ok := <-res; ok {
+		if _, login, err := task.Authenticate(code); err == nil {
 			authorize(r, login)
 		} else {
-			panic("Failed to access token or user info")
+			panic(err)
 		}
 	}
 }

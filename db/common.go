@@ -14,6 +14,6 @@ var (
 
 func Connect(params string) (err error) {
 	conn, err = sqlx.Connect("mysql", params)
-	conn.Mappper = reflectx.NewMapperFunc("json", strings.ToLower)
+	conn.Mapper = reflectx.NewMapperFunc("json", strings.ToLower)
 	return
 }
