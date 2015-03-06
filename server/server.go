@@ -1,6 +1,7 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -10,13 +11,16 @@ import (
 
 var (
 	helloTmpl = template.New("hello")
+	appTmpl   = template.New("app")
+	box       = rice.MustFindBox("app")
 )
 
 func init() {
-	box := rice.MustFindBox("static")
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(box.HTTPBox())))
-	tmplText, _ := box.String("hello.tmpl")
-	helloTmpl, _ = helloTmpl.Parse(tmplText)
+	parseTemplate("hello.tmpl", helloTmpl)
+	parseTemplate("app.tmpl", appTmpl)
+
+	// Serving static files
+	http.Handle("/app/", http.StripPrefix("/app/", http.FileServer(box.HTTPBox())))
 
 	http.HandleFunc("/", sessionHandler)
 	http.HandleFunc("/api/", authHandler)
@@ -31,4 +35,22 @@ func init() {
 func Start() {
 	fmt.Println("Starting server at http://localhost:8080")
 	http.ListenAndServe(":8080", nil)
+}
+
+func parseTemplate(file string, tmpl *template.Template) {
+	if tmplText, err := box.String(file); err == nil {
+		tmpl, _ = tmpl.Parse(tmplText)
+	} else {
+		panic(err)
+	}
+}
+
+func respondWith(w http.ResponseWriter, resp interface{}) {
+	b, err := json.Marshal(resp)
+	if err != nil {
+		panic(err)
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf8")
+	w.Write(b)
 }
