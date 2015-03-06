@@ -15,7 +15,7 @@ type Contrib struct {
 }
 
 const saveContribQuery = `
-insert into contributions (week, author, owner, repo, commits, additions, deletions)
+insert into contribs (week, author, owner, repo, commits, additions, deletions)
 values (:week, :author, :owner, :repo, :commits, :additions, :deletions)
 on duplicate key update
 commits=values(commits), additions=values(additions), deletions=values(deletions)`

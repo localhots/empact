@@ -34,9 +34,13 @@ func mustSelect(dest interface{}, query string, args ...interface{}) {
 func measure(op string, start time.Time) {
 	duration := time.Since(start).Nanoseconds()
 	outcome := "succeeded"
-	if err := recover(); err != nil {
+	err := recover()
+	if err != nil {
 		outcome = "failed"
 	}
 
 	log.Printf("Operation %s %s; time: %d (%dms)\n", op, outcome, duration, duration/1000000)
+	if err != nil {
+		panic(err)
+	}
 }

@@ -6,6 +6,7 @@ import (
 
 type Team struct {
 	ID    uint64 `json:"id"`
+	Slug  string `json:"slug"`
 	Owner string `json:"owner"`
 	Name  string `json:"name"`
 }
