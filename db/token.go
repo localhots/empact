@@ -21,5 +21,6 @@ on duplicate key update
 quota = values(quota), remaining = values(remaining), reset_at = values(reset_at)`
 
 func (t *Token) Save() {
+	defer measure("SaveToken", time.Now())
 	mustExecN(saveTokenQuery, t)
 }

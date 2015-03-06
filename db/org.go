@@ -1,5 +1,9 @@
 package db
 
+import (
+	"time"
+)
+
 type Org struct {
 	Login     string `json:"login"`
 	Descr     string `json:"descr"`
@@ -10,6 +14,7 @@ type Org struct {
 const userOrgsQuery = `select o.* from members m join orgs o on o.login = m.org where user = ?`
 
 func UserOrgs(login string) (orgs []*Org) {
+	defer measure("UserOrgs", time.Now())
 	mustSelect(&orgs, userOrgsQuery, login)
 	return
 }

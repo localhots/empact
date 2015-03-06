@@ -1,5 +1,7 @@
 package db
 
+import "time"
+
 type User struct {
 	Login     string `json:"login"`
 	Name      string `json:"name"`
@@ -14,5 +16,6 @@ on duplicate key update
 login=values(login), name=values(name), avatar_url=values(avatar_url)`
 
 func (u *User) Save() {
+	defer measure("SaveUser", time.Now())
 	mustExecN(saveUserQuery, u)
 }

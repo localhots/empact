@@ -1,5 +1,9 @@
 package db
 
+import (
+	"time"
+)
+
 type Contrib struct {
 	Week      uint64 `json:"week"`
 	Author    string `json:"author"`
@@ -17,5 +21,6 @@ on duplicate key update
 commits=values(commits), additions=values(additions), deletions=values(deletions)`
 
 func (c *Contrib) Save() {
+	defer measure("SaveContrib", time.Now())
 	mustExecN(saveContribQuery, c)
 }

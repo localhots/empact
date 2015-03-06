@@ -31,7 +31,7 @@ func saveResponseMeta(token string, res *github.Response) {
 
 func report(task string, start time.Time) {
 	duration := time.Since(start).Nanoseconds()
-	outcome := "done"
+	outcome := "succeeded"
 	if err := recover(); err != nil {
 		outcome = "failed"
 	}

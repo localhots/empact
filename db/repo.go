@@ -21,10 +21,12 @@ on duplicate key update
 updated_at=now()`
 
 func (r *Repo) Save() {
+	defer measure("SaveRepo", time.Now())
 	mustExecN(saveRepoQuery, r)
 }
 
 func OrgRepos(login string) (repos []*Repo) {
+	defer measure("OrgRepos", time.Now())
 	mustSelect(&repos, orgReposQuery, login)
 	return
 }
