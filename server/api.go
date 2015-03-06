@@ -8,10 +8,18 @@ import (
 )
 
 func orgsListHandler(w http.ResponseWriter, r *http.Request) {
-	jsonHandler(w, r)
 	login := currentUser(r)
 	orgs := db.UserOrgs(login)
-
 	b, _ := json.Marshal(orgs)
+
+	w.Header().Set("Content-Type", "application/json; charset=utf8")
+	w.Write(b)
+}
+
+func orgTeamsHandler(w http.ResponseWriter, r *http.Request) {
+	teams := db.OrgTeams(r.FormValue("org"))
+	b, _ := json.Marshal(teams)
+
+	w.Header().Set("Content-Type", "application/json; charset=utf8")
 	w.Write(b)
 }

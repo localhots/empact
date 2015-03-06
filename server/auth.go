@@ -6,7 +6,6 @@ import (
 	"net/url"
 
 	"github.com/localhots/empact/config"
-
 	"github.com/localhots/empact/task"
 )
 
