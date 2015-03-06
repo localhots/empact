@@ -48,5 +48,5 @@ func init() {
 	}
 
 	log.SetOutput(os.Stderr)
-	log.SetFlags(log.Ltime | log.Lshortfile)
+	log.SetFlags(log.Ldate | log.Ltime)
 }
