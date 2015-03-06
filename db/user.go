@@ -3,7 +3,7 @@ package db
 type User struct {
 	Login     string `json:"login"`
 	Name      string `json:"name"`
-	ID        int64  `json:"id"`
+	ID        uint64 `json:"id"`
 	AvatarURL string `json:"avatar_url"`
 }
 

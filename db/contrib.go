@@ -1,13 +1,13 @@
 package db
 
 type Contrib struct {
-	Week      int64  `json:"week"`
+	Week      uint64 `json:"week"`
 	Author    string `json:"author"`
 	Owner     string `json:"owner"`
 	Repo      string `json:"repo"`
-	Commits   int64  `json:"commits"`
-	Additions int64  `json:"additions"`
-	Deletions int64  `json:"deletions"`
+	Commits   uint64 `json:"commits"`
+	Additions uint64 `json:"additions"`
+	Deletions uint64 `json:"deletions"`
 }
 
 const saveContribQuery = `

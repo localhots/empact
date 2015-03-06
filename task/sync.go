@@ -49,13 +49,13 @@ func SyncContrib(token, owner, repo string) {
 			}
 
 			contrib := &db.Contrib{
-				Week:      week.Week.Time.Unix(),
+				Week:      uint64(week.Week.Time.Unix()),
 				Author:    *c.Author.Login,
 				Owner:     owner,
 				Repo:      repo,
-				Commits:   int64(*week.Commits),
-				Additions: int64(*week.Additions),
-				Deletions: int64(*week.Deletions),
+				Commits:   uint64(*week.Commits),
+				Additions: uint64(*week.Additions),
+				Deletions: uint64(*week.Deletions),
 			}
 			contrib.Save()
 		}

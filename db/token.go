@@ -5,11 +5,11 @@ import (
 )
 
 type Token struct {
-	ID        int64     `json:"id"`
+	ID        uint64    `json:"id"`
 	User      string    `json:"user"`
 	Token     string    `json:"token"`
-	Quota     int64     `json:"quota"`
-	Remaining int64     `json:"remaining"`
+	Quota     uint64    `json:"quota"`
+	Remaining uint64    `json:"remaining"`
 	ResetAt   time.Time `json:"reset_at"`
 	CreatedAt time.Time `json:"created_at"`
 }

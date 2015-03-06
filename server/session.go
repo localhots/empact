@@ -38,11 +38,9 @@ func sessionID(r *http.Request) string {
 	return cook.Value
 }
 
-func currentUser(r *http.Request) string {
-	conn := redisC.Get()
-	login, _ := redis.String(conn.Do("HGET", "sessions", sessionID(r)))
-
-	return login
+func currentUser(r *http.Request) (login string) {
+	login, _ = redis.String(redisC.Get().Do("HGET", "sessions", sessionID(r)))
+	return
 }
 
 func authorize(r *http.Request, login string) {

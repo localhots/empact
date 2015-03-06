@@ -3,7 +3,7 @@ package db
 type Org struct {
 	Login     string `json:"login"`
 	Descr     string `json:"descr"`
-	ID        int64  `json:"id"`
+	ID        uint64 `json:"id"`
 	AvatarURL string `json:"avatar_url"`
 }
 

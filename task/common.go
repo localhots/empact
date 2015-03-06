@@ -19,8 +19,8 @@ func saveResponseMeta(token string, res *github.Response) {
 	}
 	tok := &db.Token{
 		Token:     token,
-		Quota:     int64(res.Limit),
-		Remaining: int64(res.Remaining),
+		Quota:     uint64(res.Limit),
+		Remaining: uint64(res.Remaining),
 		ResetAt:   res.Reset.Time,
 	}
 	tok.Save()

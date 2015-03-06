@@ -1,7 +1,7 @@
 package db
 
 type Team struct {
-	ID    int64  `json:"id"`
+	ID    uint64 `json:"id"`
 	Owner string `json:"owner"`
 	Name  string `json:"name"`
 }

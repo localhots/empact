@@ -20,8 +20,9 @@ func init() {
 
 	http.HandleFunc("/", sessionHandler)
 	http.HandleFunc("/api/", authHandler)
-	http.HandleFunc("/api/orgs", orgsListHandler)
-	http.HandleFunc("/api/teams", orgTeamsHandler)
+	http.HandleFunc("/api/orgs", apiOrgsHandler)
+	http.HandleFunc("/api/teams", apiTeamsHandler)
+	http.HandleFunc("/api/repos", apiReposHandler)
 	http.HandleFunc("/auth/hello", authHelloHandler)
 	http.HandleFunc("/auth/signin", authSigninHandler)
 	http.HandleFunc("/auth/callback", authCallbackHandler)
