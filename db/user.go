@@ -9,10 +9,10 @@ type User struct {
 
 const saveUserQuery = `
 insert into users (login, name, id, avatar_url)
-values (?, ?, ?, ?)
+values (:login, :name, :id, :avatar_url)
 on duplicate key update
 login=values(login), name=values(name), avatar_url=values(avatar_url)`
 
 func (u *User) Save() {
-	conn.MustExec(saveUserQuery, u.Login, u.Name, u.ID, u.AvatarURL)
+	mustExecN(saveUserQuery, u)
 }

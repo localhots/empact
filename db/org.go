@@ -10,8 +10,6 @@ type Org struct {
 const userOrgsQuery = `select o.* from members m join orgs o on o.login = m.org where user = ?`
 
 func UserOrgs(login string) (orgs []*Org) {
-	if err := conn.Select(&orgs, userOrgsQuery, login); err != nil {
-		panic(err)
-	}
+	mustSelect(&orgs, userOrgsQuery, login)
 	return
 }

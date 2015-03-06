@@ -9,8 +9,6 @@ type Team struct {
 const orgTeamsQuery = `select * from teams where owner = ?`
 
 func OrgTeams(login string) (teams []*Team) {
-	if err := conn.Select(&teams, orgTeamsQuery, login); err != nil {
-		panic(err)
-	}
+	mustSelect(&teams, orgTeamsQuery, login)
 	return
 }

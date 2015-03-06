@@ -12,10 +12,10 @@ type Contrib struct {
 
 const saveContribQuery = `
 insert into contributions (week, author, owner, repo, commits, additions, deletions)
-values (?, ?, ?, ?, ?, ?, ?)
+values (:week, :author, :owner, :repo, :commits, :additions, :deletions)
 on duplicate key update
 commits=values(commits), additions=values(additions), deletions=values(deletions)`
 
 func (c *Contrib) Save() {
-	conn.MustExec(saveContribQuery, c.Week, c.Author, c.Owner, c.Repo, c.Commits, c.Additions, c.Deletions)
+	mustExecN(saveContribQuery, c)
 }

@@ -16,17 +16,15 @@ type Repo struct {
 const orgReposQuery = `select * from repos where owner = ?`
 const saveRepoQuery = `
 insert into repos (owner, name, updated_at)
-values (?, ?, now())
+values (:owner, :name, now())
 on duplicate key update
 updated_at=now()`
 
 func (r *Repo) Save() {
-	conn.MustExec(saveRepoQuery, r.Owner, r.Name)
+	mustExecN(saveRepoQuery, r)
 }
 
 func OrgRepos(login string) (repos []*Repo) {
-	if err := conn.Select(&repos, orgReposQuery, login); err != nil {
-		panic(err)
-	}
+	mustSelect(&repos, orgReposQuery, login)
 	return
 }

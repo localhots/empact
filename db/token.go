@@ -16,10 +16,10 @@ type Token struct {
 
 const saveTokenQuery = `
 insert into tokens (user, token, quota, remaining, reset_at, created_at)
-values (?, ?, ?, ?, ?, now())
+values (:user, :token, :quota, :remaining, :reset_at, now())
 on duplicate key update
 quota = values(quota), remaining = values(remaining), reset_at = values(reset_at)`
 
 func (t *Token) Save() {
-	conn.MustExec(saveTokenQuery, t.User, t.Token, t.Quota, t.Remaining, t.ResetAt)
+	mustExecN(saveTokenQuery, t)
 }

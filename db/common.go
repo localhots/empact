@@ -17,3 +17,15 @@ func Connect(params string) (err error) {
 	conn.Mapper = reflectx.NewMapperFunc("json", strings.ToLower)
 	return
 }
+
+func mustExecN(query string, arg interface{}) {
+	if _, err := conn.NamedExec(query, arg); err != nil {
+		panic(err)
+	}
+}
+
+func mustSelect(dest interface{}, query string, args ...interface{}) {
+	if err := conn.Select(dest, query, args...); err != nil {
+		panic(err)
+	}
+}
