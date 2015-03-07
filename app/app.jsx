@@ -17,7 +17,6 @@ var App = React.createClass({
     }
 });
 
-
 var Menu = React.createClass({
     mixins: [Router.Navigation, Router.State],
     api_url: "/api/teams?org=",
@@ -81,8 +80,13 @@ var OrgStats = React.createClass({
 var TeamStats = React.createClass({
     mixins: [Router.Navigation, Router.State],
     render: function(){
+        var url = "/api/stat/teams/top?org="+ this.getParams().org +"&from=1417878086&to=1425654067";
         return (
-            <section className="content">{this.getParams().team} team stats for {this.getParams().org}</section>
+            <section className="content">
+                <div className="left">
+                    <BarChart url={url} />
+                </div>
+            </section>
         );
     }
 });

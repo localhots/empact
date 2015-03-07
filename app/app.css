@@ -31,11 +31,6 @@ li.nav {
     width: calc(100% - 13em);
 }
 .content .left, .content .right {
+    float: left;
     width: 50%;
-}
-.content .left {
-    background: #5500fa;
-}
-.content .right {
-    background: #fa0055;
 }
