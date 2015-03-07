@@ -18,6 +18,7 @@ func authSigninHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func authCallbackHandler(w http.ResponseWriter, r *http.Request) {
+	req, _ := parseRequest(w, r)
 	if r.FormValue("error") != "" {
 		w.Write([]byte(r.FormValue("error_description")))
 		return
@@ -25,15 +26,16 @@ func authCallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	code := r.FormValue("code")
 	log.Printf("Got code %q\n", code)
+
 	if _, login, err := task.Authenticate(code); err == nil {
-		createSession(r, login)
+		req.authorize(login)
 	} else {
 		panic(err)
 	}
 }
 
 func authHandler(w http.ResponseWriter, r *http.Request) {
-	if sessionUser(r) == "" {
-		http.Redirect(w, r, "/auth/hello", 302)
+	if req, _ := parseRequest(w, r); req.login == "" {
+		http.Redirect(w, r, "/", 302)
 	}
 }

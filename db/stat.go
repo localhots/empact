@@ -1,19 +1,10 @@
 package db
 
 import (
-	"net/http"
-	"strconv"
 	"time"
 )
 
 type (
-	StatRequest struct {
-		Org  string
-		Team string
-		User string
-		From int64
-		To   int64
-	}
 	StatItem struct {
 		Item  string `json:"item"`
 		Value int    `json:"value"`
@@ -110,54 +101,32 @@ where
 group by item
 order by value desc`
 
-func StatOrgReposTop(r *StatRequest) (res []StatItem) {
+func StatOrgReposTop(org string, from, to int64) (res []StatItem) {
 	defer measure("StatOrgReposTop", time.Now())
-	mustSelect(&res, orgReposTopQuery, r.Org, r.From, r.To)
+	mustSelect(&res, orgReposTopQuery, org, from, to)
 	return
 }
 
-func StatOrgReposActivity(r *StatRequest) (res []StatPoint) {
+func StatOrgReposActivity(org string, from, to int64) (res []StatPoint) {
 	defer measure("StatOrgReposActivity", time.Now())
-	mustSelect(&res, orgReposActivityQuery, r.Org, r.From, r.To)
+	mustSelect(&res, orgReposActivityQuery, org, from, to)
 	return
 }
 
-func StatOrgTeamsTop(r *StatRequest) (res []StatItem) {
+func StatOrgTeamsTop(org string, from, to int64) (res []StatItem) {
 	defer measure("StatOrgTeamsTop", time.Now())
-	mustSelect(&res, orgTeamsTopQuery, r.Org, r.From, r.To)
+	mustSelect(&res, orgTeamsTopQuery, org, from, to)
 	return
 }
 
-func StatOrgTeamsActivity(r *StatRequest) (res []StatPoint) {
+func StatOrgTeamsActivity(org string, from, to int64) (res []StatPoint) {
 	defer measure("StatOrgTeamsActivity", time.Now())
-	mustSelect(&res, orgTeamsActivityQuery, r.Org, r.From, r.To)
+	mustSelect(&res, orgTeamsActivityQuery, org, from, to)
 	return
 }
 
-func StatOrgUsersTop(r *StatRequest) (res []StatItem) {
+func StatOrgUsersTop(org string, from, to int64) (res []StatItem) {
 	defer measure("StatOrgUsersTop", time.Now())
-	mustSelect(&res, orgUsersTopQuery, r.Org, r.From, r.To)
+	mustSelect(&res, orgUsersTopQuery, org, from, to)
 	return
-}
-
-func ParseRequest(r *http.Request) *StatRequest {
-	var err error
-	var from, to int64
-	if len(r.FormValue("from")) > 0 {
-		if from, err = strconv.ParseInt(r.FormValue("from"), 10, 64); err != nil {
-			panic(err)
-		}
-	}
-	if len(r.FormValue("to")) > 0 {
-		if to, err = strconv.ParseInt(r.FormValue("to"), 10, 64); err != nil {
-			panic(err)
-		}
-	}
-	return &StatRequest{
-		Org:  r.FormValue("org"),
-		Team: r.FormValue("team"),
-		User: r.FormValue("user"),
-		From: from,
-		To:   to,
-	}
 }

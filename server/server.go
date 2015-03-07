@@ -1,13 +1,21 @@
 package server
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
+
+	"github.com/garyburd/redigo/redis"
+)
+
+const (
+	cookieName = "session_id"
+)
+
+var (
+	redisPool = redis.NewPool(dialRedis, 10)
 )
 
 func init() {
-	http.HandleFunc("/", sessionHandler)
 	http.HandleFunc("/auth/signin", authSigninHandler)
 	http.HandleFunc("/auth/callback", authCallbackHandler)
 	http.HandleFunc("/api/", authHandler)
@@ -26,13 +34,6 @@ func Start() {
 	http.ListenAndServe(":8080", nil)
 }
 
-func respondWith(w http.ResponseWriter, resp interface{}) {
-	b, err := json.Marshal(resp)
-	if err != nil {
-		panic(err)
-	}
-
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Content-Type", "application/json; charset=utf8")
-	w.Write(b)
+func dialRedis() (redis.Conn, error) {
+	return redis.Dial("tcp", ":6379")
 }
