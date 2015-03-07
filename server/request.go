@@ -28,13 +28,12 @@ type (
 )
 
 func parseRequest(w http.ResponseWriter, r *http.Request) (*request, *statRequest) {
-	setCookie(w, r)
-	cook, _ := r.Cookie(cookieName)
-	login, _ := redis.String(redisPool.Get().Do("HGET", "sessions", cook.Value))
+	sid := sessionID(w, r)
+	login, _ := redis.String(redisPool.Get().Do("HGET", "sessions", sid))
 	req := &request{
 		r:         r,
 		w:         w,
-		sessionID: cook.Value,
+		sessionID: sid,
 		login:     login,
 	}
 	return req, parseStatRequest(r)
@@ -77,8 +76,10 @@ func parseStatRequest(r *http.Request) *statRequest {
 	}
 }
 
-func setCookie(w http.ResponseWriter, r *http.Request) {
-	if cook, err := r.Cookie(cookieName); err != nil {
+func sessionID(w http.ResponseWriter, r *http.Request) string {
+	var cook *http.Cookie
+	var err error
+	if cook, err = r.Cookie(cookieName); err != nil {
 		cook = &http.Cookie{
 			Name:     cookieName,
 			Value:    uuid.New(),
@@ -89,4 +90,5 @@ func setCookie(w http.ResponseWriter, r *http.Request) {
 		http.SetCookie(w, cook)
 		r.AddCookie(cook)
 	}
+	return cook.Value
 }
