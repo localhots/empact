@@ -2,10 +2,14 @@ section {
     float: left;
 }
 
-#menu {
+.app {
+    width: 100%;
+}
+
+.menu {
     width: 13em;
 }
-#menu ul {
+.menu ul {
     margin: 0;
     padding: 0;
 }
@@ -23,15 +27,15 @@ li.nav {
     cursor: default;
 }
 
-#content {
+.content {
     width: calc(100% - 13em);
 }
-#content .left, #content .right {
+.content .left, .content .right {
     width: 50%;
 }
-#content .left {
+.content .left {
     background: #5500fa;
 }
-#content .right {
+.content .right {
     background: #fa0055;
 }
