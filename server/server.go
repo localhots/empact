@@ -8,8 +8,6 @@ import (
 
 func init() {
 	http.HandleFunc("/", sessionHandler)
-	http.HandleFunc("/hello", appHelloHandler)
-	http.HandleFunc("/app", appAppHandler)
 	http.HandleFunc("/auth/signin", authSigninHandler)
 	http.HandleFunc("/auth/callback", authCallbackHandler)
 	http.HandleFunc("/api/", authHandler)
