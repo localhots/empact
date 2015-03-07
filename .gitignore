@@ -1,3 +1,8 @@
 config.json
+config/*/*
 *.txt
+
 app/.module-cache
+app/bower_components
+// Ignore compiled app for now
+app/app.js
