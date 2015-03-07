@@ -13,10 +13,10 @@ import (
 
 type (
 	request struct {
-		r         *http.Request
-		w         http.ResponseWriter
-		sessionID string
-		login     string
+		r     *http.Request
+		w     http.ResponseWriter
+		sid   string
+		login string
 	}
 	statRequest struct {
 		org  string
@@ -31,16 +31,16 @@ func parseRequest(w http.ResponseWriter, r *http.Request) (*request, *statReques
 	sid := sessionID(w, r)
 	login, _ := redis.String(redisPool.Get().Do("HGET", "sessions", sid))
 	req := &request{
-		r:         r,
-		w:         w,
-		sessionID: sid,
-		login:     login,
+		r:     r,
+		w:     w,
+		sid:   sid,
+		login: login,
 	}
 	return req, parseStatRequest(r)
 }
 
 func (r *request) authorize(login string) {
-	redisPool.Get().Do("HSET", "sessions", r.sessionID, login)
+	redisPool.Get().Do("HSET", "sessions", r.sid, login)
 }
 
 func (r *request) respondWith(resp interface{}) {
