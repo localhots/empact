@@ -10,10 +10,11 @@ var BarChart = React.createClass({
 
     componentDidMount: function() {
         $.get(this.props.api, function(res){
+            res = res.slice(0, 15);
             var max = 1;
             res.map(function(el) {
-                if (el.value > max) {
-                    max = el.value
+                if (el.commits > max) {
+                    max = el.commits
                 }
             });
             this.setState({points: res, max: max});
@@ -44,7 +45,7 @@ var BarChart = React.createClass({
         return (
             <Bar key={point.item} point={point} i={i} link={this.props.link}
                 y={this.y(i)}
-                width={point.value/this.state.max}
+                width={point.commits/this.state.max}
                 height={this.barHeight} />
         );
     }
@@ -59,9 +60,10 @@ var Bar = React.createClass({
     render: function() {
         var p = this.props.point
             w = this.props.width*500,
-            label = p.item + ": " + p.value,
+            label = p.item + ": " + p.commits,
+            lw = label.length*10 + 5,
             tx = 10;
-        if (label.length*15 > w) {
+        if (lw > w) {
             tx = w + tx;
         }
         return (
@@ -70,7 +72,7 @@ var Bar = React.createClass({
                     width={this.props.width*500}
                     height={this.props.height}
                     x="0" y={this.props.y} rx="2" ry="2" />
-                <rect className="label_underlay" x={tx-6} y={this.props.y+10} height={20} width={label.length*10+5} rx="3" ry="3" />
+                <rect className="label_underlay" x={tx-6} y={this.props.y+10} height={20} width={lw} rx="3" ry="3" />
                 <text className="label" x={tx} y={this.props.y + 26}>{label}</text>
             </g>
         );

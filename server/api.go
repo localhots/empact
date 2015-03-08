@@ -14,12 +14,12 @@ func apiOrgsHandler(w http.ResponseWriter, r *http.Request) {
 
 func apiTeamsHandler(w http.ResponseWriter, r *http.Request) {
 	req, stat := parseRequest(w, r)
-	teams := db.OrgTeams(stat.org)
+	teams := db.OrgTeams(stat.Org)
 	req.respondWith(teams)
 }
 
 func apiReposHandler(w http.ResponseWriter, r *http.Request) {
 	req, stat := parseRequest(w, r)
-	repos := db.OrgRepos(stat.org)
+	repos := db.OrgRepos(stat.Org)
 	req.respondWith(repos)
 }

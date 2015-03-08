@@ -1,57 +1,27 @@
 package db
 
 import (
+	"fmt"
 	"time"
 )
 
 type (
 	StatItem struct {
-		Item  string `json:"item"`
-		Value int    `json:"value"`
+		Item    string `json:"item"`
+		Commits int    `json:"commits"`
+		Delta   int    `json:"delta"`
 	}
 	StatPoint struct {
 		StatItem
-		Timestamp uint64 `json:"ts"`
+		Week uint64 `json:"week"`
 	}
 )
 
-const orgReposTopQuery = `
+const orgTopQuery = `
 select
-    c.repo as item,
-    sum(c.commits) as value
-from contribs c
-join members m on
-    c.author = m.user and
-    c.owner = m.org
-where
-    m.id is not null and
-    c.owner = ? and
-    c.week >= ? and
-    c.week <= ?
-group by item
-order by value desc`
-
-const orgReposActivityQuery = `
-select
-    c.week as ts,
-    c.repo as item,
-    sum(c.commits) as value
-from contribs c
-join members m on
-    c.author = m.user and
-    c.owner = m.org
-where
-    m.id is not null and
-    c.owner = ? and
-    c.week >= ? and
-    c.week <= ?
-group by ts, item
-order by ts, item`
-
-const orgTeamsTopQuery = `
-select
-    t.name as item,
-    sum(c.commits) value
+    %s as item,
+    sum(c.commits) as commits,
+    sum(c.additions) - sum(c.deletions) as delta
 from contribs c
 join members m on
     c.author = m.user and
@@ -60,17 +30,18 @@ join teams t on
     m.team_id = t.id
 where
     m.id is not null and
-    c.owner = ? and
-    c.week >= ? and
-    c.week <= ?
+    c.owner = :org and
+    c.week >= :from and
+    c.week <= :to
 group by item
-order by value desc`
+order by %s desc`
 
-const orgTeamsActivityQuery = `
+const orgActivityQuery = `
 select
-    c.week as ts,
-    t.name as item,
-    sum(c.commits) as value
+    %s as item,
+    sum(c.commits) as commits,
+    sum(c.additions) - sum(c.deletions) as delta,
+    c.week as week
 from contribs c
 join members m on
     c.author = m.user and
@@ -79,54 +50,73 @@ join teams t on
     m.team_id = t.id
 where
     m.id is not null and
-    c.owner = ? and
-    c.week >= ? and
-    c.week <= ?
-group by ts, item
-order by ts, item`
+    c.owner = :org and
+    c.week >= :from and
+    c.week <= :to
+group by item, week
+order by week, %s desc`
 
-const orgUsersTopQuery = `
+const teamTopQuery = `
 select
-    c.author as item,
-    sum(c.commits) value
+    %s as item,
+    sum(c.commits) as commits,
+    sum(c.additions) - sum(c.deletions) as delta
 from contribs c
 join members m on
     c.author = m.user and
     c.owner = m.org
+join teams t on
+    m.team_id = t.id and
+    t.name = :team
 where
     m.id is not null and
-    c.owner = ? and
-    c.week >= ? and
-    c.week <= ?
+    c.owner = :org and
+    c.week >= :from and
+    c.week <= :to
 group by item
-order by value desc`
+order by %s desc`
 
-func StatOrgReposTop(org string, from, to int64) (res []StatItem) {
-	defer measure("StatOrgReposTop", time.Now())
-	mustSelect(&res, orgReposTopQuery, org, from, to)
+const teamActivityQuery = `
+select
+    %s as item,
+    sum(c.commits) as commits,
+    sum(c.additions) - sum(c.deletions) as delta,
+    c.week as week
+from contribs c
+join members m on
+    c.author = m.user and
+    c.owner = m.org
+join teams t on
+    m.team_id = t.id and
+    t.name = :team
+where
+    m.id is not null and
+    c.owner = :org and
+    c.week >= :from and
+    c.week <= :to
+group by item, week
+order by week, %s desc`
+
+func StatOrgTop(p map[string]interface{}) (res []StatItem) {
+	defer measure("StatOrgTop", time.Now())
+	mustSelectN(&res, fmt.Sprintf(orgTopQuery, p["item"], p["sort"]), p)
 	return
 }
 
-func StatOrgReposActivity(org string, from, to int64) (res []StatPoint) {
-	defer measure("StatOrgReposActivity", time.Now())
-	mustSelect(&res, orgReposActivityQuery, org, from, to)
+func StatOrgActivity(p map[string]interface{}) (res []StatPoint) {
+	defer measure("StatOrgActivity", time.Now())
+	mustSelectN(&res, fmt.Sprintf(orgActivityQuery, p["item"], p["sort"]), p)
 	return
 }
 
-func StatOrgTeamsTop(org string, from, to int64) (res []StatItem) {
-	defer measure("StatOrgTeamsTop", time.Now())
-	mustSelect(&res, orgTeamsTopQuery, org, from, to)
+func StatTeamTop(p map[string]interface{}) (res []StatItem) {
+	defer measure("StatTeamTop", time.Now())
+	mustSelectN(&res, fmt.Sprintf(teamTopQuery, p["item"], p["sort"]), p)
 	return
 }
 
-func StatOrgTeamsActivity(org string, from, to int64) (res []StatPoint) {
-	defer measure("StatOrgTeamsActivity", time.Now())
-	mustSelect(&res, orgTeamsActivityQuery, org, from, to)
-	return
-}
-
-func StatOrgUsersTop(org string, from, to int64) (res []StatItem) {
-	defer measure("StatOrgUsersTop", time.Now())
-	mustSelect(&res, orgUsersTopQuery, org, from, to)
+func StatTeamActivity(p map[string]interface{}) (res []StatPoint) {
+	defer measure("StatTeamActivity", time.Now())
+	mustSelectN(&res, fmt.Sprintf(teamActivityQuery, p["item"], p["sort"]), p)
 	return
 }

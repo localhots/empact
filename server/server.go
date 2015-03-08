@@ -18,15 +18,16 @@ var (
 func init() {
 	http.HandleFunc("/auth/signin", authSigninHandler)
 	http.HandleFunc("/auth/callback", authCallbackHandler)
+
 	http.HandleFunc("/api/", authHandler)
 	http.HandleFunc("/api/orgs", apiOrgsHandler)
 	http.HandleFunc("/api/teams", apiTeamsHandler)
 	http.HandleFunc("/api/repos", apiReposHandler)
-	http.HandleFunc("/api/stat/repos/top", statOrgReposTop)
-	http.HandleFunc("/api/stat/repos/activity", statOrgReposActivity)
-	http.HandleFunc("/api/stat/teams/top", statOrgTeamsTop)
-	http.HandleFunc("/api/stat/teams/activity", statOrgTeamsActivity)
-	http.HandleFunc("/api/stat/users/top", statOrgUsersTop)
+
+	http.HandleFunc("/api/stat/orgs/top", statOrgTopHandler)
+	http.HandleFunc("/api/stat/orgs/activity", statOrgActivityHandler)
+	http.HandleFunc("/api/stat/teams/top", statTeamTopHandler)
+	http.HandleFunc("/api/stat/teams/activity", statTeamActivityHandler)
 }
 
 func Start() {

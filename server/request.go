@@ -19,11 +19,13 @@ type (
 		login string
 	}
 	statRequest struct {
-		org  string
-		team string
-		user string
-		from int64
-		to   int64
+		Org  string `structs:"org"`
+		Team string `structs:"team"`
+		User string `structs:"user"`
+		From int64  `structs:"from"`
+		To   int64  `structs:"to"`
+		Item string `structs:"item"`
+		Sort string `structs:"sort"`
 	}
 )
 
@@ -71,12 +73,33 @@ func parseStatRequest(r *http.Request) *statRequest {
 	} else {
 		to = time.Now().Unix()
 	}
+
+	var item string
+	switch val := r.FormValue("item"); val {
+	case "author":
+		item = "c.author"
+	case "team":
+		item = "t.name"
+	default:
+		item = "c.repo"
+	}
+
+	var sort string
+	switch val := r.FormValue("sort"); val {
+	case "commits", "delta":
+		sort = val
+	default:
+		sort = "commits"
+	}
+
 	return &statRequest{
-		org:  r.FormValue("org"),
-		team: r.FormValue("team"),
-		user: r.FormValue("user"),
-		from: from,
-		to:   to,
+		Org:  r.FormValue("org"),
+		Team: r.FormValue("team"),
+		User: r.FormValue("user"),
+		From: from,
+		To:   to,
+		Item: item,
+		Sort: sort,
 	}
 }
 

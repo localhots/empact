@@ -31,6 +31,17 @@ func mustSelect(dest interface{}, query string, args ...interface{}) {
 	}
 }
 
+func mustSelectN(dest interface{}, query string, params interface{}) {
+	var stmt *sqlx.NamedStmt
+	var err error
+	if stmt, err = db.PrepareNamed(query); err != nil {
+		panic(err)
+	}
+	if err = stmt.Select(dest, params); err != nil {
+		panic(err)
+	}
+}
+
 func measure(op string, start time.Time) {
 	duration := time.Since(start).Nanoseconds()
 	outcome := "succeeded"

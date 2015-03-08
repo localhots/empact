@@ -67,11 +67,11 @@ var Dashboard = React.createClass({
 var OrgStats = React.createClass({
     mixins: [Router.Navigation, Router.State],
     render: function(){
-        var topTeams = "/api/stat/teams/top?org="+ this.getParams().org,
-            teamURL = "/app/"+ this.getParams().org +"/teams/";
+        var topRepos = "/api/stat/orgs/top?org="+ this.getParams().org +"&item=repo",
+            repoURL = "/app/"+ this.getParams().org +"/repos/";
         return (
             <section className="content">
-                <BarChart api={topTeams} link={teamURL}/>
+                <BarChart api={topRepos} link={repoURL}/>
             </section>
         );
     }
@@ -80,8 +80,12 @@ var OrgStats = React.createClass({
 var TeamStats = React.createClass({
     mixins: [Router.Navigation, Router.State],
     render: function(){
+        var topRepos = "/api/stat/teams/top?org="+ this.getParams().org +"&team="+ this.getParams().team +"&item=repo",
+            repoURL = "/app/"+ this.getParams().org +"/repos/";
         return (
-            <section className="content">Team stats!</section>
+            <section className="content">
+                <BarChart api={topRepos} link={repoURL}/>
+            </section>
         );
     }
 });
