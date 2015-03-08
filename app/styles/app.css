@@ -28,6 +28,7 @@ li.nav {
 }
 
 .content {
+    margin-top: 15px;
     width: calc(100% - 13em);
 }
 .content .left, .content .right {

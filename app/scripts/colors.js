@@ -36,6 +36,30 @@ var Colors = [
     "#252F99", "#00CCFF", "#674E60", "#FC009C", "#92896B"
 ];
 
+var Colors2 = [
+    "#218C8D",
+    "#F97D81",
+    "#6CCECB",
+    "#F9E559",
+    "#EF7126",
+    "#8EDC9D",
+    "#E04836",
+    "#F39D41",
+    "#8D5924",
+    "#5696BC",
+    "#2F5168",
+    "#82AFF9",
+    "#9881F5",
+    "#F9D08B",
+    "#29264E",
+    "#72CBDB",
+    "#55134E",
+    "#A0596B",
+    "#FEC343",
+    "#EF7351",
+    "#473E3F",
+    "#000"
+];
 function randomColor() {
     return Colors[Math.floor(Math.random()*Colors.length)];
 }

@@ -34,8 +34,8 @@ var Menu = React.createClass({
     render: function() {
         var renderTeam = function(team) {
             return (
-                <li key={team.slug} className="nav team">
-                    <Link to="team" params={{org: team.owner, team: team.slug}}>{team.name}</Link>
+                <li key={team.name} className="nav team">
+                    <Link to="team" params={{org: team.owner, team: team.name}}>{team.name}</Link>
                 </li>
             )
         };
@@ -67,10 +67,11 @@ var Dashboard = React.createClass({
 var OrgStats = React.createClass({
     mixins: [Router.Navigation, Router.State],
     render: function(){
-        var topTeams = "/api/stat/teams/top?org="+ this.getParams().org;
+        var topTeams = "/api/stat/teams/top?org="+ this.getParams().org,
+            teamURL = "/app/"+ this.getParams().org +"/teams/";
         return (
             <section className="content">
-                <BarChart url={topTeams} />
+                <BarChart api={topTeams} link={teamURL}/>
             </section>
         );
     }
@@ -79,13 +80,8 @@ var OrgStats = React.createClass({
 var TeamStats = React.createClass({
     mixins: [Router.Navigation, Router.State],
     render: function(){
-        var url = "/api/stat/teams/top?org="+ this.getParams().org;
         return (
-            <section className="content">
-                <div className="left">
-                    <BarChart url={url} />
-                </div>
-            </section>
+            <section className="content">Team stats!</section>
         );
     }
 });

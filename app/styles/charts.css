@@ -1,0 +1,10 @@
+.barchart g {
+    cursor: pointer;
+}
+.barchart .label {
+    font-family: "Lucida Console", Monaco, monospace;
+    font-size: 16px;
+}
+.barchart .label_underlay {
+    fill: rgba(255, 255, 255, .8);
+}

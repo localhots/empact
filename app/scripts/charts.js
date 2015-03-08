@@ -1,14 +1,22 @@
+var Router = ReactRouter;
+
 var BarChart = React.createClass({displayName: "BarChart",
     barHeight: 40,
     barMargin: 5,
 
     getInitialState: function() {
-        return {points: []};
+        return {points: [], max: 1};
     },
 
     componentDidMount: function() {
-        $.get(this.props.url, function(res){
-            this.setState({points: res});
+        $.get(this.props.api, function(res){
+            var max = 1;
+            res.map(function(el) {
+                if (el.value > max) {
+                    max = el.value
+                }
+            });
+            this.setState({points: res, max: max});
         }.bind(this))
     },
 
@@ -25,22 +33,45 @@ var BarChart = React.createClass({displayName: "BarChart",
     },
 
     render: function() {
-        var renderPoint = function(point, i) {
-            return (
-                React.createElement("g", {key: point.item}, 
-                    React.createElement("rect", {
-                        fill: colorFor(point.item), 
-                        width: point.value, 
-                        height: this.barHeight, 
-                        x: "0", 
-                        y: this.y(i)}), 
-                    React.createElement("text", {x: "20", y: this.y(i) + 25}, point.item + ": " + point.value)
-                )
-            );
-        }.bind(this)
         return (
-            React.createElement("svg", {className: "bar_chart", width: "100%", height: this.height()}, 
-                this.state.points.map(renderPoint)
+            React.createElement("svg", {className: "barchart", width: "100%", height: this.height()}, 
+                this.state.points.map(this.renderBar)
+            )
+        );
+    },
+
+    renderBar: function(point, i) {
+        return (
+            React.createElement(Bar, {key: point.item, point: point, i: i, link: this.props.link, 
+                y: this.y(i), 
+                width: point.value/this.state.max, 
+                height: this.barHeight})
+        );
+    }
+});
+
+var Bar = React.createClass({displayName: "Bar",
+    mixins: [Router.Navigation],
+    handleClick: function(e) {
+        this.transitionTo(this.props.link + this.props.point.item);
+    },
+
+    render: function() {
+        var p = this.props.point
+            w = this.props.width*500,
+            label = p.item + ": " + p.value,
+            tx = 10;
+        if (label.length*15 > w) {
+            tx = w + tx;
+        }
+        return (
+            React.createElement("g", {onClick: this.handleClick}, 
+                React.createElement("rect", {className: "bar", fill: Colors2[this.props.i], 
+                    width: this.props.width*500, 
+                    height: this.props.height, 
+                    x: "0", y: this.props.y, rx: "2", ry: "2"}), 
+                React.createElement("rect", {className: "label_underlay", x: tx-6, y: this.props.y+10, height: 20, width: label.length*10+5, rx: "3", ry: "3"}), 
+                React.createElement("text", {className: "label", x: tx, y: this.props.y + 26}, label)
             )
         );
     }
