@@ -61,11 +61,15 @@ func parseStatRequest(r *http.Request) *statRequest {
 		if from, err = strconv.ParseInt(r.FormValue("from"), 10, 64); err != nil {
 			panic(err)
 		}
+	} else {
+		from = 0
 	}
 	if r.FormValue("to") != "" {
 		if to, err = strconv.ParseInt(r.FormValue("to"), 10, 64); err != nil {
 			panic(err)
 		}
+	} else {
+		to = time.Now().Unix()
 	}
 	return &statRequest{
 		org:  r.FormValue("org"),

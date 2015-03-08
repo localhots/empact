@@ -1,9 +1,5 @@
 var Router = ReactRouter,
-    Route = Router.Route,
-    Link = Router.Link,
-    RouteHandler = Router.RouteHandler,
-    DefaultRoute = Router.DefaultRoute,
-    NotFoundRoute = Router.NotFoundRoute;
+    Link = Router.Link;
 
 var App = React.createClass({
     mixins: [Router.Navigation],
@@ -11,7 +7,7 @@ var App = React.createClass({
         return (
             <section className="app">
                 <Menu/>
-                <RouteHandler/>
+                <Router.RouteHandler/>
             </section>
         );
     }
@@ -63,7 +59,7 @@ var Menu = React.createClass({
 var Dashboard = React.createClass({
     render: function(){
         return (
-            <RouteHandler/>
+            <Router.RouteHandler/>
         );
     }
 });
@@ -71,8 +67,11 @@ var Dashboard = React.createClass({
 var OrgStats = React.createClass({
     mixins: [Router.Navigation, Router.State],
     render: function(){
+        var topTeams = "/api/stat/teams/top?org="+ this.getParams().org;
         return (
-            <section className="content">Org stats for {this.getParams().org}</section>
+            <section className="content">
+                <BarChart url={topTeams} />
+            </section>
         );
     }
 });
@@ -80,7 +79,7 @@ var OrgStats = React.createClass({
 var TeamStats = React.createClass({
     mixins: [Router.Navigation, Router.State],
     render: function(){
-        var url = "/api/stat/teams/top?org="+ this.getParams().org +"&from=1417878086&to=1425654067";
+        var url = "/api/stat/teams/top?org="+ this.getParams().org;
         return (
             <section className="content">
                 <div className="left">
@@ -116,15 +115,15 @@ var NotFound = React.createClass({
 });
 
 var routes = [
-        <Route name="root" path="/app/" handler={App}>
-            <Route name="dashboard" path=":org" handler={Dashboard}>
-                <DefaultRoute handler={OrgStats} />
-                <Route name="team" path="teams/:team" handler={TeamStats} />
-                <Route name="user" path="users/:user" handler={UserStats} />
-                <Route name="repo" path="repos/:repo" handler={RepoStats} />
-            </Route>
-            <NotFoundRoute handler={NotFound}/>
-        </Route>
+        <Router.Route name="root" path="/app/" handler={App}>
+            <Router.Route name="dashboard" path=":org" handler={Dashboard}>
+                <Router.DefaultRoute handler={OrgStats} />
+                <Router.Route name="team" path="teams/:team" handler={TeamStats} />
+                <Router.Route name="user" path="users/:user" handler={UserStats} />
+                <Router.Route name="repo" path="repos/:repo" handler={RepoStats} />
+            </Router.Route>
+            <Router.NotFoundRoute handler={NotFound}/>
+        </Router.Route>
     ];
 Router.run(routes, Router.HistoryLocation, function(Handler) {
     React.render(<Handler/>, document.body);
