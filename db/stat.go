@@ -34,7 +34,7 @@ where
     c.week >= :from and
     c.week <= :to
 group by item
-order by %s desc`
+order by commits desc`
 
 const orgActivityQuery = `
 select
@@ -54,7 +54,7 @@ where
     c.week >= :from and
     c.week <= :to
 group by item, week
-order by week, %s desc`
+order by week, commite desc`
 
 const teamTopQuery = `
 select
@@ -169,13 +169,13 @@ order by commits desc`
 
 func StatOrgTop(p map[string]interface{}) (res []StatItem) {
 	defer measure("StatOrgTop", time.Now())
-	mustSelectN(&res, fmt.Sprintf(orgTopQuery, p["item"], p["sort"]), p)
+	mustSelectN(&res, fmt.Sprintf(orgTopQuery, p["item"]), p)
 	return
 }
 
 func StatOrgActivity(p map[string]interface{}) (res []StatPoint) {
 	defer measure("StatOrgActivity", time.Now())
-	mustSelectN(&res, fmt.Sprintf(orgActivityQuery, p["item"], p["sort"]), p)
+	mustSelectN(&res, fmt.Sprintf(orgActivityQuery, p["item"]), p)
 	return
 }
 
@@ -187,7 +187,7 @@ func StatTeamTop(p map[string]interface{}) (res []StatItem) {
 
 func StatTeamActivity(p map[string]interface{}) (res []StatPoint) {
 	defer measure("StatTeamActivity", time.Now())
-	mustSelectN(&res, fmt.Sprintf(teamActivityQuery, p["item"], p["sort"]), p)
+	mustSelectN(&res, fmt.Sprintf(teamActivityQuery, p["item"]), p)
 	return
 }
 
