@@ -1,4 +1,5 @@
-var Router = ReactRouter;
+var SVGNS = "http://www.w3.org/2000/svg",
+    Router = ReactRouter;
 
 var BarChart = React.createClass({
     barHeight: 40,
@@ -60,11 +61,12 @@ var Bar = React.createClass({
     render: function() {
         var p = this.props.point
             w = this.props.width*500,
-            label = p.item + ": " + p.commits,
-            lw = label.length*10 + 5,
-            tx = 10;
-        if (lw > w) {
-            tx = w + tx;
+            label = p.item + ': ' + p.commits,
+            labelm = 10, // Margin
+            labelw = label.length*9 + 2*labelm, // Width
+            textx = labelm;
+        if (labelw + 2*labelm > w) {
+            textx = w + textx;
         }
         return (
             <g onClick={this.handleClick}>
@@ -72,8 +74,11 @@ var Bar = React.createClass({
                     width={this.props.width*500}
                     height={this.props.height}
                     x="0" y={this.props.y} rx="2" ry="2" />
-                <rect className="label_underlay" x={tx-6} y={this.props.y+10} height={20} width={lw} rx="3" ry="3" />
-                <text className="label" x={tx} y={this.props.y + 26}>{label}</text>
+                <rect className="label_underlay"
+                    x={textx-6} y={this.props.y+10}
+                    height={20} width={labelw}
+                    rx="3" ry="3" />
+                <text className="label" x={textx} y={this.props.y + 26}>{label}</text>
             </g>
         );
     }
