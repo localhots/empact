@@ -1,10 +1,16 @@
-config.json
-config/*/*
-*.txt
-
+// JSX cache
 .module-cache
+
+// Bower
 bower_components
 
-// Ignore compiled app for now
-app/app.js
-app/charts.js
+// Config files
+/config.json
+/config/*/*
+
+// Workspace documents and notes
+*.txt
+
+// Compiled app (reconsider later)
+app/scripts/app.js
+app/scripts/charts.js
