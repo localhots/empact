@@ -25,7 +25,6 @@ type (
 		From int64  `structs:"from"`
 		To   int64  `structs:"to"`
 		Item string `structs:"item"`
-		Sort string `structs:"sort"`
 	}
 )
 
@@ -84,14 +83,6 @@ func parseStatRequest(r *http.Request) *statRequest {
 		item = "c.repo"
 	}
 
-	var sort string
-	switch val := r.FormValue("sort"); val {
-	case "commits", "delta":
-		sort = val
-	default:
-		sort = "commits"
-	}
-
 	return &statRequest{
 		Org:  r.FormValue("org"),
 		Team: r.FormValue("team"),
@@ -99,7 +90,6 @@ func parseStatRequest(r *http.Request) *statRequest {
 		From: from,
 		To:   to,
 		Item: item,
-		Sort: sort,
 	}
 }
 

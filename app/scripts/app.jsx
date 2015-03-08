@@ -80,7 +80,10 @@ var OrgStats = React.createClass({
 var TeamStats = React.createClass({
     mixins: [Router.Navigation, Router.State],
     render: function(){
-        var topRepos = "/api/stat/teams/top?org="+ this.getParams().org +"&team="+ this.getParams().team +"&item=repo",
+        var topRepos = "/api/stat/teams/top"+
+                "?org="+ this.getParams().org +
+                "&team="+ this.getParams().team +
+                "&item=repo",
             repoURL = "/app/"+ this.getParams().org +"/repos/";
         return (
             <section className="content">

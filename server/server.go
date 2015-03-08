@@ -28,6 +28,10 @@ func init() {
 	http.HandleFunc("/api/stat/orgs/activity", statOrgActivityHandler)
 	http.HandleFunc("/api/stat/teams/top", statTeamTopHandler)
 	http.HandleFunc("/api/stat/teams/activity", statTeamActivityHandler)
+	http.HandleFunc("/api/stat/users/top", statUserTopHandler)
+	http.HandleFunc("/api/stat/users/activity", statUserActivityHandler)
+	http.HandleFunc("/api/stat/repos/top", statRepoTopHandler)
+	http.HandleFunc("/api/stat/repos/activity", statRepoActivityHandler)
 }
 
 func Start() {
