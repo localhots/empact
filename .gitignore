@@ -2,7 +2,9 @@ config.json
 config/*/*
 *.txt
 
-app/.module-cache
-app/bower_components
+.module-cache
+bower_components
+
 // Ignore compiled app for now
 app/app.js
+app/charts.js
