@@ -105,6 +105,7 @@ select
 from contribs c
 where
     c.owner = :org and
+    c.author = :author and
     c.week >= :from and
     c.week <= :to
 group by item
@@ -119,6 +120,7 @@ select
 from contribs c
 where
     c.owner = :org and
+    c.author = :author and
     c.week >= :from and
     c.week <= :to
 group by item
@@ -126,7 +128,7 @@ order by week, commits desc`
 
 const repoTopQuery = `
 select
-    %s as item,
+    c.author as item,
     sum(c.commits) as commits,
     sum(c.additions) - sum(c.deletions) as delta
 from contribs c
@@ -179,7 +181,7 @@ func StatOrgActivity(p map[string]interface{}) (res []StatPoint) {
 
 func StatTeamTop(p map[string]interface{}) (res []StatItem) {
 	defer measure("StatTeamTop", time.Now())
-	mustSelectN(&res, fmt.Sprintf(teamTopQuery, p["item"], p["sort"]), p)
+	mustSelectN(&res, fmt.Sprintf(teamTopQuery, p["item"]), p)
 	return
 }
 

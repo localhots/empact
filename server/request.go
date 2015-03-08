@@ -19,12 +19,13 @@ type (
 		login string
 	}
 	statRequest struct {
-		Org  string `structs:"org"`
-		Team string `structs:"team"`
-		User string `structs:"user"`
-		From int64  `structs:"from"`
-		To   int64  `structs:"to"`
-		Item string `structs:"item"`
+		Org    string `structs:"org"`
+		Team   string `structs:"team"`
+		Author string `structs:"author"`
+		Repo   string `structs:"repo"`
+		From   int64  `structs:"from"`
+		To     int64  `structs:"to"`
+		Item   string `structs:"item"`
 	}
 )
 
@@ -84,12 +85,13 @@ func parseStatRequest(r *http.Request) *statRequest {
 	}
 
 	return &statRequest{
-		Org:  r.FormValue("org"),
-		Team: r.FormValue("team"),
-		User: r.FormValue("user"),
-		From: from,
-		To:   to,
-		Item: item,
+		Org:    r.FormValue("org"),
+		Team:   r.FormValue("team"),
+		Author: r.FormValue("author"),
+		Repo:   r.FormValue("repo"),
+		From:   from,
+		To:     to,
+		Item:   item,
 	}
 }
 

@@ -94,17 +94,33 @@ var TeamStats = React.createClass({
 });
 
 var UserStats = React.createClass({
+    mixins: [Router.Navigation, Router.State],
     render: function(){
+        var topRepos = "/api/stat/users/top"+
+                "?org="+ this.getParams().org +
+                "&author="+ this.getParams().user +
+                "&item=repo",
+            repoURL = "/app/"+ this.getParams().org +"/repos/";
         return (
-            <section className="content">User stats!</section>
+            <section className="content">
+                <BarChart api={topRepos} link={repoURL}/>
+            </section>
         );
     }
 });
 
 var RepoStats = React.createClass({
+    mixins: [Router.Navigation, Router.State],
     render: function(){
+        var topAuthors = "/api/stat/repos/top"+
+                "?org="+ this.getParams().org +
+                "&repo="+ this.getParams().repo +
+                "&item=author",
+            userURL = "/app/"+ this.getParams().org +"/users/";
         return (
-            <section className="content">Repo Stats!</section>
+            <section className="content">
+                <BarChart api={topAuthors} link={userURL}/>
+            </section>
         );
     }
 });
