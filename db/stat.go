@@ -128,7 +128,7 @@ order by week, commits desc`
 
 const repoTopQuery = `
 select
-    c.author as item,
+    %s as item,
     sum(c.commits) as commits,
     sum(c.additions) - sum(c.deletions) as delta
 from contribs c
@@ -191,26 +191,26 @@ func StatTeamActivity(p map[string]interface{}) (res []StatPoint) {
 	return
 }
 
-func StatUserTop(p interface{}) (res []StatItem) {
+func StatUserTop(p map[string]interface{}) (res []StatItem) {
 	defer measure("StatUserTop", time.Now())
 	mustSelectN(&res, userTopQuery, p)
 	return
 }
 
-func StatUserActivity(p interface{}) (res []StatPoint) {
+func StatUserActivity(p map[string]interface{}) (res []StatPoint) {
 	defer measure("StatUserActivity", time.Now())
 	mustSelectN(&res, userActivityQuery, p)
 	return
 }
 
-func StatRepoTop(p interface{}) (res []StatItem) {
+func StatRepoTop(p map[string]interface{}) (res []StatItem) {
 	defer measure("StatRepoTop", time.Now())
-	mustSelectN(&res, repoTopQuery, p)
+	mustSelectN(&res, fmt.Sprintf(repoTopQuery, p["item"]), p)
 	return
 }
 
-func StatRepoActivity(p interface{}) (res []StatPoint) {
+func StatRepoActivity(p map[string]interface{}) (res []StatPoint) {
 	defer measure("StatRepoActivity", time.Now())
-	mustSelectN(&res, repoActivityQuery, p)
+	mustSelectN(&res, fmt.Sprintf(repoTopQuery, p["item"]), p)
 	return
 }

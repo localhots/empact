@@ -21,7 +21,7 @@ var BarChart = React.createClass({
         this.fetchData();
     },
 
-    onFilter: function(thing, i) {
+    handleFilter: function(thing, i) {
         if (thing === 'item' && this.props.items[i] !== this.state.item) {
             this.setState({
                 item: this.props.items[i]
@@ -31,6 +31,12 @@ var BarChart = React.createClass({
                 sort: ['commits', 'delta'][i]
             }, this.sort);
         }
+    },
+
+    handleClick: function(point) {
+        var params = {org: this.getParams().org};
+        params[this.state.item] = point.item;
+        this.transitionTo(this.state.item, params);
     },
 
     fetchData: function() {
@@ -95,11 +101,11 @@ var BarChart = React.createClass({
                     <Selector thing="item"
                         items={this.props.items}
                         value={this.state.item}
-                        onChange={this.onFilter.bind(this, 'item')} />
+                        onChange={this.handleFilter.bind(this, 'item')} />
                     <Selector thing="sort"
                         items={['commits', 'delta']}
                         value={this.state.sort}
-                        onChange={this.onFilter.bind(this, 'sort')} />
+                        onChange={this.handleFilter.bind(this, 'sort')} />
                 </div>
                 <svg className="barchart" width="100%" height={this.height()}>
                     {this.state.points.map(this.renderBar)}
@@ -119,13 +125,12 @@ var BarChart = React.createClass({
             offset = -min/max2*maxWidth,
             x = (min >= 0 ? 0 : offset - (val >= 0 ? 0 : width)),
             y = this.y(i);
-            // console.log(point.item, {val: val, max: max, x: x, y: y, width: width})
 
         return (
-            <Bar key={point.item} point={point} i={i}
-                metric={this.state.sort}
+            <Bar key={point.item} item={point.item} value={val}
+                color={Colors2[i]}
                 x={x} y={y} offset={offset} width={width} height={height}
-                link={this.props.link} />
+                onClick={this.handleClick.bind(this, point)} />
         );
     }
 });
@@ -133,13 +138,9 @@ var BarChart = React.createClass({
 var Bar = React.createClass({
     mixins: [Router.Navigation],
 
-    handleClick: function(e) {
-        this.transitionTo(this.props.link + this.props.point.item);
-    },
-
     render: function() {
-        var val = this.props.point[this.props.metric],
-            item = this.props.point.item,
+        var val = this.props.value,
+            item = this.props.item,
             offset = this.props.offset,
             width = this.props.width,
             label = item + ': ' + val,
@@ -168,8 +169,8 @@ var Bar = React.createClass({
         }
 
         return (
-            <g onClick={this.handleClick}>
-                <rect className="bar" fill={Colors2[this.props.i]}
+            <g onClick={this.props.onClick}>
+                <rect className="bar" fill={this.props.color}
                     width={width} height={this.props.height}
                     x={this.props.x} y={this.props.y} rx="2" ry="2" />
                 <rect className="label_underlay"

@@ -80,7 +80,8 @@ var TeamStats = React.createClass({
     render: function(){
         return (
             <section className="content">
-                <BarChart api="/api/stat/teams/top" params={this.getParams()} items={["repo", "user"]} />
+                <BarChart key={this.getParams().team} api="/api/stat/teams/top"
+                params={this.getParams()} items={["repo", "user"]} />
             </section>
         );
     }
@@ -102,7 +103,7 @@ var RepoStats = React.createClass({
     render: function(){
         return (
             <section className="content">
-                <BarChart api="/api/stat/repos/top" params={this.getParams()} items={["team", "user"]} />
+                <BarChart api="/api/stat/repos/top" params={this.getParams()} items={["user", "team"]} />
             </section>
         );
     }
