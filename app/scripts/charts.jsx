@@ -3,7 +3,7 @@ var SVGNS = "http://www.w3.org/2000/svg",
 
 var BarChart = React.createClass({
     mixins: [Router.Navigation, Router.State],
-    barHeight: 40,
+    barHeight: 30,
     barMargin: 5,
 
     getInitialState: function() {
@@ -63,7 +63,7 @@ var BarChart = React.createClass({
             min: min,
             max: max
         };
-        console.log(s);
+        // console.log(s);
         this.setState(s);
     },
 
@@ -88,7 +88,7 @@ var BarChart = React.createClass({
     },
 
     render: function() {
-        console.log("State:", this.state)
+        // console.log("State:", this.state)
         return (
             <div className="barchart-container">
                 <div className="filters">
@@ -118,7 +118,7 @@ var BarChart = React.createClass({
             height = this.barHeight,
             x = (min >= 0 ? 0 : -min/max2*maxWidth - (val >= 0 ? 0 : width)),
             y = this.y(i);
-            console.log(point.item, {val: val, max: max, x: x, y: y, width: width})
+            // console.log(point.item, {val: val, max: max, x: x, y: y, width: width})
 
         return (
             <Bar key={point.item} point={point} i={i}
@@ -140,10 +140,10 @@ var Bar = React.createClass({
             val = p[this.props.metric],
             w = this.props.width,
             label = p.item + ': ' + val,
-            labelm = 10, // Margin
-            labelw = label.length*9.3 + 2*labelm, // Width
-            textx = labelm;
-        if (labelw + 2*labelm > w) {
+            labelM = 5, // Margin
+            labelW = textWidth(label, 'Helvetica Neue', '16px') + 2*labelM,
+            textx = 2*labelM;
+        if (labelW + 2*labelM > w) {
             textx = w + textx;
         }
         return (
@@ -152,10 +152,10 @@ var Bar = React.createClass({
                     width={w} height={this.props.height}
                     x={this.props.x} y={this.props.y} rx="2" ry="2" />
                 <rect className="label_underlay"
-                    x={textx-6} y={this.props.y+10}
-                    height={20} width={labelw}
+                    x={textx - labelM} y={this.props.y + 5}
+                    height={20} width={labelW}
                     rx="3" ry="3" />
-                <text className="label" x={textx} y={this.props.y + 26}>{label}</text>
+                <text className="label" x={textx} y={this.props.y + 21}>{label}</text>
             </g>
         );
     }
@@ -194,3 +194,24 @@ var Selector = React.createClass({
         );
     }
 });
+
+function textWidth(str, font, size) {
+    var svg = document.createElementNS(SVGNS, "svg");
+        text = document.createElementNS(SVGNS, "text");
+
+    svg.width = 500;
+    svg.height = 500;
+    svg.style.position = 'absolute';
+    svg.style.left = '-1000px';
+
+    text.appendChild(document.createTextNode(str))
+    text.style.fontFamily = font;
+    text.style.fontSize = size;
+
+    svg.appendChild(text);
+    document.body.appendChild(svg);
+    var box = text.getBBox();
+    document.body.removeChild(svg);
+
+    return box.width;
+}
