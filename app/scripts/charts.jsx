@@ -116,14 +116,15 @@ var BarChart = React.createClass({
             max2 = (min < 0 ? max - min : max),
             width = Math.abs(val)/max2*maxWidth,
             height = this.barHeight,
-            x = (min >= 0 ? 0 : -min/max2*maxWidth - (val >= 0 ? 0 : width)),
+            offset = -min/max2*maxWidth,
+            x = (min >= 0 ? 0 : offset - (val >= 0 ? 0 : width)),
             y = this.y(i);
             // console.log(point.item, {val: val, max: max, x: x, y: y, width: width})
 
         return (
             <Bar key={point.item} point={point} i={i}
                 metric={this.state.sort}
-                x={x} y={y} width={width} height={height}
+                x={x} y={y} offset={offset} width={width} height={height}
                 link={this.props.link} />
         );
     }
@@ -131,31 +132,51 @@ var BarChart = React.createClass({
 
 var Bar = React.createClass({
     mixins: [Router.Navigation],
+
     handleClick: function(e) {
         this.transitionTo(this.props.link + this.props.point.item);
     },
 
     render: function() {
-        var p = this.props.point,
-            val = p[this.props.metric],
-            w = this.props.width,
-            label = p.item + ': ' + val,
-            labelM = 5, // Margin
-            labelW = textWidth(label, 'Helvetica Neue', '16px') + 2*labelM,
-            textx = 2*labelM;
-        if (labelW + 2*labelM > w) {
-            textx = w + textx;
+        var val = this.props.point[this.props.metric],
+            item = this.props.point.item,
+            offset = this.props.offset,
+            width = this.props.width,
+            label = item + ': ' + val,
+            labelPadding = 5,
+            labelWidth = textWidth(label, 'Helvetica Neue', '16px') + 2*labelPadding,
+            labelOuterWidth = labelWidth + 2*labelPadding,
+            labelX = 0,
+            barX = this.props.x;
+
+        if (labelOuterWidth <= width) {
+            if (offset > 0) {
+                if (barX === offset) {
+                    labelX = barX + 2*labelPadding;
+                } else {
+                    labelX = barX + width - labelOuterWidth + 2*labelPadding;
+                }
+            } else {
+                labelX = barX + 2*labelPadding;
+            }
+        } else {
+            if (labelOuterWidth <= barX) {
+                labelX = barX - labelOuterWidth + 2*labelPadding;
+            } else {
+                labelX = barX + width + labelPadding;
+            }
         }
+
         return (
             <g onClick={this.handleClick}>
                 <rect className="bar" fill={Colors2[this.props.i]}
-                    width={w} height={this.props.height}
+                    width={width} height={this.props.height}
                     x={this.props.x} y={this.props.y} rx="2" ry="2" />
                 <rect className="label_underlay"
-                    x={textx - labelM} y={this.props.y + 5}
-                    height={20} width={labelW}
+                    x={labelX - labelPadding} y={this.props.y + 5}
+                    height={20} width={labelWidth}
                     rx="3" ry="3" />
-                <text className="label" x={textx} y={this.props.y + 21}>{label}</text>
+                <text className="label" x={labelX} y={this.props.y + 21}>{label}</text>
             </g>
         );
     }
