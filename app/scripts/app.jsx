@@ -69,7 +69,8 @@ var OrgStats = React.createClass({
     render: function(){
         return (
             <section className="content">
-                <BarChart api="/api/stat/orgs/top" params={this.getParams()} items={["repo", "team", "user"]} />
+                <BarChart key={this.getParams().team} api="/api/stat/orgs/top"
+                    params={this.getParams()} items={["repo", "team", "user"]} />
             </section>
         );
     }
@@ -81,7 +82,7 @@ var TeamStats = React.createClass({
         return (
             <section className="content">
                 <BarChart key={this.getParams().team} api="/api/stat/teams/top"
-                params={this.getParams()} items={["repo", "user"]} />
+                    params={this.getParams()} items={["repo", "user"]} />
             </section>
         );
     }
@@ -92,7 +93,8 @@ var UserStats = React.createClass({
     render: function(){
         return (
             <section className="content">
-                <BarChart api="/api/stat/users/top" params={this.getParams()} items={["repo"]} />
+                <BarChart key={this.getParams().team} api="/api/stat/users/top"
+                    params={this.getParams()} items={["repo"]} />
             </section>
         );
     }
@@ -103,7 +105,8 @@ var RepoStats = React.createClass({
     render: function(){
         return (
             <section className="content">
-                <BarChart api="/api/stat/repos/top" params={this.getParams()} items={["user", "team"]} />
+                <BarChart key={this.getParams().team} api="/api/stat/repos/top"
+                    params={this.getParams()} items={["user", "team"]} />
             </section>
         );
     }

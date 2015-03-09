@@ -3,6 +3,7 @@ var SVGNS = "http://www.w3.org/2000/svg",
 
 var BarChart = React.createClass({
     mixins: [Router.Navigation, Router.State],
+
     barHeight: 30,
     barMargin: 5,
 
@@ -64,18 +65,15 @@ var BarChart = React.createClass({
             }
         }.bind(this));
 
-        s = {
+        this.setState({
             points: points,
             min: min,
             max: max
-        };
-        // console.log(s);
-        this.setState(s);
+        });
     },
 
     apiParams: function() {
-        // Deep copy
-        // Don't use jQuery.extend
+        // Deep copy, but don't use jQuery.extend
         var params = JSON.parse(JSON.stringify(this.props.params));
         params['item'] = this.state.item;
         return params;
@@ -94,7 +92,6 @@ var BarChart = React.createClass({
     },
 
     render: function() {
-        // console.log("State:", this.state)
         return (
             <div className="barchart-container">
                 <div className="filters">
