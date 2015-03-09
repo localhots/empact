@@ -67,11 +67,9 @@ var Dashboard = React.createClass({
 var OrgStats = React.createClass({
     mixins: [Router.Navigation, Router.State],
     render: function(){
-        var topRepos = "/api/stat/orgs/top?org="+ this.getParams().org +"&item=repo",
-            repoURL = "/app/"+ this.getParams().org +"/repos/";
         return (
             <section className="content">
-                <BarChart api={topRepos} link={repoURL}/>
+                <BarChart api="/api/stat/orgs/top" params={this.getParams()} items={["repo", "team", "user"]} />
             </section>
         );
     }
@@ -80,14 +78,9 @@ var OrgStats = React.createClass({
 var TeamStats = React.createClass({
     mixins: [Router.Navigation, Router.State],
     render: function(){
-        var topRepos = "/api/stat/teams/top"+
-                "?org="+ this.getParams().org +
-                "&team="+ this.getParams().team +
-                "&item=repo",
-            repoURL = "/app/"+ this.getParams().org +"/repos/";
         return (
             <section className="content">
-                <BarChart api={topRepos} link={repoURL}/>
+                <BarChart api="/api/stat/teams/top" params={this.getParams()} items={["repo", "user"]} />
             </section>
         );
     }
@@ -96,14 +89,9 @@ var TeamStats = React.createClass({
 var UserStats = React.createClass({
     mixins: [Router.Navigation, Router.State],
     render: function(){
-        var topRepos = "/api/stat/users/top"+
-                "?org="+ this.getParams().org +
-                "&author="+ this.getParams().user +
-                "&item=repo",
-            repoURL = "/app/"+ this.getParams().org +"/repos/";
         return (
             <section className="content">
-                <BarChart api={topRepos} link={repoURL}/>
+                <BarChart api="/api/stat/users/top" params={this.getParams()} items={["repo"]} />
             </section>
         );
     }
@@ -112,14 +100,9 @@ var UserStats = React.createClass({
 var RepoStats = React.createClass({
     mixins: [Router.Navigation, Router.State],
     render: function(){
-        var topAuthors = "/api/stat/repos/top"+
-                "?org="+ this.getParams().org +
-                "&repo="+ this.getParams().repo +
-                "&item=author",
-            userURL = "/app/"+ this.getParams().org +"/users/";
         return (
             <section className="content">
-                <BarChart api={topAuthors} link={userURL}/>
+                <BarChart api="/api/stat/repos/top" params={this.getParams()} items={["team", "user"]} />
             </section>
         );
     }

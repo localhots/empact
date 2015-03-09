@@ -1,3 +1,6 @@
+.barchart-container {
+    width: 40%;
+}
 .barchart g {
     cursor: pointer;
 }
@@ -7,4 +10,35 @@
 }
 .barchart .label_underlay {
     fill: rgba(255, 255, 255, .8);
+}
+
+.filters {
+    width: 100%;
+}
+.filters .item {
+    margin: 0; padding: 0;
+    float: left;
+}
+.filters .item li {
+    margin-right: 0.3em;
+}
+.filters .sort li {
+    margin-left: 0.3em;
+}
+.filters .sort {
+    margin: 0; padding: 0;
+    float: right;
+}
+.filters li {
+    display: inline-block;
+    font-size: 1.2em;
+    line-height: 2em;
+    font-weight: 300;
+    color: #aaa;
+    cursor: pointer;
+}
+.filters li.active {
+    font-weight: 400;
+    color: #222;
+    cursor: default;
 }

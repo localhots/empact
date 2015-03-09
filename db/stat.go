@@ -105,7 +105,7 @@ select
 from contribs c
 where
     c.owner = :org and
-    c.author = :author and
+    c.author = :user and
     c.week >= :from and
     c.week <= :to
 group by item
@@ -120,7 +120,7 @@ select
 from contribs c
 where
     c.owner = :org and
-    c.author = :author and
+    c.author = :user and
     c.week >= :from and
     c.week <= :to
 group by item
