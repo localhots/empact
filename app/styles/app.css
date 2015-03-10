@@ -56,7 +56,7 @@ section {
 }
 
 .content {
-    width: calc(100% - 240px);
+    width: calc(100% - 260px);
     margin-top: 20px;
 }
 .content .left, .content .right {
