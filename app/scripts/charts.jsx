@@ -1,9 +1,12 @@
-var SVGNS = "http://www.w3.org/2000/svg",
+var SVGNS = 'http://www.w3.org/2000/svg',
+    fontFamily = 'Helvetica Neue',
+    fontSize = '16px',
     Router = ReactRouter;
 
 var BarChart = React.createClass({
     mixins: [Router.Navigation, Router.State],
 
+    numElements: 15,
     barHeight: 30,
     barMargin: 5,
 
@@ -14,12 +17,21 @@ var BarChart = React.createClass({
             rawData: [],
             points: [],
             min: 0,
-            max: 1
+            max: 1,
+            canvasWidth: 500
         };
+    },
+
+    calculateViewBoxWidth: function() {
+        this.setState({
+           canvasWidth: this.refs.svg.getDOMNode().offsetWidth
+        });
     },
 
     componentDidMount: function() {
         this.fetchData();
+        this.calculateViewBoxWidth();
+        window.addEventListener('resize', this.calculateViewBoxWidth);
     },
 
     handleFilter: function(thing, i) {
@@ -52,7 +64,7 @@ var BarChart = React.createClass({
         var sortFun = function(a, b) {
             return Math.abs(b[this.state.sort]) - Math.abs(a[this.state.sort]);
         }.bind(this);
-        var points = this.state.rawData.sort(sortFun).slice(0, 15);
+        var points = this.state.rawData.sort(sortFun).slice(0, this.numElements);
 
         var min = 0, max = 1;
         points.map(function(el) {
@@ -104,7 +116,9 @@ var BarChart = React.createClass({
                         value={this.state.sort}
                         onChange={this.handleFilter.bind(this, 'sort')} />
                 </div>
-                <svg className="barchart" width="100%" height={this.height()}>
+                <svg ref="svg" className="barchart"
+                    width="100%" height={this.height()}
+                    viewBox={"0 0 "+ this.state.canvasWidth + " "+ this.height()}>
                     {this.state.points.map(this.renderBar)}
                 </svg>
             </div>
@@ -112,7 +126,7 @@ var BarChart = React.createClass({
     },
 
     renderBar: function(point, i) {
-        var maxWidth = 400,
+        var maxWidth = this.state.canvasWidth,
             val = point[this.state.sort],
             min = this.state.min,
             max = this.state.max,
@@ -141,27 +155,33 @@ var Bar = React.createClass({
             offset = this.props.offset,
             width = this.props.width,
             label = item + ': ' + val,
-            labelPadding = 5,
-            labelWidth = textWidth(label, 'Helvetica Neue', '16px') + 2*labelPadding,
-            labelOuterWidth = labelWidth + 2*labelPadding,
+            labelPaddingH = 5, // Horizontal
+            labelPaddingV = 2, // Vertical
+            labelWidth = textWidth(label),
+            labelHeight = 16,
+            labelOuterWidth = labelWidth + 2*labelPaddingH,
+            labelOffsetWidth = labelOuterWidth + 2*labelPaddingH,
+            labelOuterHeight = labelHeight + 2*labelPaddingV,
+            labelMarginV = (this.props.height - labelOuterHeight)/2,
             labelX = 0,
+            labelY = this.props.y + labelOuterHeight + 1, // 1 is magic
             barX = this.props.x;
 
-        if (labelOuterWidth <= width) {
+        if (labelOffsetWidth <= width) {
             if (offset > 0) {
                 if (barX === offset) {
-                    labelX = barX + 2*labelPadding;
+                    labelX = barX + 2*labelPaddingH;
                 } else {
-                    labelX = barX + width - labelOuterWidth + 2*labelPadding;
+                    labelX = barX + width - labelOffsetWidth + 2*labelPaddingH;
                 }
             } else {
-                labelX = barX + 2*labelPadding;
+                labelX = barX + 2*labelPaddingH;
             }
         } else {
-            if (labelOuterWidth <= barX) {
-                labelX = barX - labelOuterWidth + 2*labelPadding;
+            if (labelOffsetWidth <= barX) {
+                labelX = barX - labelOffsetWidth + 2*labelPaddingH;
             } else {
-                labelX = barX + width + labelPadding;
+                labelX = barX + width + labelPaddingH;
             }
         }
 
@@ -171,10 +191,10 @@ var Bar = React.createClass({
                     width={width} height={this.props.height}
                     x={this.props.x} y={this.props.y} rx="2" ry="2" />
                 <rect className="label_underlay"
-                    x={labelX - labelPadding} y={this.props.y + 5}
-                    height={20} width={labelWidth}
+                    x={labelX - labelPaddingH} y={this.props.y + labelMarginV}
+                    height={labelOuterHeight} width={labelOuterWidth}
                     rx="3" ry="3" />
-                <text className="label" x={labelX} y={this.props.y + 21}>{label}</text>
+                <text className="label" x={labelX} y={labelY}>{label}</text>
             </g>
         );
     }
@@ -214,7 +234,7 @@ var Selector = React.createClass({
     }
 });
 
-function textWidth(str, font, size) {
+function textWidth(str) {
     var svg = document.createElementNS(SVGNS, "svg");
         text = document.createElementNS(SVGNS, "text");
 
@@ -224,8 +244,8 @@ function textWidth(str, font, size) {
     svg.style.left = '-1000px';
 
     text.appendChild(document.createTextNode(str))
-    text.style.fontFamily = font;
-    text.style.fontSize = size;
+    text.style.fontFamily = fontFamily;
+    text.style.fontSize = fontSize;
 
     svg.appendChild(text);
     document.body.appendChild(svg);
