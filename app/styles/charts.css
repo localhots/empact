@@ -7,6 +7,9 @@
 .barchart g {
     cursor: pointer;
 }
+.barchart g:hover .bar {
+    opacity: .8;
+}
 .barchart .label {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-size: 16px;
@@ -19,23 +22,25 @@
     width: 100%;
 }
 .filters .item {
-    margin: 0; padding: 0;
+    margin: 0;
+    padding: 0;
     float: left;
 }
 .filters .item li {
-    margin-right: 0.3em;
+    margin-right: 10px;
 }
 .filters .sort li {
-    margin-left: 0.3em;
+    margin-left: 10px;
 }
 .filters .sort {
-    margin: 0; padding: 0;
+    margin: 0;
+    padding: 0;
     float: right;
 }
 .filters li {
     display: inline-block;
-    font-size: 1.2em;
-    line-height: 2em;
+    font-size: 18px;
+    line-height: 32px;
     font-weight: 300;
     color: #aaa;
     cursor: pointer;

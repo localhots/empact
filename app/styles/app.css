@@ -36,7 +36,7 @@ section {
 .menu .nav a:before {
     display: block;
     float: left;
-    width: 3px;
+    width: 5px;
     height: 32px;
     border-radius: 3px;
     background-color: #f39d41;
