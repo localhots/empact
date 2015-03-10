@@ -14,7 +14,7 @@ var App = React.createClass({
 });
 
 var Menu = React.createClass({
-    mixins: [Router.Navigation, Router.State],
+    mixins: [Router.State],
     api_url: "/api/teams?org=",
 
     getInitialState: function() {
@@ -65,7 +65,7 @@ var Org = React.createClass({
 });
 
 var OrgStats = React.createClass({
-    mixins: [Router.Navigation, Router.State],
+    mixins: [Router.State],
     render: function(){
         return (
             <section className="content">
@@ -77,11 +77,15 @@ var OrgStats = React.createClass({
 });
 
 var TeamStats = React.createClass({
-    mixins: [Router.Navigation, Router.State],
+    mixins: [Router.State],
     render: function(){
         return (
             <section className="content">
-                <BarChart key={this.getParams().team} api="/api/stat/teams/top"
+                <InfoBlock key={"info-block-"+ this.getParams().team}
+                    image="https://media.licdn.com/mpr/mpr/p/8/005/058/14b/0088c48.jpg"
+                    title={this.getParams().team}
+                    text={"The most awesome team in "+ this.getParams().org} />
+                <BarChart key={"bar-chart"+ this.getParams().team} api="/api/stat/teams/top"
                     params={this.getParams()} items={["repo", "user"]} />
             </section>
         );
@@ -89,7 +93,7 @@ var TeamStats = React.createClass({
 });
 
 var UserStats = React.createClass({
-    mixins: [Router.Navigation, Router.State],
+    mixins: [Router.State],
     render: function(){
         return (
             <section className="content">
@@ -101,7 +105,7 @@ var UserStats = React.createClass({
 });
 
 var RepoStats = React.createClass({
-    mixins: [Router.Navigation, Router.State],
+    mixins: [Router.State],
     render: function(){
         return (
             <section className="content">
@@ -117,6 +121,19 @@ var NotFound = React.createClass({
         return (
             <section className="content">NOT FOUND :(</section>
         );
+    }
+});
+
+var InfoBlock = React.createClass({
+    render: function() {
+        var img = <div className="img" style={{backgroundImage: "url("+ this.props.image +")"}} />;
+        return (
+            <div className="info-block">
+                { this.props.image ? img : null }
+                <h1>{this.props.title}</h1>
+                <p>{this.props.text}</p>
+            </div>
+        )
     }
 });
 
