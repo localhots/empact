@@ -1,0 +1,57 @@
+.logo-button {
+    display: inline-block;
+    width: auto;
+    box-shadow: 1px 1px 1px 0px rgba(0, 0, 0, .6);
+    border-radius: 5px;
+}
+
+/* Single letter */
+.logo {
+    display: inline-block;
+    float: left;
+    font-family: Courier, monospace;
+    font-size: 22px;
+    padding: 4px 5px 6px;
+    color: #fff;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, .5);
+    font-weight: 600;
+}
+
+/* Colors */
+.logo.e {
+    background-color: #faca50;
+}
+.logo.m, .logo.p {
+    background-color: #f39d41;
+}
+.logo.a, .logo.c, .logo.t {
+    background-color: #ef7126;
+}
+
+/* Letters */
+.logo.e {
+    width: 32px;
+    padding-left: 10px;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+.logo.m {
+    width: 21px;
+    margin-left: -5px;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+.logo.p {
+    width: 22px;
+}
+.logo.a {
+    width: 21px;
+}
+.logo.c {
+    width: 20px;
+}
+.logo.t {
+    width: 29px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
