@@ -43,10 +43,10 @@ var Menu = React.createClass({
             <section className="menu">
                 <ul>
                     <li key="empact" className="nav empact">
-                        <Link to="dashboard" params={{org: this.getParams().org}}>Empact</Link>
+                        <Link to="org" params={{org: this.getParams().org}}>Empact</Link>
                     </li>
                     <li key="dash" className="nav dash">
-                        <Link to="dashboard" params={{org: this.getParams().org}}>Dashboard</Link>
+                        <Link to="org" params={{org: this.getParams().org}}>{this.getParams().org}</Link>
                     </li>
                     <li key="teams-header" className="nav header">Teams:</li>
                     {this.state.teams.map(renderTeam)}
@@ -56,7 +56,7 @@ var Menu = React.createClass({
     }
 });
 
-var Dashboard = React.createClass({
+var Org = React.createClass({
     render: function(){
         return (
             <Router.RouteHandler/>
@@ -122,7 +122,7 @@ var NotFound = React.createClass({
 
 var routes = [
         <Router.Route name="root" path="/app/" handler={App}>
-            <Router.Route name="dashboard" path=":org" handler={Dashboard}>
+            <Router.Route name="org" path=":org" handler={Org}>
                 <Router.DefaultRoute handler={OrgStats} />
                 <Router.Route name="team" path="teams/:team" handler={TeamStats} />
                 <Router.Route name="user" path="users/:user" handler={UserStats} />
