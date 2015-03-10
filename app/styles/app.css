@@ -8,6 +8,7 @@ section {
 
 .menu {
     width: 13em;
+    margin-top: 20px;
 }
 .menu ul {
     margin: 0;
@@ -28,8 +29,8 @@ li.nav {
 }
 
 .content {
-    margin-top: 15px;
     width: calc(100% - 13em);
+    margin-top: 20px;
 }
 .content .left, .content .right {
     float: left;
@@ -52,6 +53,9 @@ li.nav {
 }
 
 .info-block h1 {
+    font-size: 32px;
+    line-height: 32px;
+    margin: 0;
     font-weight: 400;
 }
 
