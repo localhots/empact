@@ -87,8 +87,12 @@ var Menu = React.createClass({
         return (
             <section className="menu">
                 <ul>
-                    <li key="empact" className="nav empact">
-                        <Link to="org" params={this.getParams()}>Empact</Link>
+                    <li key="empact" className="logo-button">
+                        <Link to="org" params={this.getParams()}>
+                            <div className="logo e">e</div>
+                            <div className="logo mp">mp</div>
+                            <div className="logo act">act</div>
+                        </Link>
                     </li>
                     <li key="orgs-header" className="nav header">Organizations:</li>
                     {this.props.orgs.map(renderOrg)}

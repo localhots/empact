@@ -2,6 +2,37 @@
     box-sizing: border-box;
 }
 
+.logo {
+    display: inline-block;
+    line-height: 32px;
+    letter-spacing: 5px;
+    padding: 0 5px;
+    color: #fff;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, .5);
+    font-weight: 600;
+}
+.logo.e {
+    float: left;
+    width: 30px;
+    padding-left: 10px;
+    background-color: #f5d059;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+.logo.mp {
+    float: left;
+    margin-left: -5px;
+    background-color: #f39d41;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+.logo.act {
+    background-color: #ef7126;
+    margin-left: -5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
 section {
     float: left;
 }
@@ -18,9 +49,11 @@ section {
     margin: 0;
     padding: 0;
 }
-li.nav {
+.menu li {
     display: block;
     cursor: pointer;
+}
+.nav {
     margin-bottom: 5px;
 }
 .nav.empact {
@@ -29,18 +62,19 @@ li.nav {
 .nav.header {
     color: #aaa;
     cursor: default;
+    margin-top: 20px;
 }
-.menu a:before {
+.menu .nav a:before {
     display: block;
     float: left;
     width: 3px;
     height: 32px;
     border-radius: 3px;
-    background-color: #218c8d;
+    background-color: #f39d41;
     content: '';
     margin-right: 10px;
 }
-.menu a {
+.menu .nav a {
     display: inline-block;
     line-height: 32px;
     width: 100%;
@@ -48,8 +82,8 @@ li.nav {
     text-decoration: underline;
     border-radius: 3px;
 }
-.menu a.active {
-    background-color: #bcdcdc;
+.menu .nav a.active {
+    background-color: #f9d4be;
 }
 
 .content {
