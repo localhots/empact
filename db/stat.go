@@ -54,7 +54,7 @@ where
     c.week >= :from and
     c.week <= :to
 group by item, week
-order by week, commite desc`
+order by week, commits desc`
 
 const teamTopQuery = `
 select

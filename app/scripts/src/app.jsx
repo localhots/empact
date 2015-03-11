@@ -87,11 +87,14 @@ var Menu = React.createClass({
         return (
             <section className="menu">
                 <ul>
-                    <li key="empact" className="logo-button">
-                        <Link to="org" params={this.getParams()}>
+                    <li key="empact">
+                        <Link to="org" params={this.getParams()} className="logo-button">
                             <div className="logo e">e</div>
-                            <div className="logo mp">mp</div>
-                            <div className="logo act">act</div>
+                            <div className="logo m">m</div>
+                            <div className="logo p">p</div>
+                            <div className="logo a">a</div>
+                            <div className="logo c">c</div>
+                            <div className="logo t">t</div>
                         </Link>
                     </li>
                     <li key="orgs-header" className="nav header">Organizations:</li>
@@ -119,9 +122,18 @@ var OrgStats = React.createClass({
         var org = Storage.get('org', this.getParams().org);
         return (
             <section className="content">
-                <InfoBlock image={org.avatar_url} title={org.login} text={org.descr} />
-                <BarChart key={this.getParams().team} api="/api/stat/orgs/top"
-                    params={this.getParams()} items={["repo", "team", "user"]} />
+                <InfoBlock key={'info-block-org-'+ this.getParams().org}
+                    image={org.avatar_url}
+                    title={org.login}
+                    text={org.descr} />
+                <BarChart key={'bar-chart-'+ this.getParams().org}
+                    api="/api/stat/orgs/top"
+                    params={this.getParams()}
+                    items={["repo", "team", "user"]} />
+                <StackedAreaChart key={'sa-chart-team-'+ this.getParams().team}
+                    api="/api/stat/orgs/activity"
+                    params={this.getParams()}
+                    items={["repo", "team", "user"]} />
             </section>
         );
     }
@@ -133,12 +145,18 @@ var TeamStats = React.createClass({
     render: function(){
         return (
             <section className="content">
-                <InfoBlock key={"info-block-"+ this.getParams().team}
+                <InfoBlock key={"info-block-team-"+ this.getParams().team}
                     image="https://media.licdn.com/mpr/mpr/p/8/005/058/14b/0088c48.jpg"
                     title={this.getParams().team}
                     text={"The most awesome team in "+ this.getParams().org} />
-                <BarChart key={'bar-chart-'+ this.getParams().team} api="/api/stat/teams/top"
-                    params={this.getParams()} items={["repo", "user"]} />
+                <BarChart key={'bar-chart-team-'+ this.getParams().team}
+                    api="/api/stat/teams/top"
+                    params={this.getParams()}
+                    items={["repo", "user"]} />
+                <StackedAreaChart key={'sa-chart-team-'+ this.getParams().team}
+                    api="/api/stat/teams/activity"
+                    params={this.getParams()}
+                    items={["repo", "user"]} />
             </section>
         );
     }
@@ -149,9 +167,16 @@ var UserStats = React.createClass({
     render: function(){
         return (
             <section className="content">
-                <InfoBlock title={this.getParams().user} />
-                <BarChart key={'bar-chart-'+ this.getParams().user} api="/api/stat/users/top"
-                    params={this.getParams()} items={["repo"]} />
+                <InfoBlock key={'info-block-user-'+ this.getParams().user}
+                    title={this.getParams().user} />
+                <BarChart key={'bar-chart-user-'+ this.getParams().user}
+                    api="/api/stat/users/top"
+                    params={this.getParams()}
+                    items={["repo"]} />
+                <StackedAreaChart key={'sa-chart-team-'+ this.getParams().team}
+                    api="/api/stat/users/activity"
+                    params={this.getParams()}
+                    items={["repo"]} />
             </section>
         );
     }
@@ -162,9 +187,16 @@ var RepoStats = React.createClass({
     render: function(){
         return (
             <section className="content">
-                <InfoBlock title={this.getParams().repo} />
-                <BarChart key={this.getParams().team} api="/api/stat/repos/top"
-                    params={this.getParams()} items={["user", "team"]} />
+                <InfoBlock key={'info-block-repo'+ this.getParams().repo}
+                    title={this.getParams().repo} />
+                <BarChart key={'bar-chart-repo-'+ this.getParams().team}
+                    api="/api/stat/repos/top"
+                    params={this.getParams()}
+                    items={["user", "team"]} />
+                <StackedAreaChart key={'sa-chart-team-'+ this.getParams().team}
+                    api="/api/stat/repos/activity"
+                    params={this.getParams()}
+                    items={["user", "team"]} />
             </section>
         );
     }

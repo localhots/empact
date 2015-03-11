@@ -18,6 +18,32 @@
     fill: rgba(255, 255, 255, .7);
 }
 
+
+.sachart-container {
+    box-sizing: border-box;
+    float: left;
+    width: 50%;
+    padding: 0 20px 20px 0;
+}
+.sachart-container .legend {
+    display: block;
+    margin: 0;
+    padding: 0;
+}
+.color-dot {
+    display: block;
+    float: left;
+    content: '';
+    width: 16px;
+    height: 16px;
+    margin: 1px 5px 0 0;
+    border-radius: 8px;
+}
+.sachart-container .legend li {
+    display: inline-block;
+    margin: 10px 15px 0 0;
+}
+
 .filters {
     width: 100%;
 }

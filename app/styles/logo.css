@@ -1,7 +1,7 @@
 .logo-button {
     display: inline-block;
     width: auto;
-    box-shadow: 0 1px 0 0 rgba(0, 0, 0, .6);
+    box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.2), 1px 1px 0 0 #faca50;
     border-radius: 5px;
 }
 
@@ -13,7 +13,7 @@
     font-size: 22px;
     padding: 4px 5px 6px;
     color: #fff;
-    text-shadow: 0 -1px 0 rgba(0, 0, 0, .5);
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, .3);
     font-weight: 600;
 }
 

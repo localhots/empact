@@ -1,8 +1,3 @@
-var SVGNS = 'http://www.w3.org/2000/svg',
-    fontFamily = 'Helvetica Neue',
-    fontSize = '16px',
-    Router = ReactRouter;
-
 var BarChart = React.createClass({
     mixins: [Router.Navigation, Router.State],
 
@@ -85,8 +80,7 @@ var BarChart = React.createClass({
     },
 
     apiParams: function() {
-        // Deep copy, but don't use jQuery.extend
-        var params = JSON.parse(JSON.stringify(this.props.params));
+        var params = _.clone(this.props.params);
         params['item'] = this.state.item;
         return params;
     },
@@ -178,7 +172,9 @@ var Bar = React.createClass({
                 labelX = barX + 2*labelPaddingH;
             }
         } else {
-            if (labelOffsetWidth <= barX) {
+            if (barX === offset) {
+                labelX = barX + width + 2*labelPaddingH;
+            } else if (labelOffsetWidth <= barX) {
                 labelX = barX - labelOffsetWidth + 2*labelPaddingH;
             } else {
                 labelX = barX + width + labelPaddingH;
@@ -199,58 +195,3 @@ var Bar = React.createClass({
         );
     }
 });
-
-var Selector = React.createClass({
-    names: {
-        "repo": "Repositories",
-        "team": "Teams",
-        "user": "Users",
-        "commits": "Commits",
-        "delta": "Delta"
-    },
-
-    itemWithName: function(name) {
-        for (item in this.names) {
-            if (this.names[item] === name) {
-                return item;
-            }
-        }
-    },
-
-    renderItem: function(item, i) {
-        var itemClass = (item === this.props.value ? 'active' : ''),
-            clickEvent = this.props.onChange.bind(this, i);
-        return (
-            <li key={item} onClick={clickEvent} className={itemClass}>{this.names[item]}</li>
-        );
-    },
-
-    render: function() {
-        return (
-            <ul className={this.props.thing}>
-                {this.props.items.map(this.renderItem)}
-            </ul>
-        );
-    }
-});
-
-function textWidth(str) {
-    var svg = document.createElementNS(SVGNS, "svg");
-        text = document.createElementNS(SVGNS, "text");
-
-    svg.width = 500;
-    svg.height = 500;
-    svg.style.position = 'absolute';
-    svg.style.left = '-1000px';
-
-    text.appendChild(document.createTextNode(str))
-    text.style.fontFamily = fontFamily;
-    text.style.fontSize = fontSize;
-
-    svg.appendChild(text);
-    document.body.appendChild(svg);
-    var box = text.getBBox();
-    document.body.removeChild(svg);
-
-    return box.width;
-}
