@@ -12,5 +12,4 @@ bower_components
 *.txt
 
 // Compiled app (reconsider later)
-app/scripts/app.js
-app/scripts/charts.js
+app/scripts/compiled
