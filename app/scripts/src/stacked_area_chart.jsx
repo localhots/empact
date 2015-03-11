@@ -15,6 +15,13 @@ var StackedAreaChart = React.createClass({
         };
     },
 
+    componentWillReceiveProps: function(newProps) {
+        this.setState({
+            'item': newProps.items[0],
+            'sort': 'commits'
+        }, this.fetchData);
+    },
+
     calculateViewBoxWidth: function() {
         this.setState({
            canvasWidth: this.refs.svg.getDOMNode().offsetWidth
@@ -77,20 +84,20 @@ var StackedAreaChart = React.createClass({
             if (res[el.week] === undefined) {
                 res[el.week] = {};
             }
-            res[el.week][el.item] = el.commits;
+            if (top.indexOf(el.item) > -1) {
+                res[el.week][el.item] = el.commits;
+            }
             return res;
         }, {});
+        var max = _.chain(weeks).keys().sort().reverse().take(15).map(function(week) {
+            return _.sum(_.values(weeks[week]));
+        })
+        .max()
+        .value();
 
-        var max = _.chain(this.state.rawData)
-            .reduce(function(res, el) {
-                if (res[el.week] === undefined) {
-                    res[el.week] = 0;
-                }
-                res[el.week] += el.commits;
-                return res;
-            }, {})
-            .max()
-            .value();
+        // var max = _.max(_.map(weeks, function(items, week) {
+        //         return _.sum(_.values(items));
+        //     }));
 
         this.setState({
             top: top,
@@ -102,11 +109,12 @@ var StackedAreaChart = React.createClass({
     buildPathD: function(points) {
         var maxWidth = this.state.canvasWidth,
             maxHeight = this.height,
+            maxValue = this.state.max,
             len = points.length;
         var d = _.map(points, function(point, i) {
-            return 'L'+ Math.floor(i/len*maxWidth) +','+ (maxHeight - point);
+            return 'L'+ Math.floor(i/len*maxWidth) +','+ Math.floor(maxHeight - point);
         });
-        d.unshift('M0,'+maxHeight);
+        d.unshift('M0,'+ maxHeight);
         d.push('L'+ maxWidth +','+ maxHeight +'Z');
 
         // for (var i = 0; i < missing; i++) {
@@ -133,8 +141,10 @@ var StackedAreaChart = React.createClass({
                 });
 
                 var sum = 0;
+                // console.log('----------');
                 var points = _.map(values, function(val) {
                     sum += Math.floor(val/max*maxHeight);
+                    // console.log(val, max, maxHeight, sum);
                     return sum;
                 });
 
@@ -182,7 +192,10 @@ var StackedAreaChart = React.createClass({
                 <ul className="legend">
                     {_.pairs(colors).map(function(pair){
                         return (
-                            <li><div className="color-dot" style={{backgroundColor: pair[1]}}></div>{pair[0]}</li>
+                            <li key={'legend-'+ pair[0]}>
+                                <div className="color-dot" style={{backgroundColor: pair[1]}}></div>
+                                {pair[0]}
+                            </li>
                         );
                     })}
                 </ul>
@@ -194,7 +207,10 @@ var StackedAreaChart = React.createClass({
 var StackedArea = React.createClass({
     render: function() {
         return (
-            <path d={this.props.path} fill={this.props.color} shapeRendering="optimizeQuality" />
+            <path key={'sac-area-'+ this.props.item}
+                d={this.props.path}
+                fill={this.props.color}
+                shapeRendering="optimizeQuality" />
         );
     }
 });

@@ -115,88 +115,49 @@ var Org = React.createClass({
     }
 });
 
-var OrgStats = React.createClass({
+var Dashboard = React.createClass({
     mixins: [Router.State],
 
     render: function(){
-        var org = Storage.get('org', this.getParams().org);
+        var p = this.getParams(),
+            infoImage, infoTitle, infoText,
+            bcApi, bcItems,
+            sacApi, sacItems;
+
+        if (p.team) {
+            infoTitle = p.team;
+            bcApi = '/api/stat/teams/top';
+            bcItems = ['repo', 'user'],
+            sacApi = '/api/stat/teams/activity';
+            sacItems = ['user', 'repo'];
+        } else if (p.user) {
+            infoTitle = p.user;
+            bcApi = '/api/stat/users/top';
+            bcItems = ['repo'],
+            sacApi = '/api/stat/users/activity';
+            sacItems = ['repo'];
+        } else if (p.repo) {
+            infoTitle = p.repo;
+            bcApi = '/api/stat/repos/top';
+            bcItems = ['user', 'team'],
+            sacApi = '/api/stat/repos/activity';
+            sacItems = ['user', 'team'];
+        } else {
+            var info = Storage.get('org', p.org);
+            infoImage = info.avatar_url;
+            infoTitle = info.login;
+            infoText = info.descr;
+            bcApi = '/api/stat/orgs/top';
+            bcItems = ['repo', 'team', 'user'],
+            sacApi = '/api/stat/orgs/activity';
+            sacItems = ['team', 'user', 'repo'];
+        }
+
         return (
             <section className="content">
-                <InfoBlock key={'info-block-org-'+ this.getParams().org}
-                    image={org.avatar_url}
-                    title={org.login}
-                    text={org.descr} />
-                <BarChart key={'bar-chart-'+ this.getParams().org}
-                    api="/api/stat/orgs/top"
-                    params={this.getParams()}
-                    items={["repo", "team", "user"]} />
-                <StackedAreaChart key={'sa-chart-team-'+ this.getParams().team}
-                    api="/api/stat/orgs/activity"
-                    params={this.getParams()}
-                    items={["repo", "team", "user"]} />
-            </section>
-        );
-    }
-});
-
-var TeamStats = React.createClass({
-    mixins: [Router.State],
-
-    render: function(){
-        return (
-            <section className="content">
-                <InfoBlock key={"info-block-team-"+ this.getParams().team}
-                    image="https://media.licdn.com/mpr/mpr/p/8/005/058/14b/0088c48.jpg"
-                    title={this.getParams().team}
-                    text={"The most awesome team in "+ this.getParams().org} />
-                <BarChart key={'bar-chart-team-'+ this.getParams().team}
-                    api="/api/stat/teams/top"
-                    params={this.getParams()}
-                    items={["repo", "user"]} />
-                <StackedAreaChart key={'sa-chart-team-'+ this.getParams().team}
-                    api="/api/stat/teams/activity"
-                    params={this.getParams()}
-                    items={["repo", "user"]} />
-            </section>
-        );
-    }
-});
-
-var UserStats = React.createClass({
-    mixins: [Router.State],
-    render: function(){
-        return (
-            <section className="content">
-                <InfoBlock key={'info-block-user-'+ this.getParams().user}
-                    title={this.getParams().user} />
-                <BarChart key={'bar-chart-user-'+ this.getParams().user}
-                    api="/api/stat/users/top"
-                    params={this.getParams()}
-                    items={["repo"]} />
-                <StackedAreaChart key={'sa-chart-team-'+ this.getParams().team}
-                    api="/api/stat/users/activity"
-                    params={this.getParams()}
-                    items={["repo"]} />
-            </section>
-        );
-    }
-});
-
-var RepoStats = React.createClass({
-    mixins: [Router.State],
-    render: function(){
-        return (
-            <section className="content">
-                <InfoBlock key={'info-block-repo'+ this.getParams().repo}
-                    title={this.getParams().repo} />
-                <BarChart key={'bar-chart-repo-'+ this.getParams().team}
-                    api="/api/stat/repos/top"
-                    params={this.getParams()}
-                    items={["user", "team"]} />
-                <StackedAreaChart key={'sa-chart-team-'+ this.getParams().team}
-                    api="/api/stat/repos/activity"
-                    params={this.getParams()}
-                    items={["user", "team"]} />
+                <InfoBlock image={infoImage} title={infoTitle} text={infoText} />
+                <BarChart api={bcApi} params={this.getParams()} items={bcItems} />
+                <StackedAreaChart api={sacApi} params={this.getParams()} items={sacItems} />
             </section>
         );
     }
@@ -236,10 +197,10 @@ var routes = [
         <Router.DefaultRoute handler={SelectOrg} />
         <Router.NotFoundRoute handler={NotFound} />
         <Router.Route name="org" path=":org" handler={Org}>
-            <Router.DefaultRoute handler={OrgStats} />
-            <Router.Route name="team" path="teams/:team" handler={TeamStats} />
-            <Router.Route name="user" path="users/:user" handler={UserStats} />
-            <Router.Route name="repo" path="repos/:repo" handler={RepoStats} />
+            <Router.DefaultRoute handler={Dashboard} />
+            <Router.Route name="team" path="teams/:team" handler={Dashboard} />
+            <Router.Route name="user" path="users/:user" handler={Dashboard} />
+            <Router.Route name="repo" path="repos/:repo" handler={Dashboard} />
         </Router.Route>
     </Router.Route>
 ];

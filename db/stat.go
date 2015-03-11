@@ -148,7 +148,7 @@ order by commits desc`
 
 const repoActivityQuery = `
 select
-    c.week as weel,
+    c.week as week,
     %s as item,
     sum(c.commits) as commits,
     sum(c.additions) - sum(c.deletions) as delta
@@ -211,6 +211,6 @@ func StatRepoTop(p map[string]interface{}) (res []StatItem) {
 
 func StatRepoActivity(p map[string]interface{}) (res []StatPoint) {
 	defer measure("StatRepoActivity", time.Now())
-	mustSelectN(&res, fmt.Sprintf(repoTopQuery, p["item"]), p)
+	mustSelectN(&res, fmt.Sprintf(repoActivityQuery, p["item"]), p)
 	return
 }

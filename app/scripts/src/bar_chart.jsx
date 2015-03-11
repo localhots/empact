@@ -7,13 +7,16 @@ var BarChart = React.createClass({
 
     getInitialState: function() {
         return {
+            currentApi: null,
+            currentParams: null,
             item: this.props.items[0],
             sort: 'commits',
             rawData: [],
             points: [],
+            oldPoints: [],
             min: 0,
             max: 1,
-            canvasWidth: 500
+            canvasWidth: 500,
         };
     },
 
@@ -24,9 +27,15 @@ var BarChart = React.createClass({
     },
 
     componentDidMount: function() {
-        this.fetchData();
         this.calculateViewBoxWidth();
         window.addEventListener('resize', this.calculateViewBoxWidth);
+    },
+
+    componentWillReceiveProps: function(newProps) {
+        this.setState({
+            'item': newProps.items[0],
+            'sort': 'commits'
+        }, this.fetchData);
     },
 
     handleFilter: function(thing, i) {
@@ -48,14 +57,30 @@ var BarChart = React.createClass({
     },
 
     fetchData: function() {
-        $.get(this.props.api, this.apiParams(), function(res){
-            this.setState({
-                rawData: res
-            }, this.sort);
+        if (!this.apiParams().item) {
+            return;
+        }
+        if (this.state.currentApi === this.props.api &&
+            this.state.currentParams === JSON.stringify(this.apiParams())) {
+            return;
+        }
+
+        console.log('-----> fetching', this.state.currentApi, this.props.api);
+        this.setState({
+            currentApi: this.props.api,
+            currentParams: JSON.stringify(this.apiParams())
+        }, function() {
+            $.get(this.props.api, this.apiParams(), function(res){
+                this.setState({
+                    rawData: res,
+                    oldPoints: this.state.points
+                }, this.sort);
+            }.bind(this));
         }.bind(this));
     },
 
     sort: function() {
+        console.log('-----> sorting');
         var sortFun = function(a, b) {
             return Math.abs(b[this.state.sort]) - Math.abs(a[this.state.sort]);
         }.bind(this);
@@ -132,9 +157,15 @@ var BarChart = React.createClass({
             y = this.y(i);
 
         return (
-            <Bar key={point.item} item={point.item} value={val}
+            <Bar key={'bar-'+ i}
+                item={point.item}
+                value={val}
                 color={Colors2[i]}
-                x={x} y={y} offset={offset} width={width} height={height}
+                x={x}
+                y={y}
+                offset={offset}
+                width={width}
+                height={height}
                 onClick={this.handleClick.bind(this, point)} />
         );
     }
@@ -142,6 +173,36 @@ var BarChart = React.createClass({
 
 var Bar = React.createClass({
     mixins: [Router.Navigation],
+
+    getInitialState: function() {
+        return {lastx: 0, lastw: 0};
+    },
+
+    componentWillReceiveProps: function(newProps) {
+        console.log("New bar props!", newProps.item, newProps.x, newProps.width);
+        this.setState({
+            lastx: this.props.x,
+            lastw: this.props.width
+        }, this.animate);
+    },
+
+    animate: function() {
+        var bar = this.refs.bar.getDOMNode(),
+            anim = anim = document.createElementNS(SVGNS, 'animate');
+
+        if (bar.childNodes.length > 0) {
+            bar.removeChild(bar.childNodes[0]);
+        }
+
+        anim.setAttributeNS(null, 'attributeType', 'XML');
+        anim.setAttributeNS(null, 'attributeName', 'width');
+        anim.setAttributeNS(null, 'from', this.state.lastw);
+        anim.setAttributeNS(null, 'to', this.props.width);
+        anim.setAttributeNS(null, 'dur', '300ms');
+        anim.setAttributeNS(null, 'repeatCount', '1');
+        bar.appendChild(anim);
+        anim.beginElement();
+    },
 
     render: function() {
         var val = this.props.value,
@@ -183,13 +244,23 @@ var Bar = React.createClass({
 
         return (
             <g onClick={this.props.onClick}>
-                <rect className="bar" fill={this.props.color}
-                    width={width} height={this.props.height}
-                    x={this.props.x} y={this.props.y} rx="2" ry="2" />
-                <rect className="label_underlay"
-                    x={labelX - labelPaddingH} y={this.props.y + labelMarginV}
-                    height={labelOuterHeight} width={labelOuterWidth}
-                    rx="3" ry="3" />
+                <rect ref="bar"
+                    className="bar"
+                    fill={this.props.color}
+                    width={width}
+                    height={this.props.height}
+                    x={this.props.x}
+                    y={this.props.y}
+                    rx="2"
+                    ry="2" />
+                <rect
+                    className="label_underlay"
+                    width={labelOuterWidth}
+                    height={labelOuterHeight}
+                    x={labelX - labelPaddingH}
+                    y={this.props.y + labelMarginV}
+                    rx="3"
+                    ry="3" />
                 <text className="label" x={labelX} y={labelY}>{label}</text>
             </g>
         );
