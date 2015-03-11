@@ -15,6 +15,12 @@ var StackedAreaChart = React.createClass({
         };
     },
 
+    componentDidMount: function() {
+        this.fetchData();
+        this.calculateViewBoxWidth();
+        window.addEventListener('resize', this.calculateViewBoxWidth);
+    },
+
     componentWillReceiveProps: function(newProps) {
         this.setState({
             'item': newProps.items[0],
@@ -26,12 +32,6 @@ var StackedAreaChart = React.createClass({
         this.setState({
            canvasWidth: this.refs.svg.getDOMNode().offsetWidth
         });
-    },
-
-    componentDidMount: function() {
-        this.fetchData();
-        this.calculateViewBoxWidth();
-        window.addEventListener('resize', this.calculateViewBoxWidth);
     },
 
     handleFilter: function(thing, i) {

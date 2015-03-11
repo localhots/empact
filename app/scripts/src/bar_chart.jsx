@@ -20,12 +20,6 @@ var BarChart = React.createClass({
         };
     },
 
-    calculateViewBoxWidth: function() {
-        this.setState({
-           canvasWidth: this.refs.svg.getDOMNode().offsetWidth
-        });
-    },
-
     componentDidMount: function() {
         this.calculateViewBoxWidth();
         window.addEventListener('resize', this.calculateViewBoxWidth);
@@ -36,6 +30,12 @@ var BarChart = React.createClass({
             'item': newProps.items[0],
             'sort': 'commits'
         }, this.fetchData);
+    },
+
+    calculateViewBoxWidth: function() {
+        this.setState({
+           canvasWidth: this.refs.svg.getDOMNode().offsetWidth
+        });
     },
 
     handleFilter: function(thing, i) {
@@ -198,7 +198,7 @@ var Bar = React.createClass({
         anim.setAttributeNS(null, 'attributeName', 'width');
         anim.setAttributeNS(null, 'from', this.state.lastw);
         anim.setAttributeNS(null, 'to', this.props.width);
-        anim.setAttributeNS(null, 'dur', '300ms');
+        anim.setAttributeNS(null, 'dur', '250ms');
         anim.setAttributeNS(null, 'repeatCount', '1');
         bar.appendChild(anim);
         anim.beginElement();
