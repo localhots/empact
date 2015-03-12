@@ -92,7 +92,18 @@ var StackedAreaChart = React.createClass({
 
     buildPoints: function() {
         // Group commits by items
+        var weeksList = _.chain(this.state.rawData)
+            .pluck('week')
+            .uniq()
+            .sort()
+            .reverse()
+            .take(this.maxWeeks)
+            .value();
+
         var counts = _.reduce(this.state.rawData, function(res, el) {
+            if (weeksList.indexOf(el.week) === -1) {
+                return res;
+            }
             if (res[el.item] === undefined) {
                 res[el.item] = el.commits;
             } else {
@@ -107,8 +118,14 @@ var StackedAreaChart = React.createClass({
             .take(this.numElements) // take first N pairs
             .pluck(0) // keep only items, omit the counts
             .value();
+        for (var i = top.length; i < this.numElements; i++) {
+            top[i] = null;
+        };
 
         var weeks = _.reduce(this.state.rawData, function(res, el) {
+            if (weeksList.indexOf(el.week) === -1) {
+                return res;
+            }
             if (res[el.week] === undefined) {
                 res[el.week] = {};
             }
@@ -117,19 +134,14 @@ var StackedAreaChart = React.createClass({
             }
             return res;
         }, {});
-        var max = _.chain(weeks).keys().sort().reverse().take(15).map(function(week) {
-            return _.sum(_.values(weeks[week]));
-        })
-        .max()
-        .value();
 
-        // var max = _.max(_.map(weeks, function(items, week) {
-        //         return _.sum(_.values(items));
-        //     }));
+        var max = _.max(_.map(weeksList, function(week) {
+                return _.sum(_.values(weeks[week]));
+            }));
 
-        // console.log("New points!");
+
         this.setState({
-            top: top,
+            top: top.reverse(),
             max: max,
             weeks: weeks,
             state: 'newPoints'
@@ -164,10 +176,8 @@ var StackedAreaChart = React.createClass({
                 });
 
                 var sum = 0;
-                // console.log('----------');
                 var points = _.map(values, function(val) {
                     sum += Math.floor(val/max*maxHeight);
-                    // console.log(val, max, maxHeight, sum);
                     return sum;
                 });
 
@@ -192,31 +202,20 @@ var StackedAreaChart = React.createClass({
             return[item, itemPoints];
         });
 
-        var colors = {}
-        // console.log('----- Areas!');
+        var colors = {};
         var areas = _.map(paths, function(pair, i) {
             var item = pair[0], path = pair[1];
-            colors[item] = Colors2[i];
+            if (item !== null) {
+                colors[item] = Colors2[i];
+            }
             // console.log("Building path for", item, path);
-            // console.log('Area', i);
             return (
                 <StackedArea key={'area-'+ i}
                     item={item}
                     d={roundPathCorners(this.buildPathD(path), 5)}
-                    color={colors[item]} />
+                    color={Colors2[i]} />
             );
         }.bind(this));
-        areas = areas.reverse();
-        for (var i = areas.length; i < this.numElements; i++) {
-            // console.log('Area (empty)', i);
-            var d = 'M0,'+ this.height +' L'+ maxWidth +','+ maxHeight +'Z';
-            areas.push(
-                <StackedArea key={'area-'+ i}
-                    item={''}
-                    d={d}
-                    color="rgba(0, 0, 0, 0)" />
-            );
-        };
 
         return (
             <div className="sachart-container">
@@ -232,7 +231,7 @@ var StackedAreaChart = React.createClass({
                 <svg ref="svg" className="sachart" key="sachart-svg"
                     width="100%" height={maxHeight}
                     viewBox={"0 0 "+ this.state.canvasWidth + " "+ maxHeight}>
-                    {areas}
+                    {areas.reverse()}
                 </svg>
                 <ul className="legend">
                     {_.pairs(colors).map(function(pair){
