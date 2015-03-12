@@ -3,6 +3,33 @@ var SVGNS = 'http://www.w3.org/2000/svg',
     fontSize = '16px',
     Router = ReactRouter;
 
+var Chart = {
+    calculateViewBoxWidth: function() {
+        this.setState({
+           canvasWidth: this.refs.svg.getDOMNode().offsetWidth
+        });
+    },
+
+    animate: function(ref, attr, from, to) {
+        var node = ref.getDOMNode(),
+            anim = anim = document.createElementNS(SVGNS, 'animate');
+
+        _.map(node.childNodes, function(el) {
+            node.removeChild(el);
+        });
+
+        anim.setAttributeNS(null, 'attributeType', 'XML');
+        anim.setAttributeNS(null, 'attributeName', attr);
+        anim.setAttributeNS(null, 'from', from);
+        anim.setAttributeNS(null, 'to', to);
+        anim.setAttributeNS(null, 'dur', '350ms');
+        // anim.setAttributeNS(null, 'keySplines', [this.easing, this.easing, this.easing].join(';'));
+        anim.setAttributeNS(null, 'repeatCount', '1');
+        node.appendChild(anim);
+        anim.beginElement();
+    }
+};
+
 var Selector = React.createClass({
     names: {
         "repo": "Repositories",
