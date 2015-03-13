@@ -1,5 +1,5 @@
 var StackedAreaChart = React.createClass({
-    mixins: [Router.Navigation, Router.State, Chart],
+    mixins: [ReactRouter.Navigation, ReactRouter.State, SVGChartMixin, ChartDataMixin],
 
     numElements: 10,
     maxWeeks: 20,
@@ -7,20 +7,15 @@ var StackedAreaChart = React.createClass({
 
     getInitialState: function() {
         return {
-            currentApi: null,
-            currentParams: null,
             item: this.props.items[0],
             rawData: [],
             top: [],
-            max: 1,
             weeks: [],
-            canvasWidth: 0,
-            state: 'initial'
+            max: 1
         };
     },
 
     componentDidMount: function() {
-        this.fetchData();
         this.calculateViewBoxWidth();
         window.addEventListener('resize', this.calculateViewBoxWidth);
     },
@@ -34,14 +29,12 @@ var StackedAreaChart = React.createClass({
     },
 
     shouldComponentUpdate: function(newProps, newState) {
-        // console.log("Should update?", newState.state);
-        if (newState.canvasWidth === 0) {
+        if (!newState.canvasWidth) {
             return false;
         }
         if (newState.state !== 'newPoints')  {
             return false;
         }
-        // console.log("Updating!");
         return true;
     },
 
@@ -60,37 +53,7 @@ var StackedAreaChart = React.createClass({
         this.transitionTo(this.state.item, params);
     },
 
-    fetchData: function() {
-        if (!this.apiParams().item) {
-            return;
-        }
-        if (this.state.currentApi === this.props.api &&
-            this.state.currentParams === JSON.stringify(this.apiParams())) {
-            return;
-        }
-
-        // console.log('-----> fetching', this.props.api, this.state.item);
-        this.setState({
-            currentApi: this.props.api,
-            currentParams: JSON.stringify(this.apiParams()),
-            state: 'loadingData'
-        }, function() {
-            $.get(this.props.api, this.apiParams(), function(res){
-                this.setState({
-                    rawData: res,
-                    state: 'newData'
-                }, this.buildPoints);
-            }.bind(this));
-        }.bind(this));
-    },
-
-    apiParams: function() {
-        var params = _.clone(this.props.params);
-        params['item'] = this.state.item;
-        return params;
-    },
-
-    buildPoints: function() {
+    handleNewData: function() {
         // Group commits by items
         var weeksList = _.chain(this.state.rawData)
             .pluck('week')
@@ -139,11 +102,10 @@ var StackedAreaChart = React.createClass({
                 return _.sum(_.values(weeks[week]));
             }));
 
-
         this.setState({
             top: top.reverse(),
-            max: max,
             weeks: weeks,
+            max: max,
             state: 'newPoints'
         });
     },
@@ -153,9 +115,10 @@ var StackedAreaChart = React.createClass({
             maxHeight = this.height,
             maxValue = this.state.max,
             len = points.length;
+
         var d = _.map(points, function(point, i) {
-            return 'L'+ Math.floor(i/len*maxWidth) +','+ Math.floor(maxHeight - point);
-        });
+                return 'L'+ Math.floor(i/(len-1)*maxWidth) +','+ Math.floor(maxHeight - point);
+            });
         d.unshift('M0,'+ maxHeight);
         d.push('L'+ maxWidth +','+ maxHeight +'Z');
 
@@ -163,7 +126,6 @@ var StackedAreaChart = React.createClass({
     },
 
     render: function() {
-        // console.log("Rendering!");
         var maxWidth = this.state.canvasWidth,
             maxHeight = this.height,
             rtop = this.state.top.reverse(),
@@ -189,12 +151,6 @@ var StackedAreaChart = React.createClass({
             .reverse()
             .value();
 
-        var paths = _.reduce(rtop, function(res, item, i) {
-            res[item] = _.map(points, function(pair) {
-                return pair[1][i];
-            });
-            return res;
-        }, {});
         var paths = _.map(rtop, function(item, i) {
             var itemPoints = _.map(points, function(pair) {
                 return pair[1][i];
@@ -208,7 +164,6 @@ var StackedAreaChart = React.createClass({
             if (item !== null) {
                 colors[item] = Colors2[i];
             }
-            // console.log("Building path for", item, path);
             return (
                 <StackedArea key={'area-'+ i}
                     item={item}
@@ -230,7 +185,7 @@ var StackedAreaChart = React.createClass({
                 </div>
                 <svg ref="svg" className="sachart" key="sachart-svg"
                     width="100%" height={maxHeight}
-                    viewBox={"0 0 "+ this.state.canvasWidth + " "+ maxHeight}>
+                    viewBox={"0 0 "+ (this.state.canvasWidth || 0) + " "+ maxHeight}>
                     {areas.reverse()}
                 </svg>
                 <ul className="legend">
@@ -249,33 +204,28 @@ var StackedAreaChart = React.createClass({
 });
 
 var StackedArea = React.createClass({
-    mixins: [Chart],
-    easing: '0.55, 0.055, 0.675, 0.19',
+    mixins: [ChartAnimationMixin],
+    easing: '0.175 0.885 0.32 1.275', // easeOutBack
 
     getInitialState: function() {
-        return {lastd: ''};
-    },
-
-    componentDidMount: function() {
-        // console.log("-- mounted area");
+        return {};
     },
 
     componentWillReceiveProps: function(newProps) {
-        // console.log("New area props!", newProps.item);
         this.setState({
-            lastd: this.props.d,
-        }, this.state.lastd === '' ? null : this.animateAll);
+            lastd: this.props.d || newProps.d,
+        }, this.animateAll);
     },
 
     animateAll: function() {
-        // console.log("Animating area", this.props.item);
+        this.clearAnimations(this.refs.path);
         this.animate(this.refs.path, 'd', this.state.lastd, this.props.d);
     },
 
     render: function() {
         return (
             <path ref="path"
-                d={this.props.d}
+                d={this.state.lastd || this.props.d}
                 fill={this.props.color}
                 shapeRendering="optimizeQuality" />
         );
