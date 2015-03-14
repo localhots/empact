@@ -3,7 +3,7 @@ var ChartAnimationMixin = {
 
     animate: function(ref, attr, from, to) {
         var node = ref.getDOMNode(),
-            anim = anim = document.createElementNS('http://www.w3.org/2000/svg', 'animate');
+            anim = document.createElementNS('http://www.w3.org/2000/svg', 'animate');
 
         anim.setAttributeNS(null, 'attributeType', 'XML');
         anim.setAttributeNS(null, 'attributeName', attr);
@@ -12,11 +12,12 @@ var ChartAnimationMixin = {
         anim.setAttributeNS(null, 'calcMode', 'spline');
         anim.setAttributeNS(null, 'keySplines', this.easing);
         anim.setAttributeNS(null, 'repeatCount', '1');
-        node.appendChild(anim);
-        anim.beginElement();
-        setTimeout(function() {
+        anim.addEventListener('endEvent', function() {
             node.setAttributeNS(null, attr, to);
-        }, this.animDuration);
+        });
+        node.appendChild(anim);
+
+        anim.beginElement();
     },
 
     clearAnimations: function(ref) {
