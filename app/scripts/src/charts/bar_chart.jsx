@@ -232,7 +232,8 @@ var Bar = React.createClass({
         }
 
         this.setState({
-            labelX: labelX
+            labelX: labelX,
+            barWidth: (this.props.item && this.props.width < 5 ? 5 : this.props.width)
         }, this.animateAll);
     },
 
@@ -245,7 +246,7 @@ var Bar = React.createClass({
         this.clearAnimations(bar);
         this.clearAnimations(underlay);
         this.clearAnimations(text);
-        this.animate(bar, 'width', this.state.lastBarWidth, this.props.width);
+        this.animate(bar, 'width', this.state.lastBarWidth, this.state.barWidth);
         this.animate(bar, 'x', this.state.lastBarX, this.props.x);
         this.animate(underlay, 'x', this.state.lastLabelX - padH, this.state.labelX - padH);
         this.animate(text, 'x', this.state.lastLabelX, this.state.labelX);
@@ -258,9 +259,9 @@ var Bar = React.createClass({
             barX = (this.state.lastBarX && this.state.lastBarX !== this.props.x
                 ? this.state.lastBarX
                 : this.props.x),
-            barWidth = (this.state.lastBarWidth && this.state.lastBarWidth !== this.props.width
+            barWidth = (this.state.lastBarWidth && this.state.lastBarWidth !== this.state.barWidth
                 ? this.state.lastBarWidth
-                : this.props.width);
+                : this.state.barWidth);
 
         return (
             <g onClick={this.props.onClick}>
