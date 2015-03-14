@@ -103,3 +103,29 @@ section {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+.week-selector {
+    display: none;
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    height: 100%;
+    float: left;
+    margin: 20px 20px 20px 0;
+}
+.week-selector .week {
+    float: left;
+    width: 20px;
+    font-size: 8px;
+    line-height: 10px;
+    margin: 0 0 1px;
+}
+.week-selector .week .square {
+    float: left;
+    width: 20px;
+    height: 20px;
+    border: #aaa 1px solid;
+    text-align: center;
+    line-height: 20px;
+    background-color: #fff;
+}

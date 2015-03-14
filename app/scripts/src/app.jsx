@@ -60,6 +60,7 @@ var App = React.createClass({
         return (
             <section className="app">
                 <Menu orgs={this.state.orgs} teams={this.state.teams} />
+                <WeekIntervalSelector />
                 <Router.RouteHandler />
             </section>
         );
@@ -126,6 +127,7 @@ var Dashboard = React.createClass({
 
         if (p.team) {
             infoTitle = p.team;
+            infoText = 'A '+ p.org +' team';
             bcApi = '/api/stat/teams/top';
             bcItems = ['repo', 'user'],
             sacApi = '/api/stat/teams/activity';
@@ -189,6 +191,60 @@ var InfoBlock = React.createClass({
                 <p>{this.props.text}</p>
             </div>
         )
+    }
+});
+
+var WeekIntervalSelector = React.createClass({
+    monthNames: [
+        'Jan', 'Feb', 'Mar',
+        'Apr', 'May', 'Jun',
+        'Jul', 'Aug', 'Sep',
+        'Oct', 'Nov', 'Dec'
+    ],
+
+    componentDidMount: function() {
+        this.resize();
+        window.addEventListener('resize', this.resize);
+    },
+
+    resize: function() {
+        var h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+        this.refs.selector.getDOMNode().style.height = ''+ (h - 40) +'px';
+    },
+
+    render: function() {
+        var ms = 1000,
+            daySeconds = 86400,
+            weekSeconds = daySeconds*7,
+            today = new Date(),
+            sunday = new Date(today - daySeconds*ms*today.getDay()),
+            perfectSunday = new Date(Date.UTC(sunday.getFullYear(), sunday.getMonth(), sunday.getDate())),
+            lastWeek = perfectSunday.setHours(0)/ms,
+            firstWeek = lastWeek - 51*weekSeconds;
+
+        var weeks = [];
+        for (var i = lastWeek; i >= firstWeek; i -= weekSeconds) {
+            weeks.push(i);
+        };
+
+        var renderWeek = function(week, i) {
+            var d = new Date(week*ms),
+                month = this.monthNames[d.getMonth()],
+                day = d.getDate();
+
+            return (
+                <div key={'week-'+ i} className="week">
+                    <div key={''+ i +'-week'} className="square">{day}</div>
+                    <div key={''+ i +'-month'} className="square">{month}</div>
+                    <div key={''+ i +'-day'} className="square">{day}</div>
+                </div>
+            )
+        }.bind(this);
+        return (
+            <section ref="selector" className="week-selector">
+                {weeks.map(renderWeek)}
+            </section>
+        );
     }
 });
 
