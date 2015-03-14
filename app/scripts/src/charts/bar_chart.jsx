@@ -103,8 +103,7 @@ var BarChart = React.createClass({
                 },
                 item: {
                     repo: 'repository',
-                    team: 'team',
-                    user: 'author'
+                    team: 'team'
                 },
                 actions: {
                     repo: 'which were the most attended by',
