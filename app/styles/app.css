@@ -50,13 +50,20 @@ section {
     color: #222;
     text-decoration: underline;
     border-radius: 3px;
+    width: 200px;
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.menu .nav a:hover {
+    background-color: #fcf1eb;
 }
 .menu .nav a.active {
     background-color: #f9d4be;
 }
-
 .content {
-    width: calc(100% - 260px);
+    width: calc(100% - 240px);
     margin-top: 20px;
 }
 .content .left, .content .right {
