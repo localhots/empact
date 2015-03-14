@@ -18,6 +18,12 @@ func apiTeamsHandler(w http.ResponseWriter, r *http.Request) {
 	req.respondWith(teams)
 }
 
+func apiUsersHandler(w http.ResponseWriter, r *http.Request) {
+	req, stat := parseRequest(w, r)
+	users := db.OrgUsers(stat.Org)
+	req.respondWith(users)
+}
+
 func apiReposHandler(w http.ResponseWriter, r *http.Request) {
 	req, stat := parseRequest(w, r)
 	repos := db.OrgRepos(stat.Org)

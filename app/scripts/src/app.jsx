@@ -15,8 +15,9 @@ var Storage = {
 var App = React.createClass({
     mixins: [Router.Navigation, Router.State],
 
-    orgsURL: "/api/orgs",
-    teamsURL: "/api/teams?org=",
+    orgsURL: '/api/orgs',
+    teamsURL: '/api/teams?org=',
+    usersURL: '/api/users?org=',
 
     getInitialState: function() {
         return {
@@ -30,6 +31,7 @@ var App = React.createClass({
     componentDidMount: function() {
         this.loadOrgs();
         this.loadTeams();
+        this.loadUsers();
     },
 
     loadOrgs: function() {
@@ -46,11 +48,23 @@ var App = React.createClass({
 
     loadTeams: function() {
         $.get(this.teamsURL + this.getParams().org, function(res){
-            this.setState({teams: res})
+            this.setState({teams: res});
             if (res !== null) {
                 for (var i = 0; i < res.length; i++) {
                     var team = res[i];
                     Storage.set('team', team.name, team);
+                }
+            }
+        }.bind(this));
+    },
+
+    loadUsers: function() {
+        $.get(this.usersURL + this.getParams().org, function(res){
+            this.setState({users: res});
+            if (res !== null) {
+                for (var i = 0; i < res.length; i++) {
+                    var user = res[i];
+                    Storage.set('user', user.login, user);
                 }
             }
         }.bind(this));
@@ -133,7 +147,9 @@ var Dashboard = React.createClass({
             sacApi = '/api/stat/teams/activity';
             sacItems = ['user', 'repo'];
         } else if (p.user) {
-            infoTitle = p.user;
+            var info = Storage.get('user', p.user);
+            infoImage = info ? info.avatar_url : null;
+            infoTitle = info && info.name ? info.name : p.user;
             bcApi = '/api/stat/users/top';
             bcItems = ['repo'],
             sacApi = '/api/stat/users/activity';
