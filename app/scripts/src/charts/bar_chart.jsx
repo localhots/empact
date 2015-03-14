@@ -181,7 +181,7 @@ var Bar = React.createClass({
     calculateLabelPosition: function() {
         var val = this.props.value,
             offset = this.props.offset,
-            label = this.props.item + ': ' + val,
+            label = this.props.item + ': ' + numberFormat(val),
             labelWidth = textWidth(label),
             labelOuterWidth = labelWidth + 2*this.labelPaddingH,
             labelOffsetWidth = labelOuterWidth + 2*this.labelPaddingH,
@@ -211,17 +211,22 @@ var Bar = React.createClass({
     },
 
     animateAll: function() {
-        this.clearAnimations(this.refs.bar);
-        this.clearAnimations(this.refs.underlay);
-        this.animate(this.refs.bar, 'width', this.state.lastBarWidth, this.props.width);
-        this.animate(this.refs.bar, 'x', this.state.lastBarX, this.props.x);
-        var ph = this.labelPaddingH;
-        this.animate(this.refs.underlay, 'x', this.state.lastLabelX - ph, this.state.labelX - ph);
-        this.animate(this.refs.label, 'x', this.state.lastLabelX, this.state.labelX);
+        var bar = this.refs.bar,
+            underlay = this.refs.label.refs.underlay,
+            text = this.refs.label.refs.text,
+            padH = this.labelPaddingH;
+
+        this.clearAnimations(bar);
+        this.clearAnimations(underlay);
+        this.clearAnimations(text);
+        this.animate(bar, 'width', this.state.lastBarWidth, this.props.width);
+        this.animate(bar, 'x', this.state.lastBarX, this.props.x);
+        this.animate(underlay, 'x', this.state.lastLabelX - padH, this.state.labelX - padH);
+        this.animate(text, 'x', this.state.lastLabelX, this.state.labelX);
     },
 
     render: function() {
-        var label = this.props.item ? (this.props.item + ': ' + this.props.value) : '',
+        var label = this.props.item ? (this.props.item + ': ' + numberFormat(this.props.value)) : '',
             labelWidth = textWidth(label),
             labelOuterWidth = (labelWidth == 0 ? 0 : labelWidth + 2*this.labelPaddingH),
             barX = (this.state.lastBarX && this.state.lastBarX !== this.props.x
@@ -242,20 +247,39 @@ var Bar = React.createClass({
                     y={this.props.y}
                     rx="2"
                     ry="2" />
-                <rect ref="underlay"
-                    className="label_underlay"
+                <BarLabel ref="label"
+                    item={this.props.item}
+                    value={this.props.value}
                     width={labelOuterWidth}
                     height={this.labelOuterHeight}
-                    x={this.state.labelX - this.labelPaddingH}
-                    y={this.props.y + this.labelMarginV}
-                    rx="3"
-                    ry="3" />
-                <text ref="label"
-                    className="label"
                     x={this.state.labelX}
-                    y={this.props.y + this.labelOuterHeight + 1}>
-                    {label}</text>
+                    y={this.props.y + this.labelMarginV} />
             </g>
         );
     }
 });
+
+var BarLabel = React.createClass({
+    render: function() {
+        var text = (this.props.item ? this.props.item +': '+ numberFormat(this.props.value) : '');
+        return (
+            <g>
+                <rect ref="underlay" key="underlay"
+                    className="label_underlay"
+                    width={this.props.width}
+                    height={this.props.height}
+                    x={this.props.x}
+                    y={this.props.y}
+                    rx="3"
+                    ry="3" />
+                <text ref="text" key="text"
+                    className="label"
+                    x={this.props.x}
+                    y={this.props.y + 16}
+                    height={20}>
+                    {text}
+                </text>
+            </g>
+        );
+    }
+})

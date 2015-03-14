@@ -26,7 +26,7 @@ var ChartAnimationMixin = {
 
     clearAnimations: function(ref) {
         var node = ref.getDOMNode();
-        while (node.firstChild) {
+        while (node.firstChild && node.firstChild.nodeName === 'animate') {
             node.removeChild(node.firstChild);
         }
     }
