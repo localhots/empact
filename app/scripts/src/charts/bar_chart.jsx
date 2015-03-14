@@ -75,7 +75,6 @@ var BarChart = React.createClass({
             points.push(point);
         }
 
-        // console.log("Setting points!");
         this.setState({
             points: points,
             min: _.min(points, this.state.sort)[this.state.sort],
@@ -97,7 +96,6 @@ var BarChart = React.createClass({
     },
 
     render: function() {
-        // console.log("Render barchart!", this.state);
         return (
             <div className="barchart-container">
                 <div className="filters">
@@ -150,9 +148,6 @@ var BarChart = React.createClass({
 var Bar = React.createClass({
     mixins: [ReactRouter.Navigation, ChartAnimationMixin],
 
-    // easing: '0.075 0.82 0.165 1', // easeOutCirc
-    easing: '0.175 0.885 0.32 1.275', // easeOutBack
-
     height: 30,
     labelPaddingH: 5,     // Label horizontal padding
     labelPaddingV: 2,     // Label vertical padding
@@ -176,7 +171,6 @@ var Bar = React.createClass({
             return;
         }
 
-        // console.log("New bar props!", newProps.item, newProps.x, newProps.width);
         this.setState({
             lastBarX: (this.props.x !== undefined ? this.props.x : newProps.x),
             lastBarWidth: (this.props.width !== undefined ? this.props.width : newProps.width),
@@ -187,16 +181,11 @@ var Bar = React.createClass({
     calculateLabelPosition: function() {
         var val = this.props.value,
             offset = this.props.offset,
-            width = this.props.width,
             label = this.props.item + ': ' + val,
             labelWidth = textWidth(label),
             labelOuterWidth = labelWidth + 2*this.labelPaddingH,
             labelOffsetWidth = labelOuterWidth + 2*this.labelPaddingH,
-            labelMarginV = (this.props.height - this.labelOuterHeight)/2,
-            labelX,
-            labelY = this.props.y + this.labelOuterHeight + 1, // 1 is magic
-            barX = this.props.x,
-            barX2 = barX + width;
+            labelX;
 
         if (offset === 0) {
             labelX = 2*this.labelPaddingH;
@@ -222,30 +211,34 @@ var Bar = React.createClass({
     },
 
     animateAll: function() {
-        // console.log("animate bar!", this.state, this.props);
         this.clearAnimations(this.refs.bar);
         this.clearAnimations(this.refs.underlay);
         this.animate(this.refs.bar, 'width', this.state.lastBarWidth, this.props.width);
         this.animate(this.refs.bar, 'x', this.state.lastBarX, this.props.x);
         var ph = this.labelPaddingH;
         this.animate(this.refs.underlay, 'x', this.state.lastLabelX - ph, this.state.labelX - ph);
-        // this.animate(this.refs.label, 'x', this.state.lastLabelX, this.state.labelX);
+        this.animate(this.refs.label, 'x', this.state.lastLabelX, this.state.labelX);
     },
 
     render: function() {
         var label = this.props.item ? (this.props.item + ': ' + this.props.value) : '',
             labelWidth = textWidth(label),
-            labelOuterWidth = labelWidth + 2*this.labelPaddingH;
+            labelOuterWidth = (labelWidth == 0 ? 0 : labelWidth + 2*this.labelPaddingH),
+            barX = (this.state.lastBarX && this.state.lastBarX !== this.props.x
+                ? this.state.lastBarX
+                : this.props.x),
+            barWidth = (this.state.lastBarWidth && this.state.lastBarWidth !== this.props.width
+                ? this.state.lastBarWidth
+                : this.props.width);
 
-        // var width = this.state.lastBarWidth === 0 ? this.props.width : this.state.lastBarWidth;
         return (
             <g onClick={this.props.onClick}>
                 <rect ref="bar"
                     className="bar"
                     fill={this.props.color}
-                    width={this.props.width}
+                    width={barWidth}
                     height={this.props.height}
-                    x={this.props.x}
+                    x={barX}
                     y={this.props.y}
                     rx="2"
                     ry="2" />

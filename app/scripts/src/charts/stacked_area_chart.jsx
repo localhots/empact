@@ -205,7 +205,6 @@ var StackedAreaChart = React.createClass({
 
 var StackedArea = React.createClass({
     mixins: [ChartAnimationMixin],
-    easing: '0.175 0.885 0.32 1.275', // easeOutBack
 
     getInitialState: function() {
         return {};
