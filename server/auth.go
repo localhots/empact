@@ -27,8 +27,8 @@ func authCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	code := r.FormValue("code")
 	log.Printf("Got code %q\n", code)
 
-	if _, login, err := task.Authenticate(code); err == nil {
-		req.authorize(login)
+	if token, login, err := task.Authenticate(code); err == nil {
+		req.authorize(token, login)
 	} else {
 		panic(err)
 	}

@@ -16,6 +16,7 @@ type (
 		r     *http.Request
 		w     http.ResponseWriter
 		sid   string
+		token string
 		login string
 	}
 	statRequest struct {
@@ -32,16 +33,19 @@ type (
 func parseRequest(w http.ResponseWriter, r *http.Request) (*request, *statRequest) {
 	sid := sessionID(w, r)
 	login, _ := redis.String(redisPool.Get().Do("HGET", "sessions", sid))
+	token, _ := redis.String(redisPool.Get().Do("HGET", "tokens", sid))
 	req := &request{
 		r:     r,
 		w:     w,
 		sid:   sid,
+		token: token,
 		login: login,
 	}
 	return req, parseStatRequest(r)
 }
 
-func (r *request) authorize(login string) {
+func (r *request) authorize(token, login string) {
+	redisPool.Get().Do("HSET", "tokens", r.sid, token)
 	redisPool.Get().Do("HSET", "sessions", r.sid, login)
 }
 

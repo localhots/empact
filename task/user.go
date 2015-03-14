@@ -18,11 +18,21 @@ func FetchUserInfo(token, login string) (u *db.User, err error) {
 	}
 	saveResponseMeta(token, resp)
 
+	name := ""
+	if n := user.Name; n != nil {
+		name = *user.Name
+	}
+
+	avatarURL := ""
+	if url := user.AvatarURL; url != nil {
+		avatarURL = *user.AvatarURL
+	}
+
 	u = &db.User{
 		Login:     *user.Login,
-		Name:      *user.Name,
+		Name:      name,
 		ID:        uint64(*user.ID),
-		AvatarURL: *user.AvatarURL,
+		AvatarURL: avatarURL,
 	}
 
 	return
