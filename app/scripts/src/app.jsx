@@ -181,10 +181,10 @@ var SelectOrg = React.createClass({
 
 var InfoBlock = React.createClass({
     render: function() {
-        var img = <div className="img" style={{backgroundImage: "url("+ this.props.image +")"}} />;
         return (
             <div className="info-block">
-                { this.props.image ? img : null }
+                <div className={'img'+ (this.props.image ? '' : ' empty')}
+                    style={{backgroundImage: "url("+ (this.props.image || '') +")"}} />
                 <h1>{this.props.title}</h1>
                 <p>{this.props.text}</p>
             </div>

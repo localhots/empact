@@ -85,6 +85,9 @@ section {
     margin-right: 20px;
     border-radius: 3px;
 }
+.info-block .img.empty {
+    background-color: #ddd;
+}
 
 .info-block h1 {
     font-size: 32px;
