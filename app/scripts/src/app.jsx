@@ -135,13 +135,12 @@ var Dashboard = React.createClass({
 
     render: function(){
         var p = this.getParams(),
-            infoImage, infoTitle, infoText,
+            infoImage, infoTitle,
             bcApi, bcItems,
             sacApi, sacItems;
 
         if (p.team) {
             infoTitle = p.team;
-            infoText = 'A '+ p.org +' team';
             bcApi = '/api/stat/teams/top';
             bcItems = ['repo', 'user'],
             sacApi = '/api/stat/teams/activity';
@@ -164,7 +163,6 @@ var Dashboard = React.createClass({
             var info = Storage.get('org', p.org);
             infoImage = info.avatar_url;
             infoTitle = info.login;
-            infoText = info.descr;
             bcApi = '/api/stat/orgs/top';
             bcItems = ['repo', 'team', 'user'],
             sacApi = '/api/stat/orgs/activity';
@@ -173,7 +171,7 @@ var Dashboard = React.createClass({
 
         return (
             <section className="content">
-                <InfoBlock image={infoImage} title={infoTitle} text={infoText} />
+                <InfoBlock image={infoImage} title={infoTitle} />
                 <BarChart api={bcApi} params={this.getParams()} items={bcItems} />
                 <StackedAreaChart api={sacApi} params={this.getParams()} items={sacItems} />
             </section>
@@ -204,7 +202,6 @@ var InfoBlock = React.createClass({
                 <div className={'img'+ (this.props.image ? '' : ' empty')}
                     style={{backgroundImage: "url("+ (this.props.image || '') +")"}} />
                 <h1>{this.props.title}</h1>
-                <p>{this.props.text}</p>
             </div>
         )
     }
