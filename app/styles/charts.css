@@ -76,3 +76,20 @@
     color: #222;
     cursor: default;
 }
+
+.whatsgoingon {
+    color: #444;
+    margin-bottom: 20px;
+    line-height: 24px;
+}
+
+.whatsgoingon em {
+    display: inline-block;
+    line-height: 16px;
+    color: #000;
+    font-style: normal;
+    margin: 3px 0 0;
+    padding: 2px 5px;
+    background-color: #eaeaea;
+    border-radius: 4px;
+}

@@ -96,8 +96,31 @@ var BarChart = React.createClass({
     },
 
     render: function() {
+        var words = {
+                items: {
+                    repo: 'repositories',
+                    team: 'teams',
+                    user: 'contributors'
+                },
+                item: {
+                    repo: 'repository',
+                    team: 'team',
+                    user: 'author'
+                },
+                actions: {
+                    repo: 'which were the most attended by',
+                    team: 'which were the most active working on',
+                    user: 'which were the most active working on'
+                }
+            },
+            who = this.getParams().repo || this.getParams().team || this.getParams().user || this.getParams().org,
+            params = Object.keys(this.getParams());
+        params.splice(params.indexOf('org'), 1);
         return (
             <div className="barchart-container">
+                <div className="whatsgoingon">
+                    This bar chart represents <em>{words.items[this.state.item]}</em> {words.actions[this.state.item]} <em>{who}</em> {words.item[params[0]]} from <em>W11, Mar 9</em> to <em>W18, Apr 27</em>
+                </div>
                 <div className="filters">
                     <Selector thing="item"
                         items={this.props.items}
