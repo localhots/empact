@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS `contributions`;
-CREATE TABLE `contributions` (
+DROP TABLE IF EXISTS `contribs`;
+CREATE TABLE `contribs` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `week` int(11) unsigned NOT NULL,
   `author` varchar(255) NOT NULL DEFAULT '',
@@ -22,17 +22,20 @@ CREATE TABLE `hooks` (
 DROP TABLE IF EXISTS `members`;
 CREATE TABLE `members` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `team_id` int(10) unsigned NOT NULL,
-  `login` varchar(255) NOT NULL DEFAULT '',
+  `org` varchar(255) NOT NULL DEFAULT '',
+  `team_id` int(11) unsigned DEFAULT NULL,
+  `user` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   KEY `team` (`team_id`),
-  KEY `login` (`login`)
+  KEY `login` (`user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-DROP TABLE IF EXISTS `owners`;
-CREATE TABLE `owners` (
+DROP TABLE IF EXISTS `orgs`;
+CREATE TABLE `orgs` (
   `login` varchar(255) NOT NULL DEFAULT '',
-  `name` varchar(255) DEFAULT NULL,
+  `descr` varchar(255) NOT NULL DEFAULT '',
+  `id` int(11) unsigned NOT NULL,
+  `avatar_url` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`login`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -48,34 +51,11 @@ CREATE TABLE `repos` (
   UNIQUE KEY `owner_repo` (`owner`,`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
-DROP TABLE IF EXISTS `teams`;
-CREATE TABLE `teams` (
-  `id` int(11) unsigned NOT NULL,
-  `owner` varchar(255) NOT NULL DEFAULT '',
-  `name` varchar(255) NOT NULL DEFAULT '',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `owner` (`owner`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-DROP TABLE IF EXISTS `tokens`;
-CREATE TABLE `tokens` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `owner` varchar(255) NOT NULL DEFAULT '',
-  `token` varchar(40) NOT NULL DEFAULT '',
-  `limit` int(11) unsigned NOT NULL,
-  `remaining` int(11) unsigned NOT NULL,
-  `reset_at` datetime DEFAULT NULL,
-  `created_at` datetime NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `owner` (`owner`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 DROP TABLE IF EXISTS `tasks`;
 CREATE TABLE `tasks` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `token` varchar(255) NOT NULL,
-  `owner` varchar(255) NOT NULL DEFAULT '',
+  `token` varchar(255) DEFAULT '',
+  `owner` varchar(255) DEFAULT '',
   `job` varchar(255) NOT NULL DEFAULT '',
   `worker` varchar(36) NOT NULL DEFAULT '',
   `duration` int(11) unsigned NOT NULL,
@@ -83,4 +63,37 @@ CREATE TABLE `tasks` (
   `created_at` datetime NOT NULL,
   `started_at` datetime NOT NULL,
   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `teams`;
+CREATE TABLE `teams` (
+  `id` int(11) unsigned NOT NULL,
+  `slug` varchar(255) NOT NULL,
+  `owner` varchar(255) NOT NULL DEFAULT '',
+  `name` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  KEY `owner` (`owner`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `tokens`;
+CREATE TABLE `tokens` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `user` varchar(255) NOT NULL DEFAULT '',
+  `token` varchar(40) NOT NULL DEFAULT '',
+  `quota` int(11) unsigned NOT NULL,
+  `remaining` int(11) unsigned NOT NULL,
+  `reset_at` datetime DEFAULT NULL,
+  `created_at` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `owner` (`user`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `users`;
+CREATE TABLE `users` (
+  `login` varchar(255) NOT NULL DEFAULT '',
+  `name` varchar(255) NOT NULL DEFAULT '',
+  `id` int(11) unsigned NOT NULL,
+  `avatar_url` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`login`),
+  UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
