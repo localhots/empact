@@ -23,7 +23,6 @@ var StackedAreaChart = React.createClass({
     componentWillReceiveProps: function(newProps) {
         this.setState({
             item: newProps.items[0],
-            sort: 'commits',
             state: 'newProps'
         }, this.fetchData);
     },
