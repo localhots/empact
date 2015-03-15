@@ -2,15 +2,12 @@
     box-sizing: border-box;
 }
 
-section {
-    float: left;
-}
-
 .app {
     width: 100%;
 }
 
 .menu {
+    float: left;
     width: 200px;
     margin: 20px;
 }
@@ -63,6 +60,7 @@ section {
     background-color: #f9d4be;
 }
 .content {
+    float: left;
     width: calc(100% - 240px);
     margin-top: 20px;
 }
@@ -95,27 +93,21 @@ section {
 }
 
 .week-selector {
-    display: none;
     position: absolute;
-    top: 50%;
-    width: 100%;
-    height: 100%;
-    float: left;
-    margin: 20px 20px 20px 0;
+    top: 20px;
+    right: 20px;
+    font-size: 32px;
+    line-height: 50px;
+    color: #666;
 }
 .week-selector .week {
-    float: left;
-    width: 20px;
-    font-size: 8px;
-    line-height: 10px;
-    margin: 0 0 1px;
+    display: inline-block;
+    padding: 0 6px;
+    margin: 0 3px;
 }
-.week-selector .week .square {
-    float: left;
-    width: 20px;
-    height: 20px;
-    border: #aaa 1px solid;
-    text-align: center;
-    line-height: 20px;
-    background-color: #fff;
+.week-selector .week:hover {
+    background-color: #eaeaea;
+    border-radius: 4px;
+    cursor: pointer;
+    color: #000;
 }

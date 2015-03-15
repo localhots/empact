@@ -72,11 +72,13 @@ var App = React.createClass({
 
     render: function(){
         return (
-            <section className="app">
-                <Menu orgs={this.state.orgs} teams={this.state.teams} />
+            <div className="master">
+                <div className="app" id="app">
+                    <Menu orgs={this.state.orgs} teams={this.state.teams} />
+                    <Router.RouteHandler />
+                </div>
                 <WeekIntervalSelector />
-                <Router.RouteHandler />
-            </section>
+            </div>
         );
     }
 });
@@ -100,7 +102,7 @@ var Menu = React.createClass({
             )
         };
         return (
-            <section className="menu">
+            <div className="menu">
                 <ul>
                     <li key="empact">
                         <Link to="org" params={this.getParams()} className="logo-button">
@@ -117,7 +119,7 @@ var Menu = React.createClass({
                     <li key="teams-header" className="nav header">Teams:</li>
                     {this.props.teams.map(renderTeam)}
                 </ul>
-            </section>
+            </div>
         );
     }
 });
@@ -170,11 +172,11 @@ var Dashboard = React.createClass({
         }
 
         return (
-            <section className="content">
+            <div className="content">
                 <InfoBlock image={infoImage} title={infoTitle} />
                 <BarChart api={bcApi} params={this.getParams()} items={bcItems} />
                 <StackedAreaChart api={sacApi} params={this.getParams()} items={sacItems} />
-            </section>
+            </div>
         );
     }
 });
@@ -182,7 +184,7 @@ var Dashboard = React.createClass({
 var NotFound = React.createClass({
     render: function(){
         return (
-            <section className="content">NOT FOUND :(</section>
+            <div className="content">NOT FOUND :(</div>
         );
     }
 });
@@ -190,7 +192,7 @@ var NotFound = React.createClass({
 var SelectOrg = React.createClass({
     render: function(){
         return (
-            <section className="content">Please select organization from the menu!</section>
+            <div className="content">Please select organization from the menu!</div>
         );
     }
 });
@@ -215,14 +217,19 @@ var WeekIntervalSelector = React.createClass({
         'Oct', 'Nov', 'Dec'
     ],
 
-    componentDidMount: function() {
-        this.resize();
-        window.addEventListener('resize', this.resize);
+    getInitialState: function() {
+        return {
+            from: 0,
+            to: 0
+        };
     },
 
-    resize: function() {
-        var h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-        this.refs.selector.getDOMNode().style.height = ''+ (h - 40) +'px';
+    componentDidMount: function() {
+        // window.addEventListener('resize', this.resize);
+    },
+
+    showSelector: function() {
+
     },
 
     render: function() {
@@ -243,20 +250,28 @@ var WeekIntervalSelector = React.createClass({
         var renderWeek = function(week, i) {
             var d = new Date(week*ms),
                 month = this.monthNames[d.getMonth()],
+                season = this.seasons[d.getMonth()],
                 day = d.getDate();
 
             return (
-                <div key={'week-'+ i} className="week">
+                <div key={'week-'+ i} ref="blocks" className="week">
                     <div key={''+ i +'-week'} className="square">{day}</div>
-                    <div key={''+ i +'-month'} className="square">{month}</div>
+                    <div key={''+ i +'-month'} className={'square '+ season}>{month}</div>
                     <div key={''+ i +'-day'} className="square">{day}</div>
                 </div>
             )
         }.bind(this);
+
         return (
-            <section ref="selector" className="week-selector">
-                {weeks.map(renderWeek)}
-            </section>
+            <div className="week-selector">
+                <div className="week">
+                    Mar 9
+                </div>
+                &mdash;
+                <div className="week">
+                    Apr 27
+                </div>
+            </div>
         );
     }
 });
