@@ -101,13 +101,23 @@
     color: #666;
 }
 .week-selector .week {
+    position: relative;
     display: inline-block;
     padding: 0 6px;
     margin: 0 3px;
 }
-.week-selector .week:hover {
-    background-color: #eaeaea;
-    border-radius: 4px;
-    cursor: pointer;
-    color: #000;
+
+.week-selector .week select {
+    position: absolute;
+    top: 30%;
+    left: 0;
+    width: 100%;
+    visibility: hidden;
+}
+
+.week-selector .week:hover .label {
+    visibility: hidden;
+}
+.week-selector .week:hover select {
+    visibility: visible;
 }

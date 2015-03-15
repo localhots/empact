@@ -57,7 +57,7 @@ var BarChart = React.createClass({
     handleClick: function(point) {
         var params = {org: this.getParams().org};
         params[this.state.item] = point.item;
-        this.transitionTo(this.state.item, params);
+        this.transitionTo(this.state.item, params, this.getQuery());
     },
 
     handleNewData: function() {

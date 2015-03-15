@@ -2,6 +2,10 @@ var ChartDataMixin = {
     apiParams: function() {
         var params = _.clone(this.props.params);
         params['item'] = this.state.item;
+        if (this.getQuery().f && this.getQuery().t) {
+            params['from'] = parseInt(this.getQuery().f, 10)*100;
+            params['to'] = parseInt(this.getQuery().t, 10)*100;
+        }
         return params;
     },
 
@@ -35,7 +39,7 @@ var ChartDataMixin = {
         }, function() {
             $.get(this.props.api, this.apiParams(), function(res){
                 this.setState({
-                    rawData: res,
+                    rawData: res || [],
                     state: 'newData'
                 }, this.handleNewData);
             }.bind(this));

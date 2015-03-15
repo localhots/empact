@@ -2,7 +2,7 @@ var StackedAreaChart = React.createClass({
     mixins: [ReactRouter.Navigation, ReactRouter.State, SVGChartMixin, ChartDataMixin],
 
     numElements: 10,
-    maxWeeks: 20,
+    maxWeeks: 30,
     height: 350,
 
     getInitialState: function() {

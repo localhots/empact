@@ -90,17 +90,25 @@ var Menu = React.createClass({
         var renderOrg = function(org) {
             return (
                 <li key={'org-'+ org.login} className="nav org">
-                    <Link to="org" params={{org: org.login}}>{org.login}</Link>
+                    <Link to="org"
+                        params={{org: org.login}}
+                        query={this.getQuery()}>
+                        {org.login}
+                    </Link>
                 </li>
             )
-        };
+        }.bind(this);
         var renderTeam = function(team) {
             return (
                 <li key={'team-'+ team.name} className="nav team">
-                    <Link to="team" params={{org: team.owner, team: team.name}}>{team.name}</Link>
+                    <Link to="team"
+                        params={{org: team.owner, team: team.name}}
+                        query={this.getQuery()}>
+                        {team.name}
+                    </Link>
                 </li>
             )
-        };
+        }.bind(this);
         return (
             <div className="menu">
                 <ul>
@@ -210,6 +218,7 @@ var InfoBlock = React.createClass({
 });
 
 var WeekIntervalSelector = React.createClass({
+    mixins: [ReactRouter.Navigation, ReactRouter.State],
     monthNames: [
         'Jan', 'Feb', 'Mar',
         'Apr', 'May', 'Jun',
@@ -218,21 +227,6 @@ var WeekIntervalSelector = React.createClass({
     ],
 
     getInitialState: function() {
-        return {
-            from: 0,
-            to: 0
-        };
-    },
-
-    componentDidMount: function() {
-        // window.addEventListener('resize', this.resize);
-    },
-
-    showSelector: function() {
-
-    },
-
-    render: function() {
         var ms = 1000,
             daySeconds = 86400,
             weekSeconds = daySeconds*7,
@@ -247,29 +241,81 @@ var WeekIntervalSelector = React.createClass({
             weeks.push(i);
         };
 
-        var renderWeek = function(week, i) {
-            var d = new Date(week*ms),
-                month = this.monthNames[d.getMonth()],
-                season = this.seasons[d.getMonth()],
-                day = d.getDate();
+        var from = (this.getQuery().f ? parseInt(this.getQuery().f, 10)*100 : lastWeek - 7*weekSeconds),
+            to = (this.getQuery().t ? parseInt(this.getQuery().t, 10)*100 : lastWeek);
 
+        return {
+            from: from,
+            to: to,
+            weeks: weeks
+        };
+    },
+
+    componentDidMount: function() {
+        this.updateLocation();
+    },
+
+    handleChange: function(thing, e) {
+        var patch = {};
+        patch[thing] = e.target.value;
+        this.setState(patch, this.updateLocation);
+    },
+
+    updateLocation: function() {
+        this.transitionTo(document.location.pathname, null, {
+            f: this.state.from/100,
+            t: this.state.to/100
+        });
+    },
+
+    formatDate: function(ts, showYear) {
+        var d = new Date(ts*1000),
+            day = d.getDate(),
+            month = this.monthNames[d.getMonth()],
+            year = (''+ d.getFullYear()).slice(2);
+
+        if (showYear) {
+            return month +' '+ day +" '"+ year;
+        } else {
+            return month +' '+ day;
+        }
+    },
+
+    render: function() {
+        var weeksBefore = _(this.state.weeks)
+            .filter(function(week) {
+                return week <= this.state.to;
+            }.bind(this))
+            .sort()
+            .reverse()
+            .value();
+        var weeksAfter = _(this.state.weeks)
+            .filter(function(week) {
+                return week >= this.state.from;
+            }.bind(this))
+            .sort()
+            .value();
+
+        var renderOption = function(ts) {
             return (
-                <div key={'week-'+ i} ref="blocks" className="week">
-                    <div key={''+ i +'-week'} className="square">{day}</div>
-                    <div key={''+ i +'-month'} className={'square '+ season}>{month}</div>
-                    <div key={''+ i +'-day'} className="square">{day}</div>
-                </div>
-            )
+                <option key={ts} value={ts}>{this.formatDate(ts, true)}</option>
+            );
         }.bind(this);
 
         return (
             <div className="week-selector">
-                <div className="week">
-                    Mar 9
+                <div ref="from" className="week">
+                    <span ref="label" className="label">{this.formatDate(this.state.from)}</span>
+                    <select ref="select" value={this.state.from} onChange={this.handleChange.bind(this, 'from')}>
+                        {weeksBefore.map(renderOption)}
+                    </select>
                 </div>
                 &mdash;
-                <div className="week">
-                    Apr 27
+                <div ref="to" className="week">
+                    <span ref="label" className="label">{this.formatDate(this.state.to)}</span>
+                    <select ref="select" value={this.state.to} onChange={this.handleChange.bind(this, 'to')}>
+                        {weeksAfter.map(renderOption)}
+                    </select>
                 </div>
             </div>
         );
