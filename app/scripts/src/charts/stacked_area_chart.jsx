@@ -394,12 +394,24 @@ var Axis = React.createClass({
             return null;
         }
         var renderMark = function(week, i) {
-            var x = i/(this.props.weeks.length - 1)*this.props.width,
+            var len = this.props.weeks.length,
+                x = i/(len - 1)*this.props.width,
+                showLabel,
                 ta = (i === 0
                     ? 'start'
-                    : (i === this.props.weeks.length - 1
+                    : (i === len - 1
                         ? 'end'
                         : 'middle'));
+
+            // Thin out labels
+            if (len > 20) {
+                showLabel = (i % 2 === 0);
+            } else if (len > 10) {
+                showLabel = (i % 2 === 0);
+            } else {
+                showLabel = true;
+            }
+
             return (
                 <g key={'mark-'+ i}>
                     <line
@@ -408,14 +420,14 @@ var Axis = React.createClass({
                         x2={x}
                         y2={this.props.y + 4}
                         stroke="#666" strokeWidth="1" />
-                    <text className="axis-mark"
+                    {showLabel ? <text className="axis-mark"
                         x={x}
                         y={this.props.y + 15}
                         textAnchor={ta}
                         fill="#666"
                         >
                         {formatDate(week)}
-                    </text>
+                    </text> : null}
                 </g>
             );
         }.bind(this);
