@@ -102,7 +102,7 @@ var StackedAreaChart = React.createClass({
             }));
 
         this.setState({
-            top: top.reverse(),
+            top: top,
             weeks: weeks,
             max: max,
             state: 'newPoints'
@@ -127,12 +127,12 @@ var StackedAreaChart = React.createClass({
     render: function() {
         var maxWidth = this.state.canvasWidth,
             maxHeight = this.height,
-            rtop = this.state.top.reverse(),
+            top = this.state.top,
             max = this.state.max;
 
         var points = _.chain(this.state.weeks)
             .map(function(items, week) {
-                var values = _.map(rtop, function(item) {
+                var values = _.map(top, function(item) {
                     return items[item] || 0;
                 });
 
@@ -150,7 +150,7 @@ var StackedAreaChart = React.createClass({
             .reverse()
             .value();
 
-        var paths = _.map(rtop, function(item, i) {
+        var paths = _.map(top, function(item, i) {
             var itemPoints = _.map(points, function(pair) {
                 return pair[1][i];
             });
