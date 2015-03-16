@@ -38,7 +38,9 @@ var StackedAreaChart = React.createClass({
 
     componentWillReceiveProps: function(newProps) {
         this.setState({
-            item: newProps.items[0],
+            item: (_.isEqual(newProps.items, this.props.items)
+                ? this.state.item
+                : newProps.items[0]),
             state: 'newProps'
         }, this.fetchData);
     },
