@@ -123,14 +123,16 @@ var BarChart = React.createClass({
                     This bar chart represents <em>{words.items[this.state.item]}</em> {words.actions[this.state.item]} <em>{who}</em> {words.item[subject]} from <em>W11, Mar 9</em> to <em>W18, Apr 27</em>
                 </div>
                 <div className="filters">
-                    <Selector thing="item"
-                        items={this.props.items}
-                        value={this.state.item}
-                        onChange={this.handleFilter.bind(this, 'item')} />
                     <Selector thing="sort"
+                        title="Show"
                         items={this.sorts}
                         value={this.state.sort}
                         onChange={this.handleFilter.bind(this, 'sort')} />
+                    <Selector thing="item"
+                        title="Grouped by"
+                        items={this.props.items}
+                        value={this.state.item}
+                        onChange={this.handleFilter.bind(this, 'item')} />
                 </div>
                 <svg ref="svg" className="barchart" key="barchart-svg"
                     width="100%" height={this.height()}

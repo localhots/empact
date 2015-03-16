@@ -199,13 +199,15 @@ var StackedAreaChart = React.createClass({
                     This stacked area chart represents <em>{words.items[this.state.item]}</em> {words.actions[this.state.item]} <em>{who}</em> {words.item[subject]} from <em>W11, Mar 9</em> to <em>W18, Apr 27</em>
                 </div>
                 <div className="filters">
+                    <Selector thing="sort"
+                        title="Show"
+                        items={['commits']}
+                        value={'commits'} />
                     <Selector thing="item"
+                        title="Grouped by"
                         items={this.props.items}
                         value={this.state.item}
                         onChange={this.handleFilter.bind(this, 'item')} />
-                    <Selector thing="sort"
-                        items={['commits']}
-                        value={'commits'} />
                 </div>
                 <svg ref="svg" className="sachart" key="sachart-svg"
                     width="100%" height={maxHeight}

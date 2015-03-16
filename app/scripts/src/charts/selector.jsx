@@ -20,9 +20,12 @@ var Selector = React.createClass({
 
     render: function() {
         return (
-            <ul className={this.props.thing}>
-                {this.props.items.map(this.renderItem)}
-            </ul>
+            <div className="selector">
+                <div className="title">{this.props.title}</div>
+                <ul className="items">
+                    {this.props.items.map(this.renderItem)}
+                </ul>
+            </div>
         );
     }
 });
