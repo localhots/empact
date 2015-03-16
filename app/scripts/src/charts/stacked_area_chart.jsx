@@ -4,6 +4,8 @@ var StackedAreaChart = React.createClass({
     numElements: 10,
     maxWeeks: 30,
     height: 350,
+    xAxisHeight: 20,
+
     words: {
         items: {
             repo: 'repositories',
@@ -185,7 +187,7 @@ var StackedAreaChart = React.createClass({
                     };
                 });
 
-                return [week, points];
+                return [parseInt(week, 10), points];
             })
             .sort(0)
             .reverse()
@@ -295,11 +297,17 @@ var StackedAreaChart = React.createClass({
                         onChange={this.handleFilter.bind(this, 'item')} />
                 </div>
                 <svg ref="svg" className="sachart" key="sachart-svg"
+                    width="100%"
+                    height={this.height + this.xAxisHeight}
+                    viewBox={"0 0 "+ (this.state.canvasWidth || 0) + " "+ (this.height + this.xAxisHeight)}
                     onMouseOut={this.handleFocusOut}
-                    width="100%" height={maxHeight}
-                    viewBox={"0 0 "+ (this.state.canvasWidth || 0) + " "+ maxHeight}>
+                    >
                     <g ref="areas">{areas.reverse()}</g>
                     <g ref="dots">{renderedDots}</g>
+                    <Axis
+                        weeks={_.pluck(points, 0)}
+                        y={this.height + 3}
+                        width={this.state.canvasWidth} />
                 </svg>
                 <ul className="legend">
                     {legend.map(renderLegend)}
@@ -377,5 +385,57 @@ var Dot = React.createClass({
                 </text>
             </g>
         );
+    }
+});
+
+var Axis = React.createClass({
+    render: function() {
+        if (this.props.weeks.length === 0) {
+            return null;
+        }
+        var renderMark = function(week, i) {
+            var x = i/(this.props.weeks.length - 1)*this.props.width,
+                ta = (i === 0
+                    ? 'start'
+                    : (i === this.props.weeks.length - 1
+                        ? 'end'
+                        : 'middle'));
+            return (
+                <g key={'mark-'+ i}>
+                    <line
+                        x1={x}
+                        y1={this.props.y}
+                        x2={x}
+                        y2={this.props.y + 4}
+                        stroke="#666" strokeWidth="1" />
+                    <text className="axis-mark"
+                        x={x}
+                        y={this.props.y + 15}
+                        textAnchor={ta}
+                        fill="#666"
+                        >
+                        {formatDate(week)}
+                    </text>
+                </g>
+            );
+        }.bind(this);
+
+        return (
+            <g ref="axis">
+                <line
+                    x1="0"
+                    y1={this.props.y}
+                    x2={this.props.width}
+                    y2={this.props.y}
+                    stroke="#666" strokeWidth="1" />
+                {this.props.weeks.map(renderMark)}
+                <line
+                    x1={this.props.width - 1}
+                    y1={this.props.y}
+                    x2={this.props.width - 1}
+                    y2={this.props.y + 4}
+                    stroke="#666" strokeWidth="1" />
+            </g>
+        )
     }
 });

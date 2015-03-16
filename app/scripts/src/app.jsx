@@ -218,12 +218,6 @@ var InfoBlock = React.createClass({
 
 var WeekIntervalSelector = React.createClass({
     mixins: [ReactRouter.Navigation, ReactRouter.State],
-    monthNames: [
-        'Jan', 'Feb', 'Mar',
-        'Apr', 'May', 'Jun',
-        'Jul', 'Aug', 'Sep',
-        'Oct', 'Nov', 'Dec'
-    ],
 
     getInitialState: function() {
         var ms = 1000,
@@ -251,19 +245,6 @@ var WeekIntervalSelector = React.createClass({
         this.transitionTo(document.location.pathname, null, params);
     },
 
-    formatDate: function(ts, showYear) {
-        var d = new Date(ts*1000),
-            day = d.getDate(),
-            month = this.monthNames[d.getMonth()],
-            year = (''+ d.getFullYear()).slice(2);
-
-        if (showYear) {
-            return month +' '+ day +" '"+ year;
-        } else {
-            return month +' '+ day;
-        }
-    },
-
     render: function() {
         var daySeconds = 86400,
             weekSeconds = daySeconds*7,
@@ -286,22 +267,22 @@ var WeekIntervalSelector = React.createClass({
 
         var renderOption = function(ts) {
             return (
-                <option key={ts} value={ts}>{this.formatDate(ts, true)}</option>
+                <option key={ts} value={ts}>{formatDate(ts, true)}</option>
             );
-        }.bind(this);
+        };
 
         return (
             <div className="week-selector">
                 <span>from</span>
                 <div ref="from" className="selector">
-                    <em ref="label">{this.formatDate(from)}</em>
+                    <em ref="label">{formatDate(from)}</em>
                     <select ref="select" value={from} onChange={this.handleChange.bind(this, 'from')}>
                         {weeksBefore.map(renderOption)}
                     </select>
                 </div>
                 <span>to</span>
                 <div ref="to" className="selector">
-                    <em ref="label">{this.formatDate(to)}</em>
+                    <em ref="label">{formatDate(to)}</em>
                     <select ref="select" value={to} onChange={this.handleChange.bind(this, 'to')}>
                         {weeksAfter.map(renderOption)}
                     </select>
