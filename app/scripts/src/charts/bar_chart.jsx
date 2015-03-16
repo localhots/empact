@@ -182,7 +182,7 @@ var Bar = React.createClass({
     getInitialState: function() {
         return {
             labelX: 0,
-            lastLabelX: 2*this.labelPaddingH
+            lastLabelX: this.labelPaddingH
         };
     },
 
@@ -207,24 +207,23 @@ var Bar = React.createClass({
             offset = this.props.offset,
             label = this.props.item + ': ' + numberFormat(val),
             labelWidth = textWidth(label),
-            labelOuterWidth = labelWidth + 2*this.labelPaddingH,
-            labelOffsetWidth = labelOuterWidth + 2*this.labelPaddingH,
+            labelOffsetWidth = labelWidth + 2*this.labelPaddingH,
             labelX;
 
         if (offset === 0) {
-            labelX = 2*this.labelPaddingH;
+            labelX = this.labelPaddingH;
         } else {
             if (val < 0) {
                 if (offset >= labelOffsetWidth) {
-                    labelX = offset - labelOffsetWidth + 2*this.labelPaddingH;
+                    labelX = offset - labelOffsetWidth + this.labelPaddingH;
                 } else {
-                    labelX = offset + 2*this.labelPaddingH;
+                    labelX = offset + this.labelPaddingH;
                 }
             } else {
                 if (offset + labelOffsetWidth <= this.props.max) {
-                    labelX = offset + 2*this.labelPaddingH;
+                    labelX = offset + this.labelPaddingH;
                 } else {
-                    labelX = offset - labelOffsetWidth + 2*this.labelPaddingH;
+                    labelX = offset - labelOffsetWidth + this.labelPaddingH;
                 }
             }
         }
@@ -236,18 +235,11 @@ var Bar = React.createClass({
     },
 
     animateAll: function() {
-        var bar = this.refs.bar,
-            underlay = this.refs.label.refs.underlay,
-            text = this.refs.label.refs.text,
-            padH = this.labelPaddingH;
-
-        this.clearAnimations(bar);
-        this.clearAnimations(underlay);
-        this.clearAnimations(text);
-        this.animate(bar, 'width', this.state.lastBarWidth, this.state.barWidth);
-        this.animate(bar, 'x', this.state.lastBarX, this.props.x);
-        this.animate(underlay, 'x', this.state.lastLabelX - padH, this.state.labelX - padH);
-        this.animate(text, 'x', this.state.lastLabelX, this.state.labelX);
+        this.clearAnimations(this.refs.bar);
+        this.clearAnimations(this.refs.label);
+        this.animate(this.refs.bar, 'width', this.state.lastBarWidth, this.state.barWidth);
+        this.animate(this.refs.bar, 'x', this.state.lastBarX, this.props.x);
+        this.animate(this.refs.label, 'x', this.state.lastLabelX, this.state.labelX);
     },
 
     render: function() {
@@ -263,8 +255,7 @@ var Bar = React.createClass({
 
         return (
             <g onClick={this.props.onClick}>
-                <rect ref="bar"
-                    className="bar"
+                <rect ref="bar" className="bar"
                     fill={this.props.color}
                     width={barWidth}
                     height={this.props.height}
@@ -272,39 +263,12 @@ var Bar = React.createClass({
                     y={this.props.y}
                     rx="2"
                     ry="2" />
-                <BarLabel ref="label"
-                    item={this.props.item}
-                    value={this.props.value}
-                    width={labelOuterWidth}
-                    height={this.labelOuterHeight}
+                <text ref="label" className="label"
                     x={this.state.labelX}
-                    y={this.props.y + this.labelMarginV} />
-            </g>
-        );
-    }
-});
-
-var BarLabel = React.createClass({
-    render: function() {
-        var text = (this.props.item ? this.props.item +': '+ numberFormat(this.props.value) : '');
-        return (
-            <g>
-                <rect ref="underlay" key="underlay"
-                    className="label_underlay"
-                    width={this.props.width}
-                    height={this.props.height}
-                    x={this.props.x}
-                    y={this.props.y}
-                    rx="3"
-                    ry="3" />
-                <text ref="text" key="text"
-                    className="label"
-                    x={this.props.x}
-                    y={this.props.y + 16}
-                    height={20}>
-                    {text}
+                    y={this.props.y + this.labelMarginV + this.labelHeight}>
+                    {label}
                 </text>
             </g>
         );
     }
-})
+});
