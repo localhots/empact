@@ -75,20 +75,14 @@ var StackedAreaChart = React.createClass({
         node.className = 'sachart-container focused item-'+ i;
     },
 
-    handleFocusOut: function(i) {
+    handleFocusOut: function() {
         var node = this.refs.container.getDOMNode();
         node.className = 'sachart-container';
     },
 
     handleNewData: function() {
         // Group commits by items
-        var weeksList = _.chain(this.state.rawData)
-            .pluck('week')
-            .uniq()
-            .sort()
-            .reverse()
-            .take(this.maxWeeks)
-            .value();
+        var weeksList = _(this.state.rawData).pluck('week').uniq().sort().reverse().take(this.maxWeeks).value();
 
         var counts = _.reduce(this.state.rawData, function(res, el) {
             if (weeksList.indexOf(el.week) === -1) {
@@ -103,7 +97,7 @@ var StackedAreaChart = React.createClass({
         }, {});
 
         // Extract top items from
-        var top = _.chain(_.pairs(counts)) // Take [item, count] pairs from counts object
+        var top = _(_.pairs(counts)) // Take [item, count] pairs from counts object
             .sortBy(1).reverse() // sort them by count (descending)
             .take(this.numElements) // take first N pairs
             .pluck(0) // keep only items, omit the counts
@@ -125,9 +119,7 @@ var StackedAreaChart = React.createClass({
             return res;
         }, {});
 
-        var max = _.max(_.map(weeksList, function(week) {
-                return _.sum(_.values(weeks[week]));
-            }));
+        var max = _.max(_.map(weeksList, function(week){ return _.sum(_.values(weeks[week])); }));
 
         this.setState({
             top: top,
@@ -141,11 +133,12 @@ var StackedAreaChart = React.createClass({
         var maxWidth = this.state.canvasWidth,
             maxHeight = this.height;
 
-        var d = _.map(this.buildDots(points), function(dot) {
-                return 'L'+ dot[0] +','+ dot[1];
-            });
-        d.unshift('M0,'+ maxHeight);
-        d.push('L'+ maxWidth +','+ maxHeight +'Z');
+        var dots = this.buildDots(points);
+        var first = dots.shift();
+        var d = _.map(dots, function(dot){ return 'L'+ dot.x +','+ dot.y; });
+        d.unshift('M'+ first.x +','+ first.y);
+        d.push('L'+ maxWidth +','+ maxHeight);
+        d.push('L0,'+ maxHeight +' Z');
 
         return d.join(' ');
     },
@@ -157,7 +150,21 @@ var StackedAreaChart = React.createClass({
             len = points.length;
 
         return _.map(points, function(point, i) {
-            return [Math.floor(i/(len-1)*maxWidth), Math.floor(maxHeight - point)];
+            point.x = i/(len-1)*maxWidth;
+            point.y = maxHeight - point.point;
+
+            if (point.x < 10) { // Radius
+                point.x = 10
+            } else if (point.x > maxWidth - 10) {
+                point.x = maxWidth - 10;
+            }
+            if (point.y < 10) {
+                point.y = 10;
+            } else if (point.y > maxHeight - 10) {
+                point.y = maxHeight - 10;
+            }
+
+            return point;
         });
     },
 
@@ -167,7 +174,8 @@ var StackedAreaChart = React.createClass({
             top = this.state.top,
             max = this.state.max;
 
-        var points = _.chain(this.state.weeks)
+        // [week, [{val, point}, ...]]
+        var points = _(this.state.weeks)
             .map(function(items, week) {
                 var values = _.map(top, function(item) {
                     return items[item] || 0;
@@ -175,8 +183,11 @@ var StackedAreaChart = React.createClass({
 
                 var sum = 0;
                 var points = _.map(values, function(val) {
-                    sum += Math.floor(val/max*maxHeight*0.96);
-                    return sum;
+                    sum += val/max*maxHeight*0.96;
+                    return {
+                        val: val,
+                        point: sum
+                    };
                 });
 
                 return [week, points];
@@ -187,6 +198,7 @@ var StackedAreaChart = React.createClass({
             .reverse()
             .value();
 
+        // [item, [{val, point}, ...]]
         var paths = _.map(top, function(item, i) {
             var itemPoints = _.map(points, function(pair) {
                 return pair[1][i];
@@ -194,61 +206,62 @@ var StackedAreaChart = React.createClass({
             return[item, itemPoints];
         });
 
-        var colors = {};
         var areas = _.map(paths, function(pair, i) {
-            var item = pair[0], path = pair[1];
-            if (item !== null) {
-                colors[item] = Colors[i];
-            }
+            var item = pair[0],
+                path = pair[1];
+
             return (
                 <StackedArea key={'area-'+ i}
                     item={item} i={i}
-                    d={roundPathCorners(this.buildPathD(path), 3)}
+                    d={this.buildPathD(path)}
                     color={Colors[i]}
-                    onMouseOver={this.handleFocusIn.bind(this, i)}
-                    onMouseOut={this.handleFocusOut.bind(this, i)} />
+                    onMouseOver={this.handleFocusIn.bind(this, i)} />
             );
         }.bind(this));
 
-        var dots = _.map(paths, function(pair, i) {
-            var item = pair[0], path = pair[1];
-            var dots = this.buildDots(path);
-            var lastY = 0;
-            var renderDot = function(dot, j) {
-                if (lastY === dot[1]) {
-                    return null;
-                }
-                lastY = dot[1];
-                return (
-                    <Dot key={'dot-'+ i +'-'+ j}
-                        item={item} i={i}
-                        value={100}
-                        x={dot[0]}
-                        y={dot[1]} />
-                );
-            };
-
-            return dots.map(renderDot);
-        }.bind(this));
-
         var words = this.words,
-            who = this.getParams().repo || this.getParams().team || this.getParams().user || this.getParams().org;
+            who = this.getParams().repo ||
+                  this.getParams().team ||
+                  this.getParams().user ||
+                  this.getParams().org;
 
         var params = Object.keys(this.getParams());
         params.splice(params.indexOf('org'), 1);
         var subject = params[0];
 
-        var renderLegend = function(pair, i){
+        var renderDot = function(item, i, dot, j) {
+            if (dot.val === 0) {
+                return null;
+            }
             return (
-                <li key={'legend-'+ pair[0]}
+                <Dot key={'dot-'+ i +'-'+ j}
+                    item={item} i={i}
+                    value={dot.val}
+                    x={dot.x}
+                    y={dot.y}
+                    onMouseOver={this.handleFocusIn.bind(this, i)} />
+            );
+        }.bind(this);
+
+        var renderedDots = _.map(paths, function(pair, i) {
+            var item = pair[0], path = pair[1];
+            var dots = this.buildDots(path);
+            return dots.map(renderDot.bind(this, item, i));
+        }.bind(this));
+
+        var renderLegend = function(item, i){
+            return (
+                <li key={'legend-'+ item}
                     className={'label label-'+ i}
                     onMouseOver={this.handleFocusIn.bind(this, i)}
                     onMouseOut={this.handleFocusOut.bind(this, i)}>
-                    <div className="color-dot" style={{backgroundColor: pair[1]}}></div>
-                    {pair[0]}
+                    <div className="color-dot" style={{backgroundColor: Colors[i]}}></div>
+                    {item}
                 </li>
             );
         }.bind(this);
+
+        var legend = _(paths).pluck(0).filter(function(el){ return el !== null; }).value();
 
         return (
             <div ref="container" className="sachart-container">
@@ -267,13 +280,14 @@ var StackedAreaChart = React.createClass({
                         onChange={this.handleFilter.bind(this, 'item')} />
                 </div>
                 <svg ref="svg" className="sachart" key="sachart-svg"
+                    onMouseOut={this.handleFocusOut}
                     width="100%" height={maxHeight}
                     viewBox={"0 0 "+ (this.state.canvasWidth || 0) + " "+ maxHeight}>
                     <g ref="areas">{areas.reverse()}</g>
-                    <g ref="dots">{dots}</g>
+                    <g ref="dots">{renderedDots}</g>
                 </svg>
                 <ul className="legend">
-                    {_.pairs(colors).map(renderLegend)}
+                    {legend.map(renderLegend)}
                 </ul>
             </div>
         );
@@ -305,7 +319,6 @@ var StackedArea = React.createClass({
                 d={this.state.lastd || this.props.d}
                 fill={this.props.color}
                 onMouseOver={this.props.onMouseOver}
-                onMouseOut={this.props.onMouseOut}
                 shapeRendering="optimizeQuality" />
         );
     }
@@ -314,7 +327,7 @@ var StackedArea = React.createClass({
 var Dot = React.createClass({
     mixins: [ChartAnimationMixin],
 
-    radius: 12,
+    radius: 10,
 
     getInitialState: function() {
         return {};
@@ -333,15 +346,18 @@ var Dot = React.createClass({
 
     render: function() {
         return (
-            <g className={'dot dot-'+ this.props.i}>
+            <g className={'dot dot-'+ this.props.i} onMouseOver={this.props.onMouseOver}>
                 <circle ref="dot"
                     cx={this.props.x}
                     cy={this.state.lastY || this.props.y}
                     r={this.radius}
-                    fill="rgba(255, 255, 255, .9)" />
+                    fill="#fff"
+                    stroke="#f0f0f0"
+                    strokeWidth="1" />
                 <text ref="value"
-                    x={this.props.x-8}
-                    y={(this.state.lastY || this.props.y)+4}>
+                    x={this.props.x}
+                    y={this.props.y+4}
+                    textAnchor="middle">
                     {this.props.value}
                 </text>
             </g>
