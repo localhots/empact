@@ -77,7 +77,6 @@ var App = React.createClass({
                     <Menu orgs={this.state.orgs} teams={this.state.teams} />
                     <Router.RouteHandler />
                 </div>
-                <WeekIntervalSelector />
             </div>
         );
     }
@@ -112,7 +111,7 @@ var Menu = React.createClass({
         return (
             <div className="menu">
                 <ul>
-                    <li key="empact">
+                    <li className="empact">
                         <Link to="org" params={this.getParams()} className="logo-button">
                             <div className="logo e">e</div>
                             <div className="logo m">m</div>
@@ -122,9 +121,9 @@ var Menu = React.createClass({
                             <div className="logo t">t</div>
                         </Link>
                     </li>
-                    <li key="orgs-header" className="nav header">Organizations:</li>
+                    <li className="nav header">Organizations:</li>
                     {this.props.orgs.map(renderOrg)}
-                    <li key="teams-header" className="nav header">Teams:</li>
+                    <li className="nav header">Teams:</li>
                     {this.props.teams.map(renderTeam)}
                 </ul>
             </div>

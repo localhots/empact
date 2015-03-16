@@ -15,8 +15,10 @@
 .menu .nav {
     margin-bottom: 5px;
 }
-    .menu .nav.empact {
-        font-weight: 600;
+    .menu .empact {
+        height: 40px;
+        padding: 5px 0;
+        margin-bottom: 21px;
     }
     .menu .nav.header {
         color: #444;
@@ -24,6 +26,7 @@
         cursor: default;
         margin-top: 20px;
         margin-bottom: 10px;
+        line-height: 24px;
     }
     .menu .nav a {
         display: inline-block;
