@@ -1,6 +1,8 @@
 * {
     box-sizing: border-box;
     font-family: 'Open Sans', Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 20px;
 }
 
 .app {
@@ -9,7 +11,7 @@
 
 .content {
     float: left;
-    width: calc(100% - 240px);
+    width: calc(100% - 190px);
     margin-top: 20px;
 }
 .content .left, .content .right {
