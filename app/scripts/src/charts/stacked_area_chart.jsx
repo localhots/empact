@@ -68,6 +68,16 @@ var StackedAreaChart = React.createClass({
         this.transitionTo(this.state.item, params);
     },
 
+    handleFocusIn: function(i) {
+        var node = this.refs.container.getDOMNode();
+        node.className = 'sachart-container focused item-'+ i;
+    },
+
+    handleFocusOut: function(i) {
+        var node = this.refs.container.getDOMNode();
+        node.className = 'sachart-container';
+    },
+
     handleNewData: function() {
         // Group commits by items
         var weeksList = _.chain(this.state.rawData)
@@ -190,9 +200,11 @@ var StackedAreaChart = React.createClass({
             }
             return (
                 <StackedArea key={'area-'+ i}
-                    item={item}
+                    item={item} i={i}
                     d={roundPathCorners(this.buildPathD(path), 3)}
-                    color={Colors[i]} />
+                    color={Colors[i]}
+                    onMouseOver={this.handleFocusIn.bind(this, i)}
+                    onMouseOut={this.handleFocusOut.bind(this, i)} />
             );
         }.bind(this));
 
@@ -207,7 +219,7 @@ var StackedAreaChart = React.createClass({
                 lastY = dot[1];
                 return (
                     <Dot key={'dot-'+ i +'-'+ j}
-                        item={item}
+                        item={item} i={i}
                         value={100}
                         x={dot[0]}
                         y={dot[1]} />
@@ -224,8 +236,20 @@ var StackedAreaChart = React.createClass({
         params.splice(params.indexOf('org'), 1);
         var subject = params[0];
 
+        var renderLegend = function(pair, i){
+            return (
+                <li key={'legend-'+ pair[0]}
+                    className={'label label-'+ i}
+                    onMouseOver={this.handleFocusIn.bind(this, i)}
+                    onMouseOut={this.handleFocusOut.bind(this, i)}>
+                    <div className="color-dot" style={{backgroundColor: pair[1]}}></div>
+                    {pair[0]}
+                </li>
+            );
+        }.bind(this);
+
         return (
-            <div className="sachart-container">
+            <div ref="container" className="sachart-container">
                 <div className="whatsgoingon">
                     This stacked area chart represents <em>{words.items[this.state.item]}</em> {words.actions[this.state.item]} <em>{who}</em> {words.item[subject]} <WeekIntervalSelector />
                 </div>
@@ -247,14 +271,7 @@ var StackedAreaChart = React.createClass({
                     <g ref="dots">{dots}</g>
                 </svg>
                 <ul className="legend">
-                    {_.pairs(colors).map(function(pair){
-                        return (
-                            <li key={'legend-'+ pair[0]}>
-                                <div className="color-dot" style={{backgroundColor: pair[1]}}></div>
-                                {pair[0]}
-                            </li>
-                        );
-                    })}
+                    {_.pairs(colors).map(renderLegend)}
                 </ul>
             </div>
         );
@@ -282,8 +299,11 @@ var StackedArea = React.createClass({
     render: function() {
         return (
             <path ref="path"
+                className={'path path-'+ this.props.i}
                 d={this.state.lastd || this.props.d}
                 fill={this.props.color}
+                onMouseOver={this.props.onMouseOver}
+                onMouseOut={this.props.onMouseOut}
                 shapeRendering="optimizeQuality" />
         );
     }
@@ -292,7 +312,7 @@ var StackedArea = React.createClass({
 var Dot = React.createClass({
     mixins: [ChartAnimationMixin],
 
-    radius: 3,
+    radius: 12,
 
     getInitialState: function() {
         return {};
@@ -311,20 +331,17 @@ var Dot = React.createClass({
 
     render: function() {
         return (
-            <g>
+            <g className={'dot dot-'+ this.props.i}>
                 <circle ref="dot"
                     cx={this.props.x}
                     cy={this.state.lastY || this.props.y}
                     r={this.radius}
-                    fill="rgba(255, 255, 255, .8)"
-                    stroke="rgba(200, 200, 200, .5)"
-                    strokeWidth="1" />
-                <circle ref="trigger"
-                    cx={this.props.x}
-                    cy={this.state.lastY || this.props.y}
-                    r={3*this.radius}
-                    fill="transparent"
-                    onMouseOver={function(){console.log("over dot")}} />
+                    fill="rgba(255, 255, 255, .9)" />
+                <text ref="value"
+                    x={this.props.x-8}
+                    y={(this.state.lastY || this.props.y)+4}>
+                    {this.props.value}
+                </text>
             </g>
         );
     }
