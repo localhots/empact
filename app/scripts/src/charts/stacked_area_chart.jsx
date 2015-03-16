@@ -64,10 +64,10 @@ var StackedAreaChart = React.createClass({
         }
     },
 
-    handleClick: function(point) {
+    handleClick: function(item) {
         var params = {org: this.getParams().org};
-        params[this.state.item] = point.item;
-        this.transitionTo(this.state.item, params);
+        params[this.state.item] = item;
+        this.transitionTo(this.state.item, params, this.getQuery());
     },
 
     handleFocusIn: function(i) {
@@ -83,6 +83,13 @@ var StackedAreaChart = React.createClass({
     handleNewData: function() {
         // Group commits by items
         var weeksList = _(this.state.rawData).pluck('week').uniq().sort().reverse().take(this.maxWeeks).value();
+        if (weeksList.length < 2) {
+            this.setState({
+                weeks: [],
+                state: 'newPoints'
+            });
+            return;
+        }
 
         var counts = _.reduce(this.state.rawData, function(res, el) {
             if (weeksList.indexOf(el.week) === -1) {
@@ -152,18 +159,6 @@ var StackedAreaChart = React.createClass({
         return _.map(points, function(point, i) {
             point.x = i/(len-1)*maxWidth;
             point.y = maxHeight - point.point;
-
-            if (point.x < 10) { // Radius
-                point.x = 10
-            } else if (point.x > maxWidth - 10) {
-                point.x = maxWidth - 10;
-            }
-            if (point.y < 10) {
-                point.y = 10;
-            } else if (point.y > maxHeight - 10) {
-                point.y = maxHeight - 10;
-            }
-
             return point;
         });
     },
@@ -233,12 +228,30 @@ var StackedAreaChart = React.createClass({
             if (dot.val === 0) {
                 return null;
             }
+
+            var maxWidth = this.state.canvasWidth,
+                maxHeight = this.height,
+                radius = 10,
+                x = dot.x,
+                y = dot.y;
+
+            if (x < radius) {
+                x = radius
+            } else if (x > maxWidth - radius) {
+                x = maxWidth - radius;
+            }
+            if (y < radius) {
+                y = radius;
+            } else if (y > maxHeight - radius) {
+                y = maxHeight - radius;
+            }
+
             return (
                 <Dot key={'dot-'+ i +'-'+ j}
                     item={item} i={i}
                     value={dot.val}
-                    x={dot.x}
-                    y={dot.y}
+                    x={x}
+                    y={y}
                     onMouseOver={this.handleFocusIn.bind(this, i)} />
             );
         }.bind(this);
@@ -254,7 +267,9 @@ var StackedAreaChart = React.createClass({
                 <li key={'legend-'+ item}
                     className={'label label-'+ i}
                     onMouseOver={this.handleFocusIn.bind(this, i)}
-                    onMouseOut={this.handleFocusOut.bind(this, i)}>
+                    onMouseOut={this.handleFocusOut.bind(this, i)}
+                    onClick={this.handleClick.bind(this, item)}
+                    >
                     <div className="color-dot" style={{backgroundColor: Colors[i]}}></div>
                     {item}
                 </li>

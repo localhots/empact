@@ -273,13 +273,13 @@ var WeekIntervalSelector = React.createClass({
 
         var weeksBefore = _(this.state.weeks)
             .filter(function(week) {
-                return week <= to;
+                return week < to;
             })
             .reverse()
             .value();
         var weeksAfter = _(this.state.weeks)
             .filter(function(week) {
-                return week >= from;
+                return week > from;
             })
             .reverse()
             .value();
