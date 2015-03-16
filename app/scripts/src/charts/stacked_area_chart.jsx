@@ -4,6 +4,22 @@ var StackedAreaChart = React.createClass({
     numElements: 10,
     maxWeeks: 30,
     height: 350,
+    words: {
+        items: {
+            repo: 'repositories',
+            team: 'teams',
+            user: 'contributors'
+        },
+        item: {
+            repo: 'repository',
+            team: 'team'
+        },
+        actions: {
+            repo: 'which were the most attended by',
+            team: 'which were the most active working on',
+            user: 'which were the most active working on'
+        }
+    },
 
     getInitialState: function() {
         return {
@@ -111,17 +127,26 @@ var StackedAreaChart = React.createClass({
 
     buildPathD: function(points) {
         var maxWidth = this.state.canvasWidth,
-            maxHeight = this.height,
-            maxValue = this.state.max,
-            len = points.length;
+            maxHeight = this.height;
 
-        var d = _.map(points, function(point, i) {
-                return 'L'+ Math.floor(i/(len-1)*maxWidth) +','+ Math.floor(maxHeight - point);
+        var d = _.map(this.buildDots(points), function(dot) {
+                return 'L'+ dot[0] +','+ dot[1];
             });
         d.unshift('M0,'+ maxHeight);
         d.push('L'+ maxWidth +','+ maxHeight +'Z');
 
         return d.join(' ');
+    },
+
+    buildDots: function(points) {
+        var maxWidth = this.state.canvasWidth,
+            maxHeight = this.height,
+            maxValue = this.state.max,
+            len = points.length;
+
+        return _.map(points, function(point, i) {
+            return [Math.floor(i/(len-1)*maxWidth), Math.floor(maxHeight - point)];
+        });
     },
 
     render: function() {
@@ -138,7 +163,7 @@ var StackedAreaChart = React.createClass({
 
                 var sum = 0;
                 var points = _.map(values, function(val) {
-                    sum += Math.floor(val/max*maxHeight);
+                    sum += Math.floor(val/max*maxHeight*0.96);
                     return sum;
                 });
 
@@ -171,22 +196,28 @@ var StackedAreaChart = React.createClass({
             );
         }.bind(this));
 
-        var words = {
-                items: {
-                    repo: 'repositories',
-                    team: 'teams',
-                    user: 'contributors'
-                },
-                item: {
-                    repo: 'repository',
-                    team: 'team'
-                },
-                actions: {
-                    repo: 'which were the most attended by',
-                    team: 'which were the most active working on',
-                    user: 'which were the most active working on'
+        var dots = _.map(paths, function(pair, i) {
+            var item = pair[0], path = pair[1];
+            var dots = this.buildDots(path);
+            var lastY = 0;
+            var renderDot = function(dot, j) {
+                if (lastY === dot[1]) {
+                    return null;
                 }
-            },
+                lastY = dot[1];
+                return (
+                    <Dot key={'dot-'+ i +'-'+ j}
+                        item={item}
+                        value={100}
+                        x={dot[0]}
+                        y={dot[1]} />
+                );
+            };
+
+            return dots.map(renderDot);
+        }.bind(this));
+
+        var words = this.words,
             who = this.getParams().repo || this.getParams().team || this.getParams().user || this.getParams().org;
 
         var params = Object.keys(this.getParams());
@@ -212,7 +243,8 @@ var StackedAreaChart = React.createClass({
                 <svg ref="svg" className="sachart" key="sachart-svg"
                     width="100%" height={maxHeight}
                     viewBox={"0 0 "+ (this.state.canvasWidth || 0) + " "+ maxHeight}>
-                    {areas.reverse()}
+                    <g ref="areas">{areas.reverse()}</g>
+                    <g ref="dots">{dots}</g>
                 </svg>
                 <ul className="legend">
                     {_.pairs(colors).map(function(pair){
@@ -253,6 +285,47 @@ var StackedArea = React.createClass({
                 d={this.state.lastd || this.props.d}
                 fill={this.props.color}
                 shapeRendering="optimizeQuality" />
+        );
+    }
+});
+
+var Dot = React.createClass({
+    mixins: [ChartAnimationMixin],
+
+    radius: 3,
+
+    getInitialState: function() {
+        return {};
+    },
+
+    componentWillReceiveProps: function(newProps) {
+        this.setState({
+            lastY: this.props.y || newProps.y
+        }, this.animateAll);
+    },
+
+    animateAll: function() {
+        this.clearAnimations(this.refs.dot);
+        this.animate(this.refs.dot, 'cy', this.state.lastY, this.props.y);
+    },
+
+    render: function() {
+        return (
+            <g>
+                <circle ref="dot"
+                    cx={this.props.x}
+                    cy={this.state.lastY || this.props.y}
+                    r={this.radius}
+                    fill="rgba(255, 255, 255, .8)"
+                    stroke="rgba(200, 200, 200, .5)"
+                    strokeWidth="1" />
+                <circle ref="trigger"
+                    cx={this.props.x}
+                    cy={this.state.lastY || this.props.y}
+                    r={3*this.radius}
+                    fill="transparent"
+                    onMouseOver={function(){console.log("over dot")}} />
+            </g>
         );
     }
 });
