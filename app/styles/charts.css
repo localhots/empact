@@ -103,10 +103,13 @@
     background-color: #f0f0f0;
     border-radius: 2px;
 }
-.whatsgoingon em.date {
+
+
+
+.week-selector em {
     background-color: #d0f0f0;
 }
-.whatsgoingon em.date:before {
+.week-selector em:before {
     content: '';
     display: inline-block;
     margin: 0 3px -1px 0;
@@ -115,4 +118,34 @@
     background-size: 14px 14px;
     /* Source: https://github.com/github/octicons/blob/master/svg/calendar.svg */
     background-image: url("data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjEwMjQiIHdpZHRoPSIxMDI0IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxwYXRoIGQ9Ik03MDQgNTEyaC02NHYxMjhoNjRWNTEyek01NzYgNTEyaC02NHYxMjhoNjRWNTEyek03MDQgMzIwaC02NHYxMjhoNjRWMzIwek04MzIgNTEyaC02NHYxMjhoNjRWNTEyek01NzYgNzA0aC02NHYxMjhoNjRWNzA0ek03NjggMGgtNjR2MTI4aDY0VjB6TTI1NiAwaC02NHYxMjhoNjRWMHpNODMyIDMyMGgtNjR2MTI4aDY0VjMyMHpNNTc2IDMyMGgtNjR2MTI4aDY0VjMyMHpNMzIwIDcwNGgtNjR2MTI4aDY0VjcwNHpNMTkyIDUxMmgtNjR2MTI4aDY0VjUxMnpNMzIwIDUxMmgtNjR2MTI4aDY0VjUxMnpNODMyIDY0djEyOEg2NDBWNjRIMzIwdjEyOEgxMjhWNjRIMHY4OTZoOTYwVjY0SDgzMnpNODk2IDg5Nkg2NFYyNTZoODMyVjg5NnpNMTkyIDcwNGgtNjR2MTI4aDY0VjcwNHpNNDQ4IDMyMGgtNjR2MTI4aDY0VjMyMHpNNDQ4IDcwNGgtNjR2MTI4aDY0VjcwNHpNMzIwIDMyMGgtNjR2MTI4aDY0VjMyMHpNNDQ4IDUxMmgtNjR2MTI4aDY0VjUxMnpNNzA0IDcwNGgtNjR2MTI4aDY0VjcwNHoiIC8+Cjwvc3ZnPg==");
+}
+
+.week-selector {
+    display: inline-block;
+}
+
+.week-selector .selector {
+    position: relative;
+    display: inline-block;
+    padding: 0 6px;
+    width: 110px;
+}
+
+.week-selector .selector em {
+    width: 100%;
+}
+.week-selector .selector select {
+    position: absolute;
+    top: 5px;
+    left: 5%;
+    width: 90%;
+    margin: 0;
+    display: none;
+}
+
+.week-selector .selector:hover em {
+    visibility: hidden;
+}
+.week-selector .selector:hover select {
+    display: inline;
 }

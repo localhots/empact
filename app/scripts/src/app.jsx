@@ -240,31 +240,15 @@ var WeekIntervalSelector = React.createClass({
             weeks.push(i);
         };
 
-        var from = (this.getQuery().f ? parseInt(this.getQuery().f, 10)*100 : lastWeek - 7*weekSeconds),
-            to = (this.getQuery().t ? parseInt(this.getQuery().t, 10)*100 : lastWeek);
-
         return {
-            from: from,
-            to: to,
-            weeks: weeks
+            weeks: weeks.sort()
         };
     },
 
-    componentDidMount: function() {
-        this.updateLocation();
-    },
-
     handleChange: function(thing, e) {
-        var patch = {};
-        patch[thing] = e.target.value;
-        this.setState(patch, this.updateLocation);
-    },
-
-    updateLocation: function() {
-        this.transitionTo(document.location.pathname, null, {
-            f: this.state.from/100,
-            t: this.state.to/100
-        });
+        var params = this.getQuery();
+        params[thing.slice(0, 1)] = e.target.value/100;
+        this.transitionTo(document.location.pathname, null, params);
     },
 
     formatDate: function(ts, showYear) {
@@ -281,18 +265,23 @@ var WeekIntervalSelector = React.createClass({
     },
 
     render: function() {
+        var daySeconds = 86400,
+            weekSeconds = daySeconds*7,
+            lastWeek = this.state.weeks[this.state.weeks.length-1],
+            from = (this.getQuery().f ? parseInt(this.getQuery().f, 10)*100 : lastWeek - 7*weekSeconds),
+            to = (this.getQuery().t ? parseInt(this.getQuery().t, 10)*100 : lastWeek);
+
         var weeksBefore = _(this.state.weeks)
             .filter(function(week) {
-                return week <= this.state.to;
-            }.bind(this))
-            .sort()
+                return week <= to;
+            })
             .reverse()
             .value();
         var weeksAfter = _(this.state.weeks)
             .filter(function(week) {
-                return week >= this.state.from;
-            }.bind(this))
-            .sort()
+                return week >= from;
+            })
+            .reverse()
             .value();
 
         var renderOption = function(ts) {
@@ -303,16 +292,17 @@ var WeekIntervalSelector = React.createClass({
 
         return (
             <div className="week-selector">
-                <div ref="from" className="week">
-                    <span ref="label" className="label">{this.formatDate(this.state.from)}</span>
-                    <select ref="select" value={this.state.from} onChange={this.handleChange.bind(this, 'from')}>
+                <span>from</span>
+                <div ref="from" className="selector">
+                    <em ref="label">{this.formatDate(from)}</em>
+                    <select ref="select" value={from} onChange={this.handleChange.bind(this, 'from')}>
                         {weeksBefore.map(renderOption)}
                     </select>
                 </div>
-                &mdash;
-                <div ref="to" className="week">
-                    <span ref="label" className="label">{this.formatDate(this.state.to)}</span>
-                    <select ref="select" value={this.state.to} onChange={this.handleChange.bind(this, 'to')}>
+                <span>to</span>
+                <div ref="to" className="selector">
+                    <em ref="label">{this.formatDate(to)}</em>
+                    <select ref="select" value={to} onChange={this.handleChange.bind(this, 'to')}>
                         {weeksAfter.map(renderOption)}
                     </select>
                 </div>
