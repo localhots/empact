@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf8">
+        <title>Empact Chart Palette</title>
+        <style>
+            * { margin: 0; padding: 0; }
+            html, body { height: 100%; }
+            div {
+                width: 100%;
+                height: 7%;
+                font-size: 3em;
+                padding: 0 30px;
+                font-family: Courier;
+            }
+        </style>
+    </head>
+    <body></body>
+    <script src="/scripts/colors.js"></script>
+    <script>
+        for (var i = 0; i < Colors.length; i++) {
+            var div = document.createElement('div');
+            div.style.backgroundColor = Colors[i];
+            div.innerText = Colors[i];
+            document.body.appendChild(div);
+        };
+    </script>
+</html>

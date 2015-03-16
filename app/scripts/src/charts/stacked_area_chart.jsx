@@ -161,13 +161,13 @@ var StackedAreaChart = React.createClass({
         var areas = _.map(paths, function(pair, i) {
             var item = pair[0], path = pair[1];
             if (item !== null) {
-                colors[item] = Colors2[i];
+                colors[item] = Colors[i];
             }
             return (
                 <StackedArea key={'area-'+ i}
                     item={item}
-                    d={roundPathCorners(this.buildPathD(path), 5)}
-                    color={Colors2[i]} />
+                    d={roundPathCorners(this.buildPathD(path), 3)}
+                    color={Colors[i]} />
             );
         }.bind(this));
 
