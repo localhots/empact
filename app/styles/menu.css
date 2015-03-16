@@ -1,0 +1,46 @@
+.menu {
+    float: left;
+    width: 200px;
+    margin: 20px;
+}
+    .menu ul {
+        margin: 0;
+        padding: 0;
+    }
+    .menu li {
+        display: block;
+        cursor: pointer;
+    }
+
+.menu .nav {
+    margin-bottom: 5px;
+}
+    .menu .nav.empact {
+        font-weight: 600;
+    }
+    .menu .nav.header {
+        color: #444;
+        font-weight: 600;
+        cursor: default;
+        margin-top: 20px;
+        margin-bottom: 10px;
+    }
+    .menu .nav a {
+        display: inline-block;
+        line-height: 21px;
+        width: 100%;
+        color: #000;
+        text-decoration: none;
+        width: auto;
+        max-width: 200px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        border-bottom: #fff 1px solid;
+        font-weight: 300;
+    }
+    .menu .nav a.active {
+        font-weight: 400;
+        color: #000;
+        border-bottom: #000 1px solid;
+    }
