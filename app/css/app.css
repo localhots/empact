@@ -28,11 +28,19 @@
     float: left;
     width: 40px;
     height: 40px;
-    background-color: #ddd;
+    background-repeat: no-repeat;
     background-position: center;
-    background-size: 100% auto;
+    background-size: 100% 100%;
     margin-right: 10px;
     border-radius: 2px;
+}
+.info-block .img.repo {
+    background-size: 30px 40px;
+    /* Source: https://github.com/github/octicons/blob/master/svg/repo.svg */
+    background-image: url(data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjEwMjQiIHdpZHRoPSI3NjgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZD0iTTMyMCAyNTZoLTY0djY0aDY0di02NHogbTAtMTI4aC02NHY2NGg2NHYtNjR6IG0zODQtMTI4Yy0zMiAwLTYwOCAwLTY0MCAwcy02NCAzMi02NCA2NCAwIDczNiAwIDc2OCAzMiA2NCA2NCA2NCAxMjggMCAxMjggMHYxMjhsOTYtOTYgOTYgOTZ2LTEyOHMyODggMCAzMjAgMCA2NC0zMiA2NC02NCAwLTczNiAwLTc2OC0zMi02NC02NC02NHogbTAgODAwYzAgMTYtMTUgMzItMzIgMzJzLTI4OCAwLTI4OCAwdi02NGgtMTkydjY0cy03OSAwLTk2IDAtMzItMTctMzItMzIgMC05NiAwLTk2aDY0MHMwIDgwIDAgOTZ6IG0wLTE2MGgtNTEydi01NzZoNTEzbC0xIDU3NnogbS0zODQtMTI4aC02NHY2NGg2NHYtNjR6IG0wLTEyOGgtNjR2NjRoNjR2LTY0eiIgLz4KPC9zdmc+);
+}
+.info-block .img.team {
+    display: none;
 }
 
 .info-block h1 {

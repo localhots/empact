@@ -21,10 +21,6 @@
 .barchart g:hover .bar {
     opacity: .8;
 }
-.barchart .label {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-size: 16px;
-}
 .barchart .label_underlay {
     fill: rgba(255, 255, 255, .7);
 }
@@ -138,6 +134,7 @@
     color: #444;
     margin-bottom: 20px;
     line-height: 24px;
+    height: 72px; /* 3*line-height */
 }
 
 .whatsgoingon em {

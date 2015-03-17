@@ -8,7 +8,7 @@ var Storage = {
 
     get: function(category, key) {
         var val = window.localStorage.getItem(category +'-'+ key);
-        return val === null ? null : JSON.parse(val);
+        return val === null ? {} : JSON.parse(val);
     }
 };
 
@@ -144,12 +144,13 @@ var Dashboard = React.createClass({
 
     render: function(){
         var p = this.getParams(),
-            infoImage, infoTitle,
+            infoImage, infoImageClass, infoTitle,
             bcApi, bcItems,
             sacApi, sacItems;
 
         if (p.team) {
-            infoTitle = p.team;
+            infoTitle = p.team +' Team';
+            infoImageClass = 'team';
             bcApi = '/api/stat/teams/top';
             bcItems = ['repo', 'user'],
             sacApi = '/api/stat/teams/activity';
@@ -164,6 +165,7 @@ var Dashboard = React.createClass({
             sacItems = ['repo'];
         } else if (p.repo) {
             infoTitle = p.repo;
+            infoImageClass = 'repo';
             bcApi = '/api/stat/repos/top';
             bcItems = ['user', 'team'],
             sacApi = '/api/stat/repos/activity';
@@ -180,7 +182,7 @@ var Dashboard = React.createClass({
 
         return (
             <div className="content">
-                <InfoBlock image={infoImage} title={infoTitle} />
+                <InfoBlock image={infoImage} className={infoImageClass} title={infoTitle} />
                 <BarChart api={bcApi} params={this.getParams()} items={bcItems} />
                 <StackedAreaChart api={sacApi} params={this.getParams()} items={sacItems} />
             </div>
@@ -208,8 +210,8 @@ var InfoBlock = React.createClass({
     render: function() {
         return (
             <div className="info-block">
-                <div className={'img'+ (this.props.image ? '' : ' empty')}
-                    style={{backgroundImage: "url("+ (this.props.image || '') +")"}} />
+                <div className={'img'+ (this.props.image ? '' : ' empty') +' '+ this.props.className}
+                    style={this.props.image ? {backgroundImage: "url("+ this.props.image +")"} : null} />
                 <h1>{this.props.title}</h1>
             </div>
         )
