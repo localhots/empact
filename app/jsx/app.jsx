@@ -251,7 +251,7 @@ var WeekIntervalSelector = React.createClass({
         var daySeconds = 86400,
             weekSeconds = daySeconds*7,
             lastWeek = this.state.weeks[this.state.weeks.length-1],
-            from = (this.getQuery().f ? parseInt(this.getQuery().f, 10)*100 : lastWeek - 7*weekSeconds),
+            from = (this.getQuery().f ? parseInt(this.getQuery().f, 10)*100 : lastWeek - 29*weekSeconds),
             to = (this.getQuery().t ? parseInt(this.getQuery().t, 10)*100 : lastWeek);
 
         var weeksBefore = _(this.state.weeks)
