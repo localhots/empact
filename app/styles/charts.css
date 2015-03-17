@@ -1,11 +1,11 @@
 @media (min-width: 640px) {
-    .barchart-container, .sachart-container {
+    .barchart-container, .sac {
         width: 100%;
     }
 }
 
 @media (min-width: 1100px) {
-    .barchart-container, .sachart-container {
+    .barchart-container, .sac {
         width: 50%;
     }
 }
@@ -30,18 +30,18 @@
 }
 
 
-.sachart-container {
+.sac {
     box-sizing: border-box;
     float: left;
     padding: 0 20px 20px 0;
 }
-.sachart-container .dot {
+.sac .dot {
     display: none;
 }
-.sachart-container .dot text {
+.sac .dot text {
     font-size: 10px;
 }
-.sachart-container .legend {
+.sac .legend {
     display: block;
     margin: 0;
     padding: 0;
@@ -55,50 +55,50 @@
     margin: 1px 5px 0 0;
     border-radius: 8px;
 }
-.sachart-container .legend li {
+.sac .legend li {
     display: inline-block;
     padding: 10px 15px 0 0;
     cursor: pointer;
 }
 
-.sachart-container.focused .path {
+.sac.focused .path {
     fill: #f0f0f0;
 }
 
-.sachart-container.focused .label {
+.sac.focused .label {
     opacity: 0.3;
 }
 
-.sachart-container.item-0 .path-0 { fill: #EA8369; }
-.sachart-container.item-1 .path-1 { fill: #FCCD67; }
-.sachart-container.item-2 .path-2 { fill: #B5A9F2; }
-.sachart-container.item-3 .path-3 { fill: #9DD7F2; }
-.sachart-container.item-4 .path-4 { fill: #FFA3A4; }
-.sachart-container.item-5 .path-5 { fill: #A8EAA8; }
-.sachart-container.item-6 .path-6 { fill: #F9D08B; }
-.sachart-container.item-7 .path-7 { fill: #6CCECB; }
-.sachart-container.item-8 .path-8 { fill: #F9E559; }
-.sachart-container.item-9 .path-9 { fill: #FFBAD2; }
-.sachart-container.item-0 .dot-0 { display: inline; }
-.sachart-container.item-1 .dot-1 { display: inline; }
-.sachart-container.item-2 .dot-2 { display: inline; }
-.sachart-container.item-3 .dot-3 { display: inline; }
-.sachart-container.item-4 .dot-4 { display: inline; }
-.sachart-container.item-5 .dot-5 { display: inline; }
-.sachart-container.item-6 .dot-6 { display: inline; }
-.sachart-container.item-7 .dot-7 { display: inline; }
-.sachart-container.item-8 .dot-8 { display: inline; }
-.sachart-container.item-9 .dot-9 { display: inline; }
-.sachart-container.item-0 .label-0 { opacity: 1; }
-.sachart-container.item-1 .label-1 { opacity: 1; }
-.sachart-container.item-2 .label-2 { opacity: 1; }
-.sachart-container.item-3 .label-3 { opacity: 1; }
-.sachart-container.item-4 .label-4 { opacity: 1; }
-.sachart-container.item-5 .label-5 { opacity: 1; }
-.sachart-container.item-6 .label-6 { opacity: 1; }
-.sachart-container.item-7 .label-7 { opacity: 1; }
-.sachart-container.item-8 .label-8 { opacity: 1; }
-.sachart-container.item-9 .label-9 { opacity: 1; }
+.sac.item-0 .path-0 { fill: #EA8369; }
+.sac.item-1 .path-1 { fill: #FCCD67; }
+.sac.item-2 .path-2 { fill: #B5A9F2; }
+.sac.item-3 .path-3 { fill: #9DD7F2; }
+.sac.item-4 .path-4 { fill: #FFA3A4; }
+.sac.item-5 .path-5 { fill: #A8EAA8; }
+.sac.item-6 .path-6 { fill: #F9D08B; }
+.sac.item-7 .path-7 { fill: #6CCECB; }
+.sac.item-8 .path-8 { fill: #F9E559; }
+.sac.item-9 .path-9 { fill: #FFBAD2; }
+.sac.item-0 .dot-0 { display: inline; }
+.sac.item-1 .dot-1 { display: inline; }
+.sac.item-2 .dot-2 { display: inline; }
+.sac.item-3 .dot-3 { display: inline; }
+.sac.item-4 .dot-4 { display: inline; }
+.sac.item-5 .dot-5 { display: inline; }
+.sac.item-6 .dot-6 { display: inline; }
+.sac.item-7 .dot-7 { display: inline; }
+.sac.item-8 .dot-8 { display: inline; }
+.sac.item-9 .dot-9 { display: inline; }
+.sac.item-0 .label-0 { opacity: 1; }
+.sac.item-1 .label-1 { opacity: 1; }
+.sac.item-2 .label-2 { opacity: 1; }
+.sac.item-3 .label-3 { opacity: 1; }
+.sac.item-4 .label-4 { opacity: 1; }
+.sac.item-5 .label-5 { opacity: 1; }
+.sac.item-6 .label-6 { opacity: 1; }
+.sac.item-7 .label-7 { opacity: 1; }
+.sac.item-8 .label-8 { opacity: 1; }
+.sac.item-9 .label-9 { opacity: 1; }
 
 
 .selector {
@@ -197,6 +197,22 @@
     display: inline;
 }
 
+/* NEW */
+
+.axis {
+    stroke: #888;
+    stroke-width: 1px;
+}
 .axis-mark {
     font-size: 10px;
+    fill: #888;
+}
+
+.sac .dot circle {
+    fill: #fff;
+    stroke: #f0f0f0;
+    stroke-width: 2px;
+}
+.sac .dot text {
+    text-anchor: middle;
 }

@@ -74,12 +74,12 @@ var StackedAreaChart = React.createClass({
 
     handleFocusIn: function(i) {
         var node = this.refs.container.getDOMNode();
-        node.className = 'sachart-container focused item-'+ i;
+        node.className = 'sac focused item-'+ i;
     },
 
     handleFocusOut: function() {
         var node = this.refs.container.getDOMNode();
-        node.className = 'sachart-container';
+        node.className = 'sac';
     },
 
     handleNewData: function() {
@@ -210,7 +210,7 @@ var StackedAreaChart = React.createClass({
             return (
                 <StackedArea key={'area-'+ i}
                     item={item} i={i}
-                    d={this.buildPathD(path)}
+                    d={roundPathCorners(this.buildPathD(path), 4)}
                     color={Colors[i]}
                     onMouseOver={this.handleFocusIn.bind(this, i)} />
             );
@@ -281,7 +281,7 @@ var StackedAreaChart = React.createClass({
         var legend = _(paths).pluck(0).filter(function(el){ return el !== null; }).value();
 
         return (
-            <div ref="container" className="sachart-container">
+            <div ref="container" className="sac">
                 <div className="whatsgoingon">
                     This stacked area chart represents <em>{words.items[this.state.item]}</em> {words.actions[this.state.item]} <em>{who}</em> {words.item[subject]} <WeekIntervalSelector />
                 </div>
@@ -373,14 +373,10 @@ var Dot = React.createClass({
                 <circle ref="dot"
                     cx={this.props.x}
                     cy={this.state.lastY || this.props.y}
-                    r={this.radius}
-                    fill="#fff"
-                    stroke="#f0f0f0"
-                    strokeWidth="2" />
+                    r={this.radius} />
                 <text ref="value"
                     x={this.props.x}
-                    y={this.props.y+4}
-                    textAnchor="middle">
+                    y={this.props.y+4}>
                     {this.props.value}
                 </text>
             </g>
@@ -414,17 +410,15 @@ var Axis = React.createClass({
 
             return (
                 <g key={'mark-'+ i}>
-                    <line
+                    <line className="axis"
                         x1={x}
                         y1={this.props.y}
                         x2={x}
-                        y2={this.props.y + 4}
-                        stroke="#666" strokeWidth="1" />
+                        y2={this.props.y + 4} />
                     {showLabel ? <text className="axis-mark"
                         x={x}
                         y={this.props.y + 15}
                         textAnchor={ta}
-                        fill="#666"
                         >
                         {formatDate(week)}
                     </text> : null}
@@ -434,20 +428,19 @@ var Axis = React.createClass({
 
         return (
             <g ref="axis">
-                <line
+                <line className="axis"
                     x1="0"
                     y1={this.props.y}
                     x2={this.props.width}
-                    y2={this.props.y}
-                    stroke="#666" strokeWidth="1" />
+                    y2={this.props.y} />
                 {this.props.weeks.map(renderMark)}
-                <line
+                <line className="axis"
                     x1={this.props.width - 1}
                     y1={this.props.y}
                     x2={this.props.width - 1}
-                    y2={this.props.y + 4}
-                    stroke="#666" strokeWidth="1" />
+                    y2={this.props.y + 4} />
             </g>
         )
     }
 });
+
