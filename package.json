@@ -1,0 +1,8 @@
+{
+    "name": "empact",
+    "private": true,
+    "dependencies": {
+        "uglify-js": "2.4.17",
+        "clean-css": "3.1.7"
+    }
+}

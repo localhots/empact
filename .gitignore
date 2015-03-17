@@ -1,7 +1,8 @@
 // JSX cache
 .module-cache
 
-// Bower
+// Packages
+node_modules
 bower_components
 
 // Config files
@@ -11,5 +12,6 @@ bower_components
 // Workspace documents and notes
 *.txt
 
-// Compiled app (reconsider later)
-app/scripts/compiled
+// Compiled
+app/jsx/build
+build/*
