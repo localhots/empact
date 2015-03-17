@@ -16,8 +16,8 @@ var App = React.createClass({
     mixins: [Router.Navigation, Router.State],
 
     orgsURL: '/api/orgs',
-    teamsURL: '/api/teams?org=',
-    usersURL: '/api/users?org=',
+    teamsURL: '/api/teams',
+    usersURL: '/api/users',
 
     getInitialState: function() {
         return {
@@ -35,7 +35,7 @@ var App = React.createClass({
     },
 
     loadOrgs: function() {
-        $.get(this.orgsURL, function(res){
+        getURL(this.orgsURL, {}, function(res) {
             this.setState({orgs: res});
             if (res !== null) {
                 for (var i = 0; i < res.length; i++) {
@@ -47,7 +47,7 @@ var App = React.createClass({
     },
 
     loadTeams: function() {
-        $.get(this.teamsURL + this.getParams().org, function(res){
+        getURL(this.teamsURL, {org: this.getParams().org}, function(res) {
             this.setState({teams: res});
             if (res !== null) {
                 for (var i = 0; i < res.length; i++) {
@@ -59,7 +59,7 @@ var App = React.createClass({
     },
 
     loadUsers: function() {
-        $.get(this.usersURL + this.getParams().org, function(res){
+        getURL(this.usersURL, {org: this.getParams().org}, function(res) {
             this.setState({users: res});
             if (res !== null) {
                 for (var i = 0; i < res.length; i++) {
@@ -70,7 +70,7 @@ var App = React.createClass({
         }.bind(this));
     },
 
-    render: function(){
+    render: function() {
         return (
             <div className="master">
                 <div className="app" id="app">

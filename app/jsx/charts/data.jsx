@@ -37,7 +37,7 @@ var ChartDataMixin = {
             currentParams: paramsHash,
             state: 'loadingData'
         }, function() {
-            $.get(this.props.api, this.apiParams(), function(res){
+            getURL(this.props.api, this.apiParams(), function(res){
                 this.setState({
                     rawData: res || [],
                     state: 'newData'
