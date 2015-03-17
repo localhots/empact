@@ -186,6 +186,7 @@ var StackedAreaChart = React.createClass({
     render: function() {
         var renderArea = function(pair, i) {
             var item = pair[0], path = pair[1];
+            // NOTE: Rounded bottom corners is a side-effect
             return (
                 <StackedArea key={'area-'+ i}
                     item={item} i={i}
@@ -319,8 +320,9 @@ var StackedAreaChart = React.createClass({
                     <g ref="dots">{renderedDots}</g>
                     <Axis
                         weeks={_.pluck(dotsByWeek, 0)}
-                        y={this.canvasHeight + 3}
-                        width={this.state.canvasWidth} />
+                        y={this.canvasHeight}
+                        width={this.state.canvasWidth}
+                        height={this.xAxisHeight} />
                 </svg>
                 <ul className="legend">
                     {legend.map(renderLegend)}
@@ -398,6 +400,9 @@ var Dot = React.createClass({
 });
 
 var Axis = React.createClass({
+    topMargin: 2,
+    markHeight: 5,
+
     render: function() {
         if (this.props.weeks.length === 0) {
             return null;
@@ -425,12 +430,12 @@ var Axis = React.createClass({
                 <g key={'mark-'+ i}>
                     <line className="axis"
                         x1={x}
-                        y1={this.props.y}
+                        y1={this.props.y + this.topMargin}
                         x2={x}
-                        y2={this.props.y + 4} />
+                        y2={this.props.y + this.topMargin + this.markHeight} />
                     {!showLabel ? null : <text className="axis-mark"
                         x={x}
-                        y={this.props.y + 15}
+                        y={this.props.y + this.topMargin + 14}
                         textAnchor={ta}
                         >
                         {formatDate(week)}
@@ -441,17 +446,23 @@ var Axis = React.createClass({
 
         return (
             <g ref="axis">
+                <rect // This rect hides area bouncing glitches
+                    x="0"
+                    y={this.props.y}
+                    width={this.props.width}
+                    height={this.props.height}
+                    fill="#fff" />
                 <line className="axis"
                     x1="0"
-                    y1={this.props.y}
+                    y1={this.props.y + this.topMargin}
                     x2={this.props.width}
-                    y2={this.props.y} />
+                    y2={this.props.y + this.topMargin} />
                 {this.props.weeks.map(renderMark)}
                 <line className="axis"
                     x1={this.props.width - 1}
-                    y1={this.props.y}
+                    y1={this.props.y + this.topMargin}
                     x2={this.props.width - 1}
-                    y2={this.props.y + 4} />
+                    y2={this.props.y + this.topMargin + this.markHeight} />
             </g>
         )
     }
