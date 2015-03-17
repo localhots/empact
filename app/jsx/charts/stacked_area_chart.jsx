@@ -8,20 +8,30 @@ var StackedAreaChart = React.createClass({
     maxWeeks: 30,
 
     words: {
-        items: {
-            repo: 'repositories',
-            team: 'teams',
-            user: 'contributors'
+        actions: { // Item
+            repo: "made to",
+            team: "made by the most active",
+            user: "made by the most active"
         },
-        item: {
-            repo: 'repository',
-            team: 'team'
+        items: { // Item
+            repo: "repositories",
+            team: "teams",
+            user: "users"
         },
-        actions: {
-            repo: 'which were the most attended by',
-            team: 'which were the most active working on',
-            user: 'which were the most active working on'
-        }
+        whatHappened: { // Item-Target
+            "user-repo": "working on",
+            "team-repo": "working on",
+            "team-org": "to repositories of",
+            "user-org": "to repositories of",
+            "repo-org": "that were most actively modified by the members of",
+            "user-team": "working on repositories of the",
+            "repo-team": "that were most actively modified by the members of the",
+            "repo-user": "that were most actively modified by"
+        },
+        targetSuffix: { // Subject of current context
+            repo: "repository",
+            team: "team"
+        },
     },
 
     getInitialState: function() {
@@ -277,19 +287,16 @@ var StackedAreaChart = React.createClass({
 
         // Text generation stuff
         var words = this.words,
-            who = this.getParams().repo ||
-                  this.getParams().team ||
-                  this.getParams().user ||
-                  this.getParams().org;
-
-        var params = Object.keys(this.getParams());
-        params.splice(params.indexOf('org'), 1);
-        var subject = params[0];
+            target = (this.getParams().repo ? 'repo'
+                : this.getParams().team ? 'team'
+                : this.getParams().user ? 'user'
+                : 'org');
+            subject = this.getParams()[target];
 
         return (
             <div ref="container" className="sac">
                 <div className="whatsgoingon">
-                    This stacked area chart represents <em>{words.items[this.state.item]}</em> {words.actions[this.state.item]} <em>{who}</em> {words.item[subject]} <WeekIntervalSelector />
+                    This stacked area chart shows <em>the number of commits</em> {words.actions[this.state.item]} <em>{words.items[this.state.item]}</em> {words.whatHappened[this.state.item +'-'+ target]} <em>{subject}</em> {words.targetSuffix[target]} <WeekIntervalSelector />
                 </div>
                 <div className="filters">
                     <Selector thing="sort"

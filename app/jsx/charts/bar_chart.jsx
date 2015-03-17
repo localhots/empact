@@ -6,6 +6,40 @@ var BarChart = React.createClass({
     barHeight: 30,
     barMargin: 5,
 
+    words: {
+        values: { // Sort
+            commits: "the number of commits",
+            delta: "the delta between lines added and lines removed"
+        },
+        actions: { // Item-Sort
+            "repo-commits": "made to",
+            "repo-delta": "for",
+            "team-commits": "made by the most active",
+            "team-delta": "for the most active",
+            "user-commits": "made by the most active",
+            "user-delta": "for the most active"
+        },
+        items: { // Item
+            repo: "repositories",
+            team: "teams",
+            user: "users"
+        },
+        whatHappened: { // Item-Target
+            "user-repo": "working on",
+            "team-repo": "working on",
+            "team-org": "working on repositories of",
+            "user-org": "working on repositories of",
+            "repo-org": "that were most actively modified by the members of",
+            "user-team": "working on repositories of the",
+            "repo-team": "that were most actively modified by the members of the",
+            "repo-user": "that were most actively modified by"
+        },
+        targetSuffix: { // Subject of current context
+            repo: "repository",
+            team: "team"
+        },
+    },
+
     getInitialState: function() {
         return {
             item: this.props.items[0],
@@ -97,32 +131,17 @@ var BarChart = React.createClass({
     },
 
     render: function() {
-        var words = {
-                items: {
-                    repo: 'repositories',
-                    team: 'teams',
-                    user: 'contributors'
-                },
-                item: {
-                    repo: 'repository',
-                    team: 'team'
-                },
-                actions: {
-                    repo: 'which were the most attended by',
-                    team: 'which were the most active working on',
-                    user: 'which were the most active working on'
-                }
-            },
-            who = this.getParams().repo || this.getParams().team || this.getParams().user || this.getParams().org;
-
-        var params = Object.keys(this.getParams());
-        params.splice(params.indexOf('org'), 1);
-        var subject = params[0];
+        var words = this.words,
+            target = (this.getParams().repo ? 'repo'
+                : this.getParams().team ? 'team'
+                : this.getParams().user ? 'user'
+                : 'org');
+            subject = this.getParams()[target];
 
         return (
             <div className="barchart-container">
                 <div className="whatsgoingon">
-                    This bar chart represents <em>{words.items[this.state.item]}</em> {words.actions[this.state.item]} <em>{who}</em> {words.item[subject]} <WeekIntervalSelector />
+                    This bar chart shows <em>{words.values[this.state.sort]}</em> {words.actions[this.state.item +'-'+ this.state.sort]} <em>{words.items[this.state.item]}</em> {words.whatHappened[this.state.item +'-'+ target]} <em>{subject}</em> {words.targetSuffix[target]} <WeekIntervalSelector />
                 </div>
                 <div className="filters">
                     <Selector thing="sort"
