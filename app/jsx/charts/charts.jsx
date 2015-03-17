@@ -9,11 +9,6 @@ var SVGChartMixin = {
 var fontFamily = 'Helvetica Neue, Helvetica, sans-serif',
     fontSize = 16;
 
-function numberFormat(num) {
-    // FIXME: Not supported in IE10- and Safari
-    return Intl.NumberFormat().format(num);
-}
-
 function textWidth(str) {
     var svg = document.createElementNS('http://www.w3.org/2000/svg', "svg");
         text = document.createElementNS('http://www.w3.org/2000/svg', "text");

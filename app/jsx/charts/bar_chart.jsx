@@ -209,7 +209,7 @@ var Bar = React.createClass({
     calculateLabelPosition: function() {
         var val = this.props.value,
             offset = this.props.offset,
-            label = this.props.item + ': ' + numberFormat(val),
+            label = this.props.item + ': ' + formatNumber(val),
             labelWidth = textWidth(label),
             labelOffsetWidth = labelWidth + 2*this.labelPaddingH,
             labelX;
@@ -247,7 +247,7 @@ var Bar = React.createClass({
     },
 
     render: function() {
-        var label = this.props.item ? (this.props.item + ': ' + numberFormat(this.props.value)) : '',
+        var label = this.props.item ? (this.props.item + ': ' + formatNumber(this.props.value)) : '',
             labelWidth = textWidth(label),
             labelOuterWidth = (labelWidth == 0 ? 0 : labelWidth + 2*this.labelPaddingH),
             barX = (this.state.lastBarX && this.state.lastBarX !== this.props.x

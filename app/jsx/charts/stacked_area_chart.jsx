@@ -179,7 +179,7 @@ var StackedAreaChart = React.createClass({
             return (
                 <StackedArea key={'area-'+ i}
                     item={item} i={i}
-                    d={roundPathCorners(this.buildPathD(path), 4)}
+                    d={roundPathCorners(this.buildPathD(path), 3)}
                     color={Colors[i]}
                     onMouseOver={this.handleFocusIn.bind(this, i)} />
             );
