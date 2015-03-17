@@ -1,10 +1,11 @@
 var StackedAreaChart = React.createClass({
     mixins: [ReactRouter.Navigation, ReactRouter.State, SVGChartMixin, ChartDataMixin],
 
-    numElements: 10,
-    maxWeeks: 30,
-    height: 350,
+    canvasHeight: 350,
     xAxisHeight: 20,
+
+    maxItems: 10,
+    maxWeeks: 30,
 
     words: {
         items: {
@@ -27,9 +28,9 @@ var StackedAreaChart = React.createClass({
         return {
             item: this.props.items[0],
             rawData: [],
-            top: [],
-            weeks: [],
-            max: 1
+            topItems: [],
+            weeklyData: [],
+            maxCommitsPerWeek: 1
         };
     },
 
@@ -39,19 +40,22 @@ var StackedAreaChart = React.createClass({
     },
 
     componentWillReceiveProps: function(newProps) {
+        // If new items are the same as old then don't reset current item
         this.setState({
             item: (_.isEqual(newProps.items, this.props.items)
                 ? this.state.item
                 : newProps.items[0]),
-            state: 'newProps'
+            state: 'loadingData'
         }, this.fetchData);
     },
 
     shouldComponentUpdate: function(newProps, newState) {
+        // Don't re-render unless canvas width is calculated
         if (!newState.canvasWidth) {
             return false;
         }
-        if (newState.state !== 'newPoints')  {
+        // We're working with animations here so we render only in one particular state
+        if (newState.state !== 'pleaseRender')  {
             return false;
         }
         return true;
@@ -61,7 +65,7 @@ var StackedAreaChart = React.createClass({
         if (this.props.items[i] !== this.state.item) {
             this.setState({
                 item: this.props.items[i],
-                state: 'newProps'
+                state: 'loadingData'
             }, this.fetchData);
         }
     },
@@ -83,17 +87,18 @@ var StackedAreaChart = React.createClass({
     },
 
     handleNewData: function() {
-        // Group commits by items
+        // [week, ...]
         var weeksList = _(this.state.rawData).pluck('week').uniq().sort().reverse().take(this.maxWeeks).value();
         if (weeksList.length < 2) {
             this.setState({
                 weeks: [],
-                state: 'newPoints'
+                state: 'pleaseRender'
             });
             return;
         }
 
-        var counts = _.reduce(this.state.rawData, function(res, el) {
+        // {item: commits, ...}
+        var commitsByItem = _.reduce(this.state.rawData, function(res, el) {
             if (weeksList.indexOf(el.week) === -1) {
                 return res;
             }
@@ -105,108 +110,72 @@ var StackedAreaChart = React.createClass({
             return res;
         }, {});
 
-        // Extract top items from
-        var top = _(_.pairs(counts)) // Take [item, count] pairs from counts object
+        // [item, ...]
+        var topItems = _(_.pairs(commitsByItem)) // Take [item, count] pairs from counts object
             .sortBy(1).reverse() // sort them by count (descending)
-            .take(this.numElements) // take first N pairs
+            .take(this.maxItems) // take first N pairs
             .pluck(0) // keep only items, omit the counts
             .value();
-        for (var i = top.length; i < this.numElements; i++) {
-            top[i] = null;
+        for (var i = topItems.length; i < this.maxItems; i++) {
+            topItems[i] = null;
         };
 
-        var weeks = _.reduce(this.state.rawData, function(res, el) {
+        // {week: {item: commits, ...}, ...}
+        var weeklyData = _.reduce(this.state.rawData, function(res, el) {
             if (weeksList.indexOf(el.week) === -1) {
                 return res;
             }
             if (res[el.week] === undefined) {
                 res[el.week] = {};
             }
-            if (top.indexOf(el.item) > -1) {
+            if (topItems.indexOf(el.item) > -1) {
                 res[el.week][el.item] = el.commits;
             }
             return res;
         }, {});
 
-        var max = _.max(_.map(weeksList, function(week){ return _.sum(_.values(weeks[week])); }));
+        var maxCommitsPerWeek = _.max(_.map(weeksList, function(week) {
+            return _.sum(_.values(weeklyData[week]));
+        }));
 
         this.setState({
-            top: top,
-            weeks: weeks,
-            max: max,
-            state: 'newPoints'
+            topItems: topItems,
+            weeklyData: weeklyData,
+            maxCommitsPerWeek: maxCommitsPerWeek,
+            state: 'pleaseRender'
         });
     },
 
-    buildPathD: function(points) {
+    buildPathD: function(dots) {
         var maxWidth = this.state.canvasWidth,
-            maxHeight = this.height;
+            maxHeight = this.canvasHeight;
 
-        var dots = this.buildDots(points);
-        var first = dots.shift();
+        var dots = this.extendDotsWithCoordinates(dots);
+        var first = dots.shift(); // Don't draw a line to the first dot, it should be a move
         var d = _.map(dots, function(dot){ return 'L'+ dot.x +','+ dot.y; });
-        d.unshift('M'+ first.x +','+ first.y);
-        d.push('L'+ maxWidth +','+ maxHeight);
-        d.push('L0,'+ maxHeight +' Z');
+        d.unshift('M'+ first.x +','+ first.y); // Prepend first move
+        d.push('L'+ maxWidth +','+ maxHeight); // Draw a line to the bottom right corner
+        d.push('L0,'+ maxHeight +' Z'); // And then to a bottom left corner
 
         return d.join(' ');
     },
 
-    buildDots: function(points) {
+    extendDotsWithCoordinates: function(dots) {
         var maxWidth = this.state.canvasWidth,
-            maxHeight = this.height,
-            maxValue = this.state.max,
-            len = points.length;
+            maxHeight = this.canvasHeight,
+            maxValue = this.state.maxCommitsPerWeek,
+            len = dots.length;
 
-        return _.map(points, function(point, i) {
-            point.x = i/(len-1)*maxWidth;
-            point.y = maxHeight - point.point;
-            return point;
+        return _.map(dots, function(dot, i) {
+            dot.x = i/(len-1)*maxWidth;
+            dot.y = maxHeight - dot.norm*maxHeight*0.96;
+            return dot;
         });
     },
 
     render: function() {
-        var maxWidth = this.state.canvasWidth,
-            maxHeight = this.height,
-            top = this.state.top,
-            max = this.state.max;
-
-        // [week, [{val, point}, ...]]
-        var points = _(this.state.weeks)
-            .map(function(items, week) {
-                var values = _.map(top, function(item) {
-                    return items[item] || 0;
-                });
-
-                var sum = 0;
-                var points = _.map(values, function(val) {
-                    sum += val/max*maxHeight*0.96;
-                    return {
-                        val: val,
-                        point: sum
-                    };
-                });
-
-                return [parseInt(week, 10), points];
-            })
-            .sort(0)
-            .reverse()
-            .take(this.maxWeeks)
-            .reverse()
-            .value();
-
-        // [item, [{val, point}, ...]]
-        var paths = _.map(top, function(item, i) {
-            var itemPoints = _.map(points, function(pair) {
-                return pair[1][i];
-            });
-            return[item, itemPoints];
-        });
-
-        var areas = _.map(paths, function(pair, i) {
-            var item = pair[0],
-                path = pair[1];
-
+        var renderArea = function(pair, i) {
+            var item = pair[0], path = pair[1];
             return (
                 <StackedArea key={'area-'+ i}
                     item={item} i={i}
@@ -214,17 +183,7 @@ var StackedAreaChart = React.createClass({
                     color={Colors[i]}
                     onMouseOver={this.handleFocusIn.bind(this, i)} />
             );
-        }.bind(this));
-
-        var words = this.words,
-            who = this.getParams().repo ||
-                  this.getParams().team ||
-                  this.getParams().user ||
-                  this.getParams().org;
-
-        var params = Object.keys(this.getParams());
-        params.splice(params.indexOf('org'), 1);
-        var subject = params[0];
+        }.bind(this);
 
         var renderDot = function(item, i, dot, j) {
             if (dot.val === 0) {
@@ -232,7 +191,7 @@ var StackedAreaChart = React.createClass({
             }
 
             var maxWidth = this.state.canvasWidth,
-                maxHeight = this.height,
+                maxHeight = this.canvasHeight,
                 radius = 10,
                 x = dot.x,
                 y = dot.y;
@@ -258,12 +217,6 @@ var StackedAreaChart = React.createClass({
             );
         }.bind(this);
 
-        var renderedDots = _.map(paths, function(pair, i) {
-            var item = pair[0], path = pair[1];
-            var dots = this.buildDots(path);
-            return dots.map(renderDot.bind(this, item, i));
-        }.bind(this));
-
         var renderLegend = function(item, i){
             return (
                 <li key={'legend-'+ item}
@@ -278,7 +231,60 @@ var StackedAreaChart = React.createClass({
             );
         }.bind(this);
 
-        var legend = _(paths).pluck(0).filter(function(el){ return el !== null; }).value();
+        var maxWidth = this.state.canvasWidth,
+            maxHeight = this.canvasHeight,
+            top = this.state.topItems,
+            max = this.state.maxCommitsPerWeek;
+
+        // [week, [dot, ...]]
+        var dotsByWeek = _(this.state.weeklyData)
+            .map(function(items, week) {
+                var values = _.map(top, function(item) {
+                    return items[item] || 0;
+                });
+                var sum = 0;
+                var dots = _.map(values, function(val) {
+                    sum += val/max;
+                    return {
+                        val: val,
+                        norm: sum
+                    };
+                });
+                return [parseInt(week, 10), dots];
+            })
+            .sort(0)
+            .reverse()
+            .take(this.maxWeeks)
+            .reverse()
+            .value();
+
+        // [item, [dot, ...]]
+        var dotsByItem = _.map(top, function(item, i) {
+            var dots = _.map(dotsByWeek, function(pair) {
+                var dots = pair[1];
+                return dots[i];
+            });
+            return[item, dots];
+        });
+
+        var renderedDots = _.map(dotsByItem, function(pair, i) {
+            var item = pair[0], path = pair[1];
+            var dots = this.extendDotsWithCoordinates(path);
+            return dots.map(renderDot.bind(this, item, i));
+        }.bind(this));
+
+        var legend = _(dotsByItem).pluck(0).filter(function(el){ return el !== null; }).value();
+
+        // Text generation stuff
+        var words = this.words,
+            who = this.getParams().repo ||
+                  this.getParams().team ||
+                  this.getParams().user ||
+                  this.getParams().org;
+
+        var params = Object.keys(this.getParams());
+        params.splice(params.indexOf('org'), 1);
+        var subject = params[0];
 
         return (
             <div ref="container" className="sac">
@@ -298,15 +304,15 @@ var StackedAreaChart = React.createClass({
                 </div>
                 <svg ref="svg" className="sachart" key="sachart-svg"
                     width="100%"
-                    height={this.height + this.xAxisHeight}
-                    viewBox={"0 0 "+ (this.state.canvasWidth || 0) + " "+ (this.height + this.xAxisHeight)}
+                    height={this.canvasHeight + this.xAxisHeight}
+                    viewBox={"0 0 "+ (this.state.canvasWidth || 0) + " "+ (this.canvasHeight + this.xAxisHeight)}
                     onMouseOut={this.handleFocusOut}
                     >
-                    <g ref="areas">{areas.reverse()}</g>
+                    <g ref="areas">{dotsByItem.map(renderArea).reverse()}</g>
                     <g ref="dots">{renderedDots}</g>
                     <Axis
-                        weeks={_.pluck(points, 0)}
-                        y={this.height + 3}
+                        weeks={_.pluck(dotsByWeek, 0)}
+                        y={this.canvasHeight + 3}
                         width={this.state.canvasWidth} />
                 </svg>
                 <ul className="legend">
@@ -393,15 +399,15 @@ var Axis = React.createClass({
             var len = this.props.weeks.length,
                 x = i/(len - 1)*this.props.width,
                 showLabel,
-                ta = (i === 0
+                ta = (i === 0 // Text anchor for the leftmost label
                     ? 'start'
-                    : (i === len - 1
+                    : (i === len - 1 // Text anchor for the rightmost label
                         ? 'end'
-                        : 'middle'));
+                        : 'middle')); // Text anchor for other labels
 
             // Thin out labels
             if (len > 20) {
-                showLabel = (i % 2 === 0);
+                showLabel = (i % 3 === 0);
             } else if (len > 10) {
                 showLabel = (i % 2 === 0);
             } else {
@@ -415,13 +421,13 @@ var Axis = React.createClass({
                         y1={this.props.y}
                         x2={x}
                         y2={this.props.y + 4} />
-                    {showLabel ? <text className="axis-mark"
+                    {!showLabel ? null : <text className="axis-mark"
                         x={x}
                         y={this.props.y + 15}
                         textAnchor={ta}
                         >
                         {formatDate(week)}
-                    </text> : null}
+                    </text>}
                 </g>
             );
         }.bind(this);
@@ -443,4 +449,3 @@ var Axis = React.createClass({
         )
     }
 });
-
