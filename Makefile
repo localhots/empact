@@ -10,6 +10,7 @@ static:
 		app/bower_components/react-router/build/global/ReactRouter.min.js \
 		app/bower_components/lodash/lodash.min.js \
 		app/js/* \
-		app/jsx/build/*/* \
+		app/jsx/build/charts/* \
+		app/jsx/build/app.js \
 		> build/app.js
 	cat app/css/* | $(CLEANCSS) -o build/app.css
