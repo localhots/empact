@@ -29,7 +29,6 @@ join members m on
 join teams t on
     m.team_id = t.id
 where
-    m.id is not null and
     c.owner = :org and
     c.week >= :from and
     c.week <= :to
@@ -49,7 +48,6 @@ join members m on
 join teams t on
     m.team_id = t.id
 where
-    m.id is not null and
     c.owner = :org and
     c.week >= :from and
     c.week <= :to
@@ -69,7 +67,6 @@ join teams t on
     m.team_id = t.id and
     t.name = :team
 where
-    m.id is not null and
     c.owner = :org and
     c.week >= :from and
     c.week <= :to
@@ -90,7 +87,6 @@ join teams t on
     m.team_id = t.id and
     t.name = :team
 where
-    m.id is not null and
     c.owner = :org and
     c.week >= :from and
     c.week <= :to
@@ -138,7 +134,6 @@ join members m on
 join teams t on
     m.team_id = t.id
 where
-    m.id is not null and
     c.owner = :org and
     c.repo = :repo and
     c.week >= :from and
@@ -159,7 +154,6 @@ join members m on
 join teams t on
     m.team_id = t.id
 where
-    m.id is not null and
     c.owner = :org and
     c.repo = :repo and
     c.week >= :from and
