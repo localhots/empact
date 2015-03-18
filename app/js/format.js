@@ -25,5 +25,5 @@ function formatNumber(num) {
     while (/(\d+)(\d{3})/.test(x1)) {
         x1 = x1.replace(/(\d+)(\d{3})/, '$1,$2');
     }
-    return x1 + x2;
+    return (x1 + x2).replace('-', '−');
 }
