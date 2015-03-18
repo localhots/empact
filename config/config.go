@@ -10,7 +10,8 @@ import (
 
 type (
 	Config struct {
-		Domain         string `json:"app_domain"`
+		ServerPort     int    `json:"app_server_port"`
+		RedisPort      int    `json:"app_redis_port"`
 		DatabaseURI    string `json:"app_database_uri"`
 		AuthURL        string `json:"github_auth_url"`
 		AccessTokenURL string `json:"github_access_token_url"`

@@ -1,10 +1,12 @@
 package server
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/garyburd/redigo/redis"
+	"github.com/localhots/empact/config"
 )
 
 const (
@@ -36,10 +38,10 @@ func init() {
 }
 
 func Start() {
-	log.Println("Starting server at http://localhost:8080")
-	http.ListenAndServe(":8080", nil)
+	log.Printf("Starting server at http://localhost:%d\n", config.C().ServerPort)
+	http.ListenAndServe(fmt.Sprintf(":%d", config.C().ServerPort), nil)
 }
 
 func dialRedis() (redis.Conn, error) {
-	return redis.Dial("tcp", ":6379")
+	return redis.Dial("tcp", fmt.Sprintf(":%d", config.C().RedisPort))
 }

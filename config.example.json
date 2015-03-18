@@ -1,5 +1,6 @@
 {
-    "app_domain": "localhost",
+    "app_server_port": 8080,
+    "app_redis_port": 6379,
     "app_database_uri": "root@/empact?parseTime=true",
     "github_auth_url": "https://github.com/login/oauth/authorize",
     "github_access_token_url": "https://github.com/login/oauth/access_token",
