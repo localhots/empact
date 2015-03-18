@@ -14,7 +14,8 @@ var ChartAnimationMixin = {
         // easeOutCirc: 0.075 0.82 0.165 1
         // easeOutBack: 0.175 0.885 0.32 1.275
         // easeInOutCubic: 0.645 0.045 0.355 1
-        anim.setAttributeNS(null, 'keySplines', '0.175 0.885 0.32 1.275');
+        // easeOutBack2: 0.15 0.9 0.6 1.07 (more linear, less bouncy)
+        anim.setAttributeNS(null, 'keySplines', '0.15 0.9 0.6 1.07');
         anim.setAttributeNS(null, 'repeatCount', '1');
         anim.addEventListener('endEvent', function() {
             node.setAttributeNS(null, attr, to);
