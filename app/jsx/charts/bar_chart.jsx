@@ -104,11 +104,6 @@ var BarChart = React.createClass({
             }.bind(this))
             .take(this.numElements)
             .value();
-        for (var i = points.length; i < this.numElements; i++) {
-            var point = {};
-            point[this.state.sort] = 0;
-            points.push(point);
-        }
 
         this.setState({
             points: points,
@@ -138,6 +133,13 @@ var BarChart = React.createClass({
                 : 'org');
             subject = this.getParams()[target];
 
+        var points = _.clone(this.state.points);
+        if (points.length > 0) {
+            for (var i = points.length; i < this.numElements; i++) {
+                points.push({commits: 0, delta: 0});
+            }
+        }
+
         return (
             <div className="barchart-container">
                 <div className="whatsgoingon">
@@ -158,7 +160,7 @@ var BarChart = React.createClass({
                 <svg ref="svg" className="barchart" key="barchart-svg"
                     width="100%" height={this.height()}
                     viewBox={"0 0 "+ (this.state.canvasWidth || 0) + " "+ this.height()}>
-                    {this.state.points.map(this.renderBar)}
+                    {points.map(this.renderBar)}
                 </svg>
             </div>
         );
