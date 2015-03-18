@@ -13,4 +13,7 @@ static:
 		app/jsx/build/charts/* \
 		app/jsx/build/app.js \
 		> build/app.js
-	cat app/css/* | $(CLEANCSS) -o build/app.css
+	cat \
+		app/bower_components/normalize.css/normalize.css \
+		app/css/* \
+		| $(CLEANCSS) -o build/app.css
