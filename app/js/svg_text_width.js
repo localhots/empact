@@ -1,17 +1,9 @@
-var SVGChartMixin = {
-    calculateViewBoxWidth: function() {
-        this.setState({
-           canvasWidth: this.refs.svg.getDOMNode().offsetWidth
-        });
-    }
-};
-
 var fontFamily = "'Open Sans', Helvetica, Arial, sans-serif",
     fontSize = 16;
 
 function textWidth(str) {
-    var svg = document.createElementNS('http://www.w3.org/2000/svg', "svg");
-        text = document.createElementNS('http://www.w3.org/2000/svg', "text");
+    var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
 
     svg.width = 500;
     svg.height = 500;
