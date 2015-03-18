@@ -1,9 +1,6 @@
-// JSX cache
-.module-cache
-
 // Packages
-node_modules
-bower_components
+/node_modules
+/app/bower_components
 
 // Config files
 /config.json
@@ -13,5 +10,5 @@ bower_components
 *.txt
 
 // Compiled
-app/jsx/build
-build/*
+/app/jsx/build
+/build
