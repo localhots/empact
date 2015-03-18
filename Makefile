@@ -3,7 +3,7 @@ UGLIFY = ./node_modules/uglify-js/bin/uglifyjs
 CLEANCSS = ./node_modules/clean-css/bin/cleancss
 
 cloc:
-	cloc . --exclude-dir=app/bower_components,app/scripts/.module-cache
+	cloc . --exclude-dir=node_modules,app/bower_components,app/jsx/build/.module_cache
 
 dist:
 	# Compiling JSX
