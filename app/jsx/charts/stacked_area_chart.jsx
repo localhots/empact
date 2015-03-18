@@ -81,6 +81,7 @@ var StackedAreaChart = React.createClass({
     },
 
     handleClick: function(item) {
+        this.handleFocusOut();
         var params = {org: this.getParams().org};
         params[this.state.item] = item;
         this.transitionTo(this.state.item, params, this.getQuery());
