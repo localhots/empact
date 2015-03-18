@@ -6,7 +6,7 @@ var SVGChartMixin = {
     }
 };
 
-var fontFamily = 'Helvetica Neue, Helvetica, sans-serif',
+var fontFamily = "'Open Sans', Helvetica, Arial, sans-serif",
     fontSize = 16;
 
 function textWidth(str) {
