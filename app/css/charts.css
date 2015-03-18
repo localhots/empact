@@ -41,7 +41,7 @@
     display: block;
     margin: 0;
     padding: 0;
-    height: 90px;
+    min-height: 90px;
 }
 .color-dot {
     display: block;
@@ -135,7 +135,7 @@
     color: #444;
     margin-bottom: 20px;
     line-height: 24px;
-    height: 72px; /* 3*line-height */
+    min-height: 72px; /* 3*line-height */
 }
 
 .whatsgoingon em {
