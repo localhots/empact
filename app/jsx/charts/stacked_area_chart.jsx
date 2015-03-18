@@ -101,7 +101,9 @@ var StackedAreaChart = React.createClass({
         var weeksList = _(this.state.rawData).pluck('week').uniq().sort().reverse().take(this.maxWeeks).value();
         if (weeksList.length < 2) {
             this.setState({
-                weeks: [],
+                topItems: [],
+                weeklyData: {},
+                maxCommitsPerWeek: 0,
                 state: 'pleaseRender'
             });
             return;
