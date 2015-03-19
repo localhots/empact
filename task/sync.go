@@ -154,21 +154,8 @@ func SyncOrgMembers(token string, org *db.Org) (err error) {
 		saveResponseMeta(token, resp)
 
 		for _, user := range users {
-			var name, avatarURL string
-			if user.Name != nil {
-				name = *user.Name
-			}
-			if user.AvatarURL != nil {
-				avatarURL = *user.AvatarURL
-			}
-			u := &db.User{
-				ID:        uint64(*user.ID),
-				Login:     *user.Login,
-				Name:      name,
-				AvatarURL: avatarURL,
-			}
-			u.Save()
-			ids = append(ids, u.ID)
+			ids = append(ids, uint64(*user.ID))
+			go SyncUserInfo(token, *user.Login)
 		}
 		if opt.Page >= resp.LastPage {
 			break
