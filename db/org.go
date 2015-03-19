@@ -5,9 +5,9 @@ import (
 )
 
 type Org struct {
+	GithubID  uint64 `json:"github_id"`
 	Login     string `json:"login"`
-	Descr     string `json:"descr"`
-	ID        uint64 `json:"id"`
+	Company   string `json:"company"`
 	AvatarURL string `json:"avatar_url"`
 }
 

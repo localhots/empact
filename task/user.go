@@ -37,3 +37,25 @@ func FetchUserInfo(token, login string) (u *db.User, err error) {
 
 	return
 }
+
+func FetchUserOrgs(token string) (orgs []*db.Org, err error) {
+	client := newGithubClient(token)
+	var ghorgs []github.Organization
+	var resp *github.Response
+	if ghorgs, resp, err = client.Organizations.List("", nil); err != nil {
+		return
+	}
+	saveResponseMeta(token, resp)
+
+	for _, ghorg := range ghorgs {
+		org := &db.Org{
+			GithubID:  uint64(*ghorg.ID),
+			Login:     *ghorg.Login,
+			Company:   *ghorg.Company,
+			AvatarURL: *ghorg.AvatarURL,
+		}
+		orgs = append(orgs, org)
+	}
+
+	return
+}
