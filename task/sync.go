@@ -71,6 +71,7 @@ func SyncUserOrgs(token string) (err error) {
 	opt := &github.ListOptions{PerPage: 100}
 
 	for {
+		opt.Page++
 		var orgs []github.Organization
 		var resp *github.Response
 		if orgs, resp, err = client.Organizations.List("", opt); err != nil {
