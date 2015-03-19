@@ -3,9 +3,9 @@ package db
 import "time"
 
 type User struct {
+	ID        uint64 `json:"id"`
 	Login     string `json:"login"`
 	Name      string `json:"name"`
-	ID        uint64 `json:"id"`
 	AvatarURL string `json:"avatar_url" db:"avatar_url"`
 }
 
@@ -20,10 +20,13 @@ join users u on
 where m.org = ?`
 
 const saveUserQuery = `
-insert into users (login, name, id, avatar_url)
-values (:login, :name, :id, :avatar_url)
+insert into users (id, login, name, avatar_url, created_at, updated_at)
+values (:id, :login, :name, :avatar_url, now(), now())
 on duplicate key update
-login=values(login), name=values(name), avatar_url=values(avatar_url)`
+login = values(login),
+name = values(name),
+avatar_url = values(avatar_url),
+updated_at = now()`
 
 func (u *User) Save() {
 	defer measure("SaveUser", time.Now())
