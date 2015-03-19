@@ -29,10 +29,10 @@ var BarChart = React.createClass({
             "team-repo": "working on",
             "team-org": "working on repositories of",
             "user-org": "working on repositories of",
-            "repo-org": "that were most actively modified by the members of",
+            "repo-org": "most actively modified by the members of",
             "user-team": "working on repositories of the",
-            "repo-team": "that were most actively modified by the members of the",
-            "repo-user": "that were most actively modified by"
+            "repo-team": "most actively modified by the members of the",
+            "repo-user": "most actively modified by"
         },
         targetSuffix: { // Subject of current context
             repo: "repository",
