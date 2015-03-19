@@ -10,9 +10,7 @@ import (
 func SyncRepos(token, owner string) {
 	defer report("SyncRepos", time.Now())
 	client := newGithubClient(token)
-	opt := &github.RepositoryListByOrgOptions{
-		ListOptions: github.ListOptions{},
-	}
+	opt := &github.RepositoryListByOrgOptions{ListOptions: github.ListOptions{PerPage: 100}}
 
 	for {
 		opt.Page++
@@ -28,7 +26,7 @@ func SyncRepos(token, owner string) {
 			}
 			r.Save()
 		}
-		if len(repos) < 30 {
+		if opt.Page == resp.LastPage {
 			break
 		}
 	}
@@ -37,6 +35,7 @@ func SyncRepos(token, owner string) {
 func SyncContrib(token, owner, repo string) {
 	defer report("SyncContrib", time.Now())
 	client := newGithubClient(token)
+
 	contribs, resp, err := client.Repositories.ListContributorsStats(owner, repo)
 	saveResponseMeta(token, resp)
 	if err != nil {
@@ -46,22 +45,25 @@ func SyncContrib(token, owner, repo string) {
 		panic(err)
 	}
 
-	for _, c := range contribs {
-		for _, week := range c.Weeks {
+	for _, contrib := range contribs {
+		for _, week := range contrib.Weeks {
 			if *week.Commits == 0 {
 				continue
 			}
 
-			contrib := &db.Contrib{
+			c := &db.Contrib{
 				Week:      uint64(week.Week.Time.Unix()),
-				Author:    *c.Author.Login,
+				Author:    *contrib.Author.Login,
 				Owner:     owner,
 				Repo:      repo,
 				Commits:   uint64(*week.Commits),
 				Additions: uint64(*week.Additions),
 				Deletions: uint64(*week.Deletions),
 			}
-			contrib.Save()
+			c.Save()
+		}
+	}
+}
 
 func SyncUserOrgs(token string) (err error) {
 	defer report("SyncUserOrgs", time.Now())
