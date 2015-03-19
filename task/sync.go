@@ -103,6 +103,38 @@ func SyncUserOrgs(token string) (err error) {
 
 	return
 }
+
+func SyncOrgTeams(token string, org *db.Org) (err error) {
+	defer report("SyncOrgTeams", time.Now())
+	client := newGithubClient(token)
+	opt := &github.ListOptions{PerPage: 100}
+
+	for {
+		opt.Page++
+		var teams []github.Team
+		var resp *github.Response
+		if teams, resp, err = client.Organizations.ListTeams(org.Login, opt); err != nil {
+			return
+		}
+		saveResponseMeta(token, resp)
+
+		for _, team := range teams {
+			t := &db.Team{
+				ID:         uint64(*team.ID),
+				Name:       *team.Name,
+				Slug:       *team.Slug,
+				Permission: *team.Permission,
+				OrgID:      org.ID,
+			}
+			t.Save()
+		}
+		if opt.Page == resp.LastPage {
+			break
+		}
+	}
+
+	return
+}
 		}
 	}
 }
