@@ -49,7 +49,7 @@
     content: '';
     width: 16px;
     height: 16px;
-    margin: 1px 5px 0 0;
+    margin: 2px 5px 0 0;
     border-radius: 8px;
 }
 .sac .legend li {
@@ -133,9 +133,12 @@
 
 .whatsgoingon {
     color: #444;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     line-height: 24px;
     min-height: 72px; /* 3*line-height */
+}
+.whatsgoingon span {
+    line-height: 24px;
 }
 
 .whatsgoingon em {
@@ -143,8 +146,8 @@
     line-height: 16px;
     color: #000;
     font-style: normal;
-    margin: 3px 0 0;
-    padding: 3px 6px;
+    margin: 4px 0;
+    padding: 0px 3px;
     background-color: #f0f0f0;
     border-radius: 2px;
 }
@@ -177,11 +180,13 @@
 }
 
 .week-selector .selector em {
+    display: inline-block;
+    padding: 3px;
     width: 100%;
 }
 .week-selector .selector select {
     position: absolute;
-    top: 5px;
+    top: 4px;
     left: 5%;
     width: 90%;
     margin: 0;
@@ -214,3 +219,12 @@
 .sac .dot text {
     text-anchor: middle;
 }
+hr {
+    margin: 20px 20px 30px 0;
+    height: 1px;
+    color: #aaa;
+    background-color: #ccc;
+    border: 0 none;
+    clear: both;
+}
+

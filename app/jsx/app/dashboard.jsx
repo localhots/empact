@@ -43,6 +43,7 @@ var Dashboard = React.createClass({
             <div className="content">
                 <InfoBlock image={infoImage} className={infoImageClass} title={infoTitle} />
                 <StackedAreaChart api={sacApi} params={this.getParams()} items={sacItems} />
+                <hr />
                 <BarChart api={bcApi} params={this.getParams()} items={bcItems} />
             </div>
         );

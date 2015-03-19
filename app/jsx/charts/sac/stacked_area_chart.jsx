@@ -300,7 +300,7 @@ var StackedAreaChart = React.createClass({
         return (
             <div ref="container" className="sac">
                 <div className="whatsgoingon">
-                    This stacked area chart shows <em>the number of commits</em> {words.actions[this.state.item]} <em>{words.items[this.state.item]}</em> {words.whatHappened[this.state.item +'-'+ target]} <em>{subject}</em> {words.targetSuffix[target]} <WeekIntervalSelector />
+                    This stacked area chart shows <em>the number of commits</em> {words.actions[this.state.item]} <em>{words.items[this.state.item]}</em> {words.whatHappened[this.state.item +'-'+ target]} <em>{subject}</em> {words.targetSuffix[target]}<br /><WeekIntervalSelector />
                 </div>
                 <div className="filters">
                     <Selector thing="sort"
