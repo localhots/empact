@@ -1,8 +1,6 @@
 var Dot = React.createClass({
     mixins: [ChartAnimationMixin],
 
-    radius: 10,
-
     getInitialState: function() {
         return {};
     },
@@ -19,12 +17,21 @@ var Dot = React.createClass({
     },
 
     render: function() {
+        var radius,
+            val = ''+ this.props.value;
+        if (val.length === 1) {
+            radius = 8;
+        } else if (val.length === 2) {
+            radius = 9;
+        } else {
+            radius = 11;
+        }
         return (
             <g className={'dot dot-'+ this.props.i} onMouseOver={this.props.onMouseOver}>
                 <circle ref="dot"
                     cx={this.props.x}
                     cy={this.state.lastY || this.props.y}
-                    r={this.radius} />
+                    r={radius} />
                 <text ref="value"
                     x={this.props.x}
                     y={this.props.y+4}>
