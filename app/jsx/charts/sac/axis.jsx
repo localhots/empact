@@ -8,7 +8,7 @@ var Axis = React.createClass({
         }
         var renderMark = function(week, i) {
             var len = this.props.weeks.length,
-                x = i/(len - 1)*this.props.width,
+                x = i/(len - 1)*this.props.width + 1,
                 showLabel,
                 ta = (i === 0 // Text anchor for the leftmost label
                     ? 'start'
