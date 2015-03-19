@@ -1,10 +1,10 @@
 var Bar = React.createClass({
     mixins: [ReactRouter.Navigation, ChartAnimationMixin],
 
-    height: 30,
+    height: 28,
     labelPaddingH: 5,     // Label horizontal padding
     labelPaddingV: 2,     // Label vertical padding
-    labelMarginV: 5,      // Same as padding
+    labelMarginV: 4,      // Tune text vertical alignment
     labelHeight: 16,      // Text size
     labelOuterHeight: 20, // labelHeight + 2*labelPaddingV,
 

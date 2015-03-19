@@ -3,8 +3,8 @@ var BarChart = React.createClass({
 
     sorts: ['commits', 'delta'],
     numElements: 15,
-    barHeight: 30,
-    barMargin: 5,
+    barHeight: 28,
+    barMargin: 4,
 
     words: {
         values: { // Sort
