@@ -135,6 +135,45 @@ func SyncOrgTeams(token string, org *db.Org) (err error) {
 
 	return
 }
+
+func SyncOrgMembers(token string, org *db.Org) (err error) {
+	defer report("SyncOrgTeams", time.Now())
+	client := newGithubClient(token)
+	opt := &github.ListMembersOptions{ListOptions: github.ListOptions{PerPage: 100}}
+
+	var ids = []uint64{}
+
+	for {
+		opt.Page++
+		var users []github.User
+		var resp *github.Response
+		if users, resp, err = client.Organizations.ListMembers(org.Login, opt); err != nil {
+			return
+		}
+		saveResponseMeta(token, resp)
+
+		for _, user := range users {
+			var name, avatarURL string
+			if user.Name != nil {
+				name = *user.Name
+			}
+			if user.AvatarURL != nil {
+				avatarURL = *user.AvatarURL
+			}
+			u := &db.User{
+				ID:        uint64(*user.ID),
+				Login:     *user.Login,
+				Name:      name,
+				AvatarURL: avatarURL,
+			}
+			u.Save()
+			ids = append(ids, u.ID)
+		}
+		if opt.Page == resp.LastPage {
+			break
 		}
 	}
+	db.SaveOrgMembers(org.ID, ids)
+
+	return
 }
