@@ -62,7 +62,7 @@ var BarChart = React.createClass({
             item: (_.isEqual(newProps.items, this.props.items)
                 ? this.state.item
                 : newProps.items[0]),
-            state: 'newProps'
+            state: 'loadingData'
         }, this.fetchData);
     },
 
@@ -70,7 +70,7 @@ var BarChart = React.createClass({
         if (!newState.canvasWidth) {
             return false;
         }
-        if (newState.state !== 'newPoints')  {
+        if (newState.state !== 'pleaseRender')  {
             return false;
         }
         return true;
@@ -80,12 +80,12 @@ var BarChart = React.createClass({
         if (thing === 'item' && this.props.items[i] !== this.state.item) {
             this.setState({
                 item: this.props.items[i],
-                state: 'newProps'
+                state: 'loadingData'
             }, this.fetchData);
         } else if (thing === 'sort' && this.sorts[i] !== this.state.sort) {
             this.setState({
                 sort: this.sorts[i],
-                state: 'newProps'
+                state: 'loadingData'
             }, this.handleNewData);
         }
     },
@@ -109,7 +109,7 @@ var BarChart = React.createClass({
             points: points,
             min: _.min(points, this.state.sort)[this.state.sort],
             max: _.max(points, this.state.sort)[this.state.sort],
-            state: 'newPoints'
+            state: 'pleaseRender'
         });
     },
 
