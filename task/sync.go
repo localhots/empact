@@ -62,6 +62,45 @@ func SyncContrib(token, owner, repo string) {
 				Deletions: uint64(*week.Deletions),
 			}
 			contrib.Save()
+
+func SyncUserOrgs(token string) (err error) {
+	defer report("SyncUserOrgs", time.Now())
+	client := newGithubClient(token)
+	opt := &github.ListOptions{PerPage: 100}
+
+	for {
+		var orgs []github.Organization
+		var resp *github.Response
+		if orgs, resp, err = client.Organizations.List("", opt); err != nil {
+			return
+		}
+		saveResponseMeta(token, resp)
+
+		for _, org := range orgs {
+			var company, avatarURL string
+			if org.Company != nil {
+				company = *org.Company
+			}
+			if org.AvatarURL != nil {
+				avatarURL = *org.AvatarURL
+			}
+			o := &db.Org{
+				ID:        uint64(*org.ID),
+				Login:     *org.Login,
+				Company:   company,
+				AvatarURL: avatarURL,
+			}
+			go SyncOrgTeams(token, o)
+			go SyncOrgMembers(token, o)
+			o.Save()
+		}
+		if opt.Page == resp.LastPage {
+			break
+		}
+	}
+
+	return
+}
 		}
 	}
 }
