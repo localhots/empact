@@ -26,7 +26,7 @@ func SyncRepos(token, owner string) {
 			}
 			r.Save()
 		}
-		if opt.Page == resp.LastPage {
+		if opt.Page >= resp.LastPage {
 			break
 		}
 	}
@@ -96,7 +96,7 @@ func SyncUserOrgs(token string) (err error) {
 			go SyncOrgMembers(token, o)
 			o.Save()
 		}
-		if opt.Page == resp.LastPage {
+		if opt.Page >= resp.LastPage {
 			break
 		}
 	}
@@ -126,9 +126,10 @@ func SyncOrgTeams(token string, org *db.Org) (err error) {
 				Permission: *team.Permission,
 				OrgID:      org.ID,
 			}
+			go SyncTeamMembers(token, t)
 			t.Save()
 		}
-		if opt.Page == resp.LastPage {
+		if opt.Page >= resp.LastPage {
 			break
 		}
 	}
@@ -137,12 +138,11 @@ func SyncOrgTeams(token string, org *db.Org) (err error) {
 }
 
 func SyncOrgMembers(token string, org *db.Org) (err error) {
-	defer report("SyncOrgTeams", time.Now())
+	defer report("SyncOrgMembers", time.Now())
 	client := newGithubClient(token)
 	opt := &github.ListMembersOptions{ListOptions: github.ListOptions{PerPage: 100}}
 
 	var ids = []uint64{}
-
 	for {
 		opt.Page++
 		var users []github.User
@@ -169,11 +169,38 @@ func SyncOrgMembers(token string, org *db.Org) (err error) {
 			u.Save()
 			ids = append(ids, u.ID)
 		}
-		if opt.Page == resp.LastPage {
+		if opt.Page >= resp.LastPage {
 			break
 		}
 	}
 	db.SaveOrgMembers(org.ID, ids)
+
+	return
+}
+
+func SyncTeamMembers(token string, team *db.Team) (err error) {
+	defer report("SyncTeamMembers", time.Now())
+	client := newGithubClient(token)
+	opt := &github.ListOptions{PerPage: 100}
+
+	var ids = []uint64{}
+	for {
+		opt.Page++
+		var users []github.User
+		var resp *github.Response
+		if users, resp, err = client.Organizations.ListTeamMembers(int(team.ID), opt); err != nil {
+			return
+		}
+		saveResponseMeta(token, resp)
+
+		for _, user := range users {
+			ids = append(ids, uint64(*user.ID))
+		}
+		if opt.Page >= resp.LastPage {
+			break
+		}
+	}
+	db.SaveTeamMembers(team.OrgID, team.ID, ids)
 
 	return
 }
