@@ -20,6 +20,8 @@ func (c *Contrib) Save() {
 		insert into contribs (week, org_id, repo_id, user_id, commits, additions, deletions)
 		values (:week, :org_id, :repo_id, :user_id, :commits, :additions, :deletions)
 		on duplicate key update
-		commits=values(commits), additions=values(additions), deletions=values(deletions)
+			commits = values(commits),
+			additions = values(additions),
+			deletions = values(deletions)
 	`, c)
 }
