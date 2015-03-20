@@ -39,11 +39,11 @@ func SyncRepos(token, owner string) {
 	}
 }
 
-func SyncContrib(token, owner, repo string) {
+func SyncContrib(token, owner string, repo *db.Repo) {
 	defer report("SyncContrib", time.Now())
 	client := newGithubClient(token)
 
-	contribs, resp, err := client.Repositories.ListContributorsStats(owner, repo)
+	contribs, resp, err := client.Repositories.ListContributorsStats(owner, repo.Name)
 	saveResponseMeta(token, resp)
 	if err != nil {
 		if err.Error() == "EOF" {
@@ -60,9 +60,9 @@ func SyncContrib(token, owner, repo string) {
 
 			c := &db.Contrib{
 				Week:      uint64(week.Week.Time.Unix()),
-				Author:    *contrib.Author.Login,
-				Owner:     owner,
-				Repo:      repo,
+				OrgID:     repo.OrgID,
+				RepoID:    repo.ID,
+				UserID:    uint64(*contrib.Author.ID),
 				Commits:   uint64(*week.Commits),
 				Additions: uint64(*week.Additions),
 				Deletions: uint64(*week.Deletions),
