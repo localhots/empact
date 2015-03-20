@@ -9,15 +9,14 @@ type User struct {
 	Login     string    `json:"login"`
 	Name      string    `json:"name"`
 	AvatarURL string    `json:"avatar_url" db:"avatar_url"`
-	CreatedAt time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
 }
 
 func (u *User) Save() {
 	defer measure("SaveUser", time.Now())
 	mustExecN(`
-		insert into users (id, login, name, avatar_url, created_at, updated_at)
-		values (:id, :login, :name, :avatar_url, now(), now())
+		insert into users (id, login, name, avatar_url, updated_at)
+		values (:id, :login, :name, :avatar_url, now())
 		on duplicate key update
 			login = values(login),
 			name = values(name),

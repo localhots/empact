@@ -10,15 +10,14 @@ type Team struct {
 	Slug       string    `json:"slug"`
 	Name       string    `json:"name"`
 	Permission string    `json:"permission"`
-	CreatedAt  time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at" db:"updated_at"`
 }
 
 func (t *Team) Save() {
 	defer measure("SaveTeam", time.Now())
 	mustExecN(`
-		insert into teams (id, org_id, slug, name, permission, created_at, updated_at)
-		values (:id, :org_id, :slug, :name, :permission, now(), now())
+		insert into teams (id, org_id, slug, name, permission, updated_at)
+		values (:id, :org_id, :slug, :name, :permission, now())
 		on duplicate key update
 			slug = values(slug),
 			name = values(name),

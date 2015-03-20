@@ -9,15 +9,14 @@ type Org struct {
 	Login     string    `json:"login"`
 	Company   string    `json:"company"`
 	AvatarURL string    `json:"avatar_url" db:"avatar_url"`
-	CreatedAt time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
 }
 
 func (o *Org) Save() {
 	defer measure("SaveOrg", time.Now())
 	mustExecN(`
-		insert into orgs (id, login, company, avatar_url, created_at, updated_at)
-		values (:id, :login, :company, :avatar_url, now(), now())
+		insert into orgs (id, login, company, avatar_url, updated_at)
+		values (:id, :login, :company, :avatar_url, now())
 		on duplicate key update
 			login = values(login),
 			company = values(company),
