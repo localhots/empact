@@ -14,13 +14,14 @@ type Token struct {
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
 }
 
-const saveTokenQuery = `
-insert into tokens (user, token, quota, remaining, reset_at, created_at)
-values (:user, :token, :quota, :remaining, :reset_at, now())
-on duplicate key update
-quota = values(quota), remaining = values(remaining), reset_at = values(reset_at)`
-
 func (t *Token) Save() {
 	defer measure("SaveToken", time.Now())
-	mustExecN(saveTokenQuery, t)
+	mustExecN(`
+		insert into tokens (user, token, quota, remaining, reset_at, created_at)
+		values (:user, :token, :quota, :remaining, :reset_at, now())
+		on duplicate key update
+			quota = values(quota),
+			remaining = values(remaining),
+			reset_at = values(reset_at)
+	`, t)
 }
