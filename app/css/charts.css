@@ -107,16 +107,14 @@
 }
 .selector li {
     display: inline-block;
-    font-weight: 300;
     color: #aaa;
     cursor: pointer;
     margin-right: 8px;
 }
 .selector li.active {
-    font-weight: 400;
-    color: #222;
+    color: #000;
     cursor: default;
-    border-bottom: #222 1px solid;
+    border-bottom: #000 1px solid;
 }
 
 .whatsgoingon {

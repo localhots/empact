@@ -54,7 +54,7 @@ dist:
 	| perl -pe 's/<link.*>\n/STYLE_TAG/g' \
 	| perl -pe 's/(STYLE_TAG\s*)+/\
 	<link rel="stylesheet" href="\/app.css">\n        \
-	<link rel="stylesheet" href="\/\/fonts.googleapis.com\/css?family=Open\+Sans:400,300,600">\n    /g' \
+	<link rel="stylesheet" href="\/\/fonts.googleapis.com\/css?family=Open\+Sans:400,600">\n    /g' \
 	| perl -pe 's/<script.*>\n/SCRIPT_TAG/g' \
 	| perl -pe 's/(SCRIPT_TAG\s*)+/\
 	<script type="text\/javascript" src="\/app.js"><\/script>\n/g' \
