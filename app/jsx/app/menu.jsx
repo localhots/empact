@@ -17,7 +17,7 @@ var Menu = React.createClass({
             return (
                 <li key={'team-'+ team.name} className="nav team">
                     <ReactRouter.Link to="team"
-                        params={{org: team.owner, team: team.name}}
+                        params={{org: this.getParams().org, team: team.name}}
                         query={this.getQuery()}>
                         {team.name}
                     </ReactRouter.Link>

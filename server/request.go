@@ -81,11 +81,11 @@ func parseStatRequest(r *http.Request) *statRequest {
 	var item string
 	switch val := r.FormValue("item"); val {
 	case "author", "user":
-		item = "c.author"
+		item = "u.login"
 	case "team":
 		item = "t.name"
 	default:
-		item = "c.repo"
+		item = "r.name"
 	}
 
 	return &statRequest{
