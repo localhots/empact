@@ -21,7 +21,7 @@ func (r *Repo) Save() {
 		insert into repos (owner, name, updated_at)
 		values (:owner, :name, now())
 		on duplicate key update
-		updated_at=now()
+			updated_at = now()
 	`, r)
 }
 
