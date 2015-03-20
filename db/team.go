@@ -5,8 +5,8 @@ import (
 )
 
 type Team struct {
-	ID         uint64    `json:"id"`
-	OrgID      uint64    `json:"org_id" db:"org_id"`
+	ID         int       `json:"id"`
+	OrgID      int       `json:"org_id"`
 	Slug       string    `json:"slug"`
 	Name       string    `json:"name"`
 	Permission string    `json:"permission"`

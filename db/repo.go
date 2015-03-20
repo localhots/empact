@@ -5,8 +5,8 @@ import (
 )
 
 type Repo struct {
-	ID          uint64    `json:"id"`
-	OrgID       uint64    `json:"org_id"`
+	ID          int       `json:"id"`
+	OrgID       int       `json:"org_id"`
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
 	IsPrivate   bool      `json:"is_private"`

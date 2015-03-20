@@ -5,7 +5,7 @@ import (
 )
 
 type Org struct {
-	ID        uint64    `json:"id"`
+	ID        int       `json:"id"`
 	Login     string    `json:"login"`
 	Company   string    `json:"company"`
 	AvatarURL string    `json:"avatar_url" db:"avatar_url"`

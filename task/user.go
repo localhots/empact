@@ -31,7 +31,7 @@ func FetchUserInfo(token, login string) (u *db.User, err error) {
 	u = &db.User{
 		Login:     *user.Login,
 		Name:      name,
-		ID:        uint64(*user.ID),
+		ID:        *user.ID,
 		AvatarURL: avatarURL,
 	}
 

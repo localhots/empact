@@ -5,13 +5,13 @@ import (
 )
 
 type Contrib struct {
-	Week      uint64 `json:"week"`
-	OrgID     uint64 `json:"org_id"`
-	RepoID    uint64 `json:"repo_id"`
-	UserID    uint64 `json:"user_id"`
-	Commits   uint64 `json:"commits"`
-	Additions uint64 `json:"additions"`
-	Deletions uint64 `json:"deletions"`
+	Week      int `json:"week"`
+	OrgID     int `json:"org_id"`
+	RepoID    int `json:"repo_id"`
+	UserID    int `json:"user_id"`
+	Commits   int `json:"commits"`
+	Additions int `json:"additions"`
+	Deletions int `json:"deletions"`
 }
 
 func (c *Contrib) Save() {

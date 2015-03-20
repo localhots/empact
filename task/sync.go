@@ -25,7 +25,7 @@ func SyncRepos(token, owner string) {
 				descr = *repo.Description
 			}
 			r := &db.Repo{
-				OrgID:       uint64(*repo.Organization.ID),
+				OrgID:       *repo.Organization.ID,
 				Name:        *repo.Name,
 				Description: descr,
 				IsPrivate:   *repo.Private,
@@ -59,13 +59,13 @@ func SyncContrib(token, owner string, repo *db.Repo) {
 			}
 
 			c := &db.Contrib{
-				Week:      uint64(week.Week.Time.Unix()),
+				Week:      int(week.Week.Time.Unix()),
 				OrgID:     repo.OrgID,
 				RepoID:    repo.ID,
-				UserID:    uint64(*contrib.Author.ID),
-				Commits:   uint64(*week.Commits),
-				Additions: uint64(*week.Additions),
-				Deletions: uint64(*week.Deletions),
+				UserID:    *contrib.Author.ID,
+				Commits:   *week.Commits,
+				Additions: *week.Additions,
+				Deletions: *week.Deletions,
 			}
 			c.Save()
 		}
@@ -95,7 +95,7 @@ func SyncUserOrgs(token string) (err error) {
 				avatarURL = *org.AvatarURL
 			}
 			o := &db.Org{
-				ID:        uint64(*org.ID),
+				ID:        *org.ID,
 				Login:     *org.Login,
 				Company:   company,
 				AvatarURL: avatarURL,
@@ -128,8 +128,8 @@ func SyncOrgTeams(token string, org *db.Org) (err error) {
 
 		for _, team := range teams {
 			t := &db.Team{
-				ID:         uint64(*team.ID),
 				Name:       *team.Name,
+				ID:         *team.ID,
 				Slug:       *team.Slug,
 				Permission: *team.Permission,
 				OrgID:      org.ID,
@@ -151,7 +151,7 @@ func SyncOrgMembers(token string, org *db.Org) (err error) {
 	client := newGithubClient(token)
 	opt := &github.ListMembersOptions{ListOptions: github.ListOptions{PerPage: 100}}
 
-	var ids = []uint64{}
+	var ids = []int{}
 	for {
 		opt.Page++
 		var users []github.User
@@ -162,7 +162,7 @@ func SyncOrgMembers(token string, org *db.Org) (err error) {
 		saveResponseMeta(token, resp)
 
 		for _, user := range users {
-			ids = append(ids, uint64(*user.ID))
+			ids = append(ids, *user.ID)
 			go SyncUserInfo(token, *user.Login)
 		}
 		if opt.Page >= resp.LastPage {
@@ -179,7 +179,7 @@ func SyncTeamMembers(token string, team *db.Team) (err error) {
 	client := newGithubClient(token)
 	opt := &github.ListOptions{PerPage: 100}
 
-	var ids = []uint64{}
+	var ids = []int{}
 	for {
 		opt.Page++
 		var users []github.User
@@ -190,7 +190,7 @@ func SyncTeamMembers(token string, team *db.Team) (err error) {
 		saveResponseMeta(token, resp)
 
 		for _, user := range users {
-			ids = append(ids, uint64(*user.ID))
+			ids = append(ids, *user.ID)
 		}
 		if opt.Page >= resp.LastPage {
 			break
@@ -206,7 +206,7 @@ func SyncTeamRepos(token string, team *db.Team) (err error) {
 	client := newGithubClient(token)
 	opt := &github.ListOptions{PerPage: 100}
 
-	var ids = []uint64{}
+	var ids = []int{}
 	for {
 		opt.Page++
 		var repos []github.Repository
@@ -217,7 +217,7 @@ func SyncTeamRepos(token string, team *db.Team) (err error) {
 		saveResponseMeta(token, resp)
 
 		for _, repo := range repos {
-			ids = append(ids, uint64(*repo.ID))
+			ids = append(ids, *repo.ID)
 		}
 		if opt.Page >= resp.LastPage {
 			break
