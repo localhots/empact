@@ -67,3 +67,34 @@ func SaveTeamMembers(orgID, teamID uint64, members []uint64) {
 		panic(err)
 	}
 }
+
+func SaveTeamRepos(orgID, teamID uint64, repos []uint64) {
+	defer measure("SaveTeamRepos", time.Now())
+	tx := db.MustBegin()
+
+	var ids = []string{}
+	for _, id := range repos {
+		ids = append(ids, strconv.FormatUint(id, 10))
+	}
+	tx.MustExec(fmt.Sprintf(`
+        delete from team_repos
+        where
+            org_id = %d and
+            team_id = %d and
+            repo_id not in (%s)
+    `, orgID, teamID, strings.Join(ids, ", ")))
+
+	var values = []string{}
+	for _, id := range repos {
+		values = append(values, fmt.Sprintf("(%d, %d, %d)", orgID, teamID, id))
+	}
+	tx.MustExec(`
+        insert into team_repos (org_id, team_id, repo_id)
+        values ` + strings.Join(values, ", ") + `
+        on duplicate key update org_id = org_id
+    `)
+
+	if err := tx.Commit(); err != nil {
+		panic(err)
+	}
+}
