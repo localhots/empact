@@ -5,29 +5,35 @@ import (
 )
 
 type Team struct {
-	ID         uint64 `json:"id"`
-	Slug       string `json:"slug"`
-	Name       string `json:"name"`
-	Permission string `json:"permission"`
-	OrgID      uint64 `json:"org_id" db:"org_id"`
+	ID         uint64    `json:"id"`
+	OrgID      uint64    `json:"org_id" db:"org_id"`
+	Slug       string    `json:"slug"`
+	Name       string    `json:"name"`
+	Permission string    `json:"permission"`
+	CreatedAt  time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at" db:"updated_at"`
 }
-
-const orgTeamsQuery = `select * from teams where owner = ?`
-const saveTeamQuery = `
-insert into teams (id, slug, name, permission, org_id, created_at, updated_at)
-values (:id, :slug, :name, :permission, :org_id, now(), now())
-on duplicate key update
-slug = values(slug),
-permission = values(permission),
-updated_at=now()`
 
 func (t *Team) Save() {
 	defer measure("SaveTeam", time.Now())
-	mustExecN(saveTeamQuery, t)
+	mustExecN(`
+		insert into teams (id, org_id, slug, name, permission, created_at, updated_at)
+		values (:id, :org_id, :slug, :name, :permission, now(), now())
+		on duplicate key update
+			slug = values(slug),
+			name = values(name),
+			permission = values(permission),
+			updated_at = now()
+	`, t)
 }
 
 func OrgTeams(login string) (teams []*Team) {
 	defer measure("OrgTeams", time.Now())
-	mustSelect(&teams, orgTeamsQuery, login)
+	mustSelect(&teams, `
+		select t.*
+		from teams t
+		join orgs o on o.id = t.org_id
+		where o.login = ?
+	`, login)
 	return
 }
