@@ -5,28 +5,33 @@ import (
 )
 
 type Repo struct {
-	ID        uint64    `json:"id"`
-	Owner     string    `json:"owner"`
-	Name      string    `json:"name"`
-	UpdatedAt time.Time `json:"updated_at"`
-	IsPrivate bool      `json:"is_private"`
-	IsForm    bool      `json:"is_fork"`
+	ID          uint64    `json:"id"`
+	OrgID       uint64    `json:"org_id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	IsPrivate   bool      `json:"is_private"`
+	IsFork      bool      `json:"is_fork"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
-
-const orgReposQuery = `select * from repos where owner = ?`
-const saveRepoQuery = `
-insert into repos (owner, name, updated_at)
-values (:owner, :name, now())
-on duplicate key update
-updated_at=now()`
 
 func (r *Repo) Save() {
 	defer measure("SaveRepo", time.Now())
-	mustExecN(saveRepoQuery, r)
+	mustExecN(`
+		insert into repos (owner, name, updated_at)
+		values (:owner, :name, now())
+		on duplicate key update
+		updated_at=now()
+	`, r)
 }
 
 func OrgRepos(login string) (repos []*Repo) {
 	defer measure("OrgRepos", time.Now())
-	mustSelect(&repos, orgReposQuery, login)
+	mustSelect(&repos, `
+		select *
+		from repos r
+		left join orgs o on r.org_id = o.id
+		where o.login = ?
+	`, login)
 	return
 }

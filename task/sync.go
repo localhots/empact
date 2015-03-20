@@ -20,9 +20,16 @@ func SyncRepos(token, owner string) {
 			panic(err)
 		}
 		for _, repo := range repos {
+			var descr string
+			if repo.Description != nil {
+				descr = *repo.Description
+			}
 			r := &db.Repo{
-				Owner: owner,
-				Name:  *repo.Name,
+				OrgID:       uint64(*repo.Organization.ID),
+				Name:        *repo.Name,
+				Description: descr,
+				IsPrivate:   *repo.Private,
+				IsFork:      *repo.Fork,
 			}
 			r.Save()
 		}
