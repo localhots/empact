@@ -13,7 +13,7 @@ type User struct {
 }
 
 func (u *User) Save() {
-	defer measure("SaveUser", time.Now())
+	defer measure(time.Now(), "SaveUser")
 	mustExecN(`
 		insert into users (id, login, name, avatar_url, updated_at)
 		values (:id, :login, :name, :avatar_url, now())
@@ -26,7 +26,7 @@ func (u *User) Save() {
 }
 
 func OrgUsers(login string) (users []*User) {
-	defer measure("OrgUsers", time.Now())
+	defer measure(time.Now(), "OrgUsers")
 	mustSelect(&users, `
 		select u.*
 		from org_members om

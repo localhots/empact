@@ -15,7 +15,7 @@ type Repo struct {
 }
 
 func (r *Repo) Save() {
-	defer measure("SaveRepo", time.Now())
+	defer measure(time.Now(), "SaveRepo")
 	mustExecN(`
 		insert into repos (org_id, name, description, is_private, is_fork, updated_at)
 		values (:org_id, :name, :description, :is_private, :is_fork, now())
@@ -30,7 +30,7 @@ func (r *Repo) Save() {
 }
 
 func OrgRepos(login string) (repos []*Repo) {
-	defer measure("OrgRepos", time.Now())
+	defer measure(time.Now(), "OrgRepos")
 	mustSelect(&repos, `
 		select *
 		from repos r

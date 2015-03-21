@@ -31,7 +31,7 @@ join repos r on
     c.repo_id = r.id`
 
 func StatOrgTop(p map[string]interface{}) (res []StatItem) {
-	defer measure("StatOrgTop", time.Now())
+	defer measure(time.Now(), "StatOrgTop")
 	mustSelectN(&res, fmt.Sprintf(`
         select
             %s as item,
@@ -50,7 +50,7 @@ func StatOrgTop(p map[string]interface{}) (res []StatItem) {
 }
 
 func StatOrgActivity(p map[string]interface{}) (res []StatPoint) {
-	defer measure("StatOrgActivity", time.Now())
+	defer measure(time.Now(), "StatOrgActivity")
 	mustSelectN(&res, fmt.Sprintf(`
         select
             %s as item,
@@ -70,7 +70,7 @@ func StatOrgActivity(p map[string]interface{}) (res []StatPoint) {
 }
 
 func StatTeamTop(p map[string]interface{}) (res []StatItem) {
-	defer measure("StatTeamTop", time.Now())
+	defer measure(time.Now(), "StatTeamTop")
 	mustSelectN(&res, fmt.Sprintf(`
         select
             %s as item,
@@ -90,7 +90,7 @@ func StatTeamTop(p map[string]interface{}) (res []StatItem) {
 }
 
 func StatTeamActivity(p map[string]interface{}) (res []StatPoint) {
-	defer measure("StatTeamActivity", time.Now())
+	defer measure(time.Now(), "StatTeamActivity")
 	mustSelectN(&res, fmt.Sprintf(`
         select
             %s as item,
@@ -111,7 +111,7 @@ func StatTeamActivity(p map[string]interface{}) (res []StatPoint) {
 }
 
 func StatUserTop(p map[string]interface{}) (res []StatItem) {
-	defer measure("StatUserTop", time.Now())
+	defer measure(time.Now(), "StatUserTop")
 	mustSelectN(&res, `
         select
             r.name as item,
@@ -136,7 +136,7 @@ func StatUserTop(p map[string]interface{}) (res []StatItem) {
 }
 
 func StatUserActivity(p map[string]interface{}) (res []StatPoint) {
-	defer measure("StatUserActivity", time.Now())
+	defer measure(time.Now(), "StatUserActivity")
 	mustSelectN(&res, `
         select
             c.week as week,
@@ -162,7 +162,7 @@ func StatUserActivity(p map[string]interface{}) (res []StatPoint) {
 }
 
 func StatRepoTop(p map[string]interface{}) (res []StatItem) {
-	defer measure("StatRepoTop", time.Now())
+	defer measure(time.Now(), "StatRepoTop")
 	mustSelectN(&res, fmt.Sprintf(`
         select
             %s as item,
@@ -182,7 +182,7 @@ func StatRepoTop(p map[string]interface{}) (res []StatItem) {
 }
 
 func StatRepoActivity(p map[string]interface{}) (res []StatPoint) {
-	defer measure("StatRepoActivity", time.Now())
+	defer measure(time.Now(), "StatRepoActivity")
 	mustSelectN(&res, fmt.Sprintf(`
         select
             c.week as week,

@@ -15,7 +15,7 @@ type Token struct {
 }
 
 func (t *Token) Save() {
-	defer measure("SaveToken", time.Now())
+	defer measure(time.Now(), "SaveToken")
 	mustExecN(`
 		insert into tokens (user, token, quota, remaining, reset_at, created_at)
 		values (:user, :token, :quota, :remaining, :reset_at, now())

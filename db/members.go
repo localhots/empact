@@ -8,7 +8,7 @@ import (
 )
 
 func SaveOrgMembers(orgID int, members []int) {
-	defer measure("SaveOrgMembers", time.Now())
+	defer measure(time.Now(), "SaveOrgMembers")
 	tx := db.MustBegin()
 
 	var ids = []string{}
@@ -37,7 +37,7 @@ func SaveOrgMembers(orgID int, members []int) {
 }
 
 func SaveTeamMembers(orgID, teamID int, members []int) {
-	defer measure("SaveTeamMembers", time.Now())
+	defer measure(time.Now(), "SaveTeamMembers")
 	tx := db.MustBegin()
 
 	var ids = []string{}
@@ -67,7 +67,7 @@ func SaveTeamMembers(orgID, teamID int, members []int) {
 }
 
 func SaveTeamRepos(orgID, teamID int, repos []int) {
-	defer measure("SaveTeamRepos", time.Now())
+	defer measure(time.Now(), "SaveTeamRepos")
 	tx := db.MustBegin()
 
 	var ids = []string{}

@@ -14,7 +14,7 @@ type Team struct {
 }
 
 func (t *Team) Save() {
-	defer measure("SaveTeam", time.Now())
+	defer measure(time.Now(), "SaveTeam")
 	mustExecN(`
 		insert into teams (id, org_id, slug, name, permission, updated_at)
 		values (:id, :org_id, :slug, :name, :permission, now())
@@ -27,7 +27,7 @@ func (t *Team) Save() {
 }
 
 func OrgTeams(login string) (teams []*Team) {
-	defer measure("OrgTeams", time.Now())
+	defer measure(time.Now(), "OrgTeams")
 	mustSelect(&teams, `
 		select t.*
 		from teams t

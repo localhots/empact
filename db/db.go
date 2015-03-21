@@ -11,7 +11,7 @@ import (
 
 var (
 	db         *sqlx.DB
-	queryQueue = make(chan func(), 1000)
+	queryQueue = make(chan func())
 )
 
 func Connect(params string) (err error) {
@@ -50,21 +50,18 @@ func Queue(fun func()) {
 
 func processQueue() {
 	for {
-		fun := <-queryQueue
-		fun()
+		(<-queryQueue)()
 	}
 }
 
-func measure(op string, start time.Time) {
+func measure(start time.Time, op string) {
 	duration := time.Since(start).Nanoseconds()
 	outcome := "succeeded"
 	err := recover()
 	if err != nil {
 		outcome = "failed"
+		defer panic(err)
 	}
 
 	log.Printf("Operation %s %s; time: %d (%dms)\n", op, outcome, duration, duration/1000000)
-	if err != nil {
-		panic(err)
-	}
 }

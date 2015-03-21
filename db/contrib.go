@@ -15,7 +15,7 @@ type Contrib struct {
 }
 
 func (c *Contrib) Save() {
-	defer measure("SaveContrib", time.Now())
+	defer measure(time.Now(), "SaveContrib")
 	mustExecN(`
 		insert into contribs (week, org_id, repo_id, user_id, commits, additions, deletions)
 		values (:week, :org_id, :repo_id, :user_id, :commits, :additions, :deletions)
