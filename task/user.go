@@ -8,8 +8,7 @@ import (
 )
 
 func FetchUserInfo(token, login string) (u *db.User, err error) {
-	defer report("FetchUserInfo", time.Now())
-
+	defer report(time.Now(), "FetchUserInfo (%s)", login)
 	client := newGithubClient(token)
 	var user *github.User
 	var resp *github.Response
@@ -39,7 +38,7 @@ func FetchUserInfo(token, login string) (u *db.User, err error) {
 }
 
 func SyncUserInfo(token, login string) (err error) {
-	defer report("SyncUserInfo", time.Now())
+	defer report(time.Now(), "SyncUserInfo (%s)", login)
 	var u *db.User
 	if u, err = FetchUserInfo(token, login); err == nil {
 		db.Queue(func() { u.Save() })

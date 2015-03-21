@@ -7,14 +7,14 @@ import (
 	"github.com/localhots/empact/db"
 )
 
-func SyncRepos(token, owner string) {
-	defer report("SyncRepos", time.Now())
+func SyncOrgRepos(token string, org *db.Org) {
+	defer report(time.Now(), "SyncOrgRepos (%s)", org.Login)
 	client := newGithubClient(token)
 	opt := &github.RepositoryListByOrgOptions{ListOptions: github.ListOptions{PerPage: 100}}
 
 	for {
 		opt.Page++
-		repos, resp, err := client.Repositories.ListByOrg(owner, opt)
+		repos, resp, err := client.Repositories.ListByOrg(org.Login, opt)
 		saveResponseMeta(token, resp)
 		if err != nil {
 			panic(err)
@@ -24,13 +24,16 @@ func SyncRepos(token, owner string) {
 			if repo.Description != nil {
 				descr = *repo.Description
 			}
+			// pretty.Println(repo)
 			r := &db.Repo{
-				OrgID:       *repo.Organization.ID,
+				ID:          *repo.ID,
+				OrgID:       *repo.Owner.ID,
 				Name:        *repo.Name,
 				Description: descr,
 				IsPrivate:   *repo.Private,
 				IsFork:      *repo.Fork,
 			}
+			go SyncContrib(token, org.Login, r)
 			db.Queue(func() { r.Save() })
 		}
 		if opt.Page >= resp.LastPage {
@@ -40,7 +43,7 @@ func SyncRepos(token, owner string) {
 }
 
 func SyncContrib(token, owner string, repo *db.Repo) {
-	defer report("SyncContrib", time.Now())
+	defer report(time.Now(), "SyncContrib (%s/%s)", owner, repo.Name)
 	client := newGithubClient(token)
 
 	contribs, resp, err := client.Repositories.ListContributorsStats(owner, repo.Name)
@@ -73,7 +76,7 @@ func SyncContrib(token, owner string, repo *db.Repo) {
 }
 
 func SyncUserOrgs(token string) (err error) {
-	defer report("SyncUserOrgs", time.Now())
+	defer report(time.Now(), "SyncUserOrgs")
 	client := newGithubClient(token)
 	opt := &github.ListOptions{PerPage: 100}
 
@@ -102,6 +105,7 @@ func SyncUserOrgs(token string) (err error) {
 			}
 			go SyncOrgTeams(token, o)
 			go SyncOrgMembers(token, o)
+			go SyncOrgRepos(token, o)
 			db.Queue(func() { o.Save() })
 		}
 		if opt.Page >= resp.LastPage {
@@ -113,7 +117,7 @@ func SyncUserOrgs(token string) (err error) {
 }
 
 func SyncOrgTeams(token string, org *db.Org) (err error) {
-	defer report("SyncOrgTeams", time.Now())
+	defer report(time.Now(), "SyncOrgTeams (%s)", org.Login)
 	client := newGithubClient(token)
 	opt := &github.ListOptions{PerPage: 100}
 
@@ -147,7 +151,7 @@ func SyncOrgTeams(token string, org *db.Org) (err error) {
 }
 
 func SyncOrgMembers(token string, org *db.Org) (err error) {
-	defer report("SyncOrgMembers", time.Now())
+	defer report(time.Now(), "SyncOrgMembers (%s)", org.Login)
 	client := newGithubClient(token)
 	opt := &github.ListMembersOptions{ListOptions: github.ListOptions{PerPage: 100}}
 
@@ -175,7 +179,7 @@ func SyncOrgMembers(token string, org *db.Org) (err error) {
 }
 
 func SyncTeamMembers(token string, team *db.Team) (err error) {
-	defer report("SyncTeamMembers", time.Now())
+	defer report(time.Now(), "SyncTeamMembers (%d/%s)", team.OrgID, team.Name)
 	client := newGithubClient(token)
 	opt := &github.ListOptions{PerPage: 100}
 
@@ -202,7 +206,7 @@ func SyncTeamMembers(token string, team *db.Team) (err error) {
 }
 
 func SyncTeamRepos(token string, team *db.Team) (err error) {
-	defer report("SyncTeamRepos", time.Now())
+	defer report(time.Now(), "SyncTeamRepos (%d/%s)", team.OrgID, team.Name)
 	client := newGithubClient(token)
 	opt := &github.ListOptions{PerPage: 100}
 

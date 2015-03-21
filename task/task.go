@@ -1,6 +1,7 @@
 package task
 
 import (
+	"fmt"
 	"log"
 	"time"
 
@@ -29,12 +30,15 @@ func saveResponseMeta(token string, res *github.Response) {
 	db.Queue(func() { tok.Save() })
 }
 
-func report(task string, start time.Time) {
+func report(start time.Time, format string, args ...interface{}) {
 	duration := time.Since(start).Nanoseconds()
 	outcome := "succeeded"
-	if err := recover(); err != nil {
-		outcome = "failed"
-	}
+	// if err := recover(); err != nil {
+	// 	log.Println(err)
+	// 	outcome = "failed"
+	// }
 
+	task := fmt.Sprintf(format, args...)
 	log.Printf("Task %s %s; time: %d (%dms)\n", task, outcome, duration, duration/1000000)
+
 }

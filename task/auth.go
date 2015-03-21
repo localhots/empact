@@ -15,7 +15,7 @@ import (
 )
 
 func Authenticate(code string) (token, login string, err error) {
-	defer report("Authenticate", time.Now())
+	defer report(time.Now(), "Authenticate")
 	if token, err = FetchAccessToken(code); err != nil {
 		return
 	}
@@ -40,7 +40,7 @@ func Authenticate(code string) (token, login string, err error) {
 }
 
 func FetchAccessToken(code string) (token string, err error) {
-	defer report("FetchAccessToken", time.Now())
+	defer report(time.Now(), "FetchAccessToken")
 	payload := url.Values{}
 	payload.Set("client_id", config.C().ClientID)
 	payload.Set("client_secret", config.C().ClientSecret)
@@ -68,7 +68,7 @@ func FetchAccessToken(code string) (token string, err error) {
 }
 
 func FetchUserInfoWithToken(token string) (u *db.User, err error) {
-	defer report("FetchUserInfoWithToken", time.Now())
+	defer report(time.Now(), "FetchUserInfoWithToken")
 	var resp *http.Response
 	if resp, err = http.Get("https://api.github.com/user?access_token=" + token); err != nil {
 		return
