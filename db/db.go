@@ -10,12 +10,14 @@ import (
 )
 
 var (
-	db *sqlx.DB
+	db         *sqlx.DB
+	queryQueue = make(chan func(), 1000)
 )
 
 func Connect(params string) (err error) {
 	db, err = sqlx.Connect("mysql", params)
 	db.Mapper = reflectx.NewMapper("json")
+	go processQueue()
 	return
 }
 
@@ -39,6 +41,17 @@ func mustSelectN(dest interface{}, query string, params interface{}) {
 	}
 	if err = stmt.Select(dest, params); err != nil {
 		panic(err)
+	}
+}
+
+func Queue(fun func()) {
+	queryQueue <- fun
+}
+
+func processQueue() {
+	for {
+		fun := <-queryQueue
+		fun()
 	}
 }
 
