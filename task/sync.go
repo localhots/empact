@@ -31,7 +31,7 @@ func SyncRepos(token, owner string) {
 				IsPrivate:   *repo.Private,
 				IsFork:      *repo.Fork,
 			}
-			r.Save()
+			db.Queue(func() { r.Save() })
 		}
 		if opt.Page >= resp.LastPage {
 			break
@@ -67,7 +67,7 @@ func SyncContrib(token, owner string, repo *db.Repo) {
 				Additions: *week.Additions,
 				Deletions: *week.Deletions,
 			}
-			c.Save()
+			db.Queue(func() { c.Save() })
 		}
 	}
 }
@@ -102,7 +102,7 @@ func SyncUserOrgs(token string) (err error) {
 			}
 			go SyncOrgTeams(token, o)
 			go SyncOrgMembers(token, o)
-			o.Save()
+			db.Queue(func() { o.Save() })
 		}
 		if opt.Page >= resp.LastPage {
 			break
@@ -136,7 +136,7 @@ func SyncOrgTeams(token string, org *db.Org) (err error) {
 			}
 			go SyncTeamMembers(token, t)
 			go SyncTeamRepos(token, t)
-			t.Save()
+			db.Queue(func() { t.Save() })
 		}
 		if opt.Page >= resp.LastPage {
 			break
@@ -169,7 +169,7 @@ func SyncOrgMembers(token string, org *db.Org) (err error) {
 			break
 		}
 	}
-	db.SaveOrgMembers(org.ID, ids)
+	db.Queue(func() { db.SaveOrgMembers(org.ID, ids) })
 
 	return
 }
@@ -196,7 +196,7 @@ func SyncTeamMembers(token string, team *db.Team) (err error) {
 			break
 		}
 	}
-	db.SaveTeamMembers(team.OrgID, team.ID, ids)
+	db.Queue(func() { db.SaveTeamMembers(team.OrgID, team.ID, ids) })
 
 	return
 }
@@ -223,7 +223,7 @@ func SyncTeamRepos(token string, team *db.Team) (err error) {
 			break
 		}
 	}
-	db.SaveTeamRepos(team.OrgID, team.ID, ids)
+	db.Queue(func() { db.SaveTeamRepos(team.OrgID, team.ID, ids) })
 
 	return
 }

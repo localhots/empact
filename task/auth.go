@@ -27,14 +27,14 @@ func Authenticate(code string) (token, login string, err error) {
 	}
 	login = user.Login
 	log.Println("Saving user", user)
-	user.Save()
+	db.Queue(func() { user.Save() })
 
 	tok := &db.Token{
 		User:  login,
 		Token: token,
 	}
 	log.Println("Saving token", tok)
-	tok.Save()
+	db.Queue(func() { tok.Save() })
 
 	return
 }

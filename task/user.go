@@ -42,7 +42,7 @@ func SyncUserInfo(token, login string) (err error) {
 	defer report("SyncUserInfo", time.Now())
 	var u *db.User
 	if u, err = FetchUserInfo(token, login); err == nil {
-		u.Save()
+		db.Queue(func() { u.Save() })
 	}
 	return
 }

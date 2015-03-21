@@ -26,7 +26,7 @@ func saveResponseMeta(token string, res *github.Response) {
 		Remaining: res.Remaining,
 		ResetAt:   res.Reset.Time,
 	}
-	tok.Save()
+	db.Queue(func() { tok.Save() })
 }
 
 func report(task string, start time.Time) {
