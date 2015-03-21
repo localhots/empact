@@ -6,12 +6,12 @@ import (
 
 type Repo struct {
 	ID          int       `json:"id"`
-	OrgID       int       `json:"org_id"`
+	OrgID       int       `json:"org_id" db:"org_id"`
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
-	IsPrivate   bool      `json:"is_private"`
-	IsFork      bool      `json:"is_fork"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	IsPrivate   bool      `json:"is_private" db:"is_private"`
+	IsFork      bool      `json:"is_fork" db:"is_fork"`
+	UpdatedAt   time.Time `json:"updated_at" db:"updated_at"`
 }
 
 func (r *Repo) Save() {

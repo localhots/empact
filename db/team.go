@@ -6,7 +6,7 @@ import (
 
 type Team struct {
 	ID         int       `json:"id"`
-	OrgID      int       `json:"org_id"`
+	OrgID      int       `json:"org_id" db:"org_id"`
 	Slug       string    `json:"slug"`
 	Name       string    `json:"name"`
 	Permission string    `json:"permission"`

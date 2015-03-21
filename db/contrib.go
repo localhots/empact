@@ -6,9 +6,9 @@ import (
 
 type Contrib struct {
 	Week      int `json:"week"`
-	OrgID     int `json:"org_id"`
-	RepoID    int `json:"repo_id"`
-	UserID    int `json:"user_id"`
+	OrgID     int `json:"org_id" db:"org_id"`
+	RepoID    int `json:"repo_id" db:"repo_id"`
+	UserID    int `json:"user_id" db:"user_id"`
 	Commits   int `json:"commits"`
 	Additions int `json:"additions"`
 	Deletions int `json:"deletions"`
