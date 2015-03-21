@@ -21,13 +21,13 @@ func saveResponseMeta(token string, res *github.Response) {
 	if res == nil {
 		return
 	}
-	tok := &db.Token{
+	t := &db.Token{
 		Token:     token,
 		Quota:     res.Limit,
 		Remaining: res.Remaining,
 		ResetAt:   res.Reset.Time,
 	}
-	db.Queue(func() { tok.Save() })
+	db.Later(func() { t.Save() })
 }
 
 func report(start time.Time, format string, args ...interface{}) {

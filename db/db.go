@@ -10,8 +10,9 @@ import (
 )
 
 var (
-	db         *sqlx.DB
-	queryQueue = make(chan func())
+	db            *sqlx.DB
+	priorityQueue = make(chan func())
+	delayedQueue  = make(chan func(), 1000)
 )
 
 func Connect(params string) (err error) {
@@ -44,13 +45,22 @@ func mustSelectN(dest interface{}, query string, params interface{}) {
 	}
 }
 
-func Queue(fun func()) {
-	queryQueue <- fun
+func Now(fun func()) {
+	priorityQueue <- fun
+}
+
+func Later(fun func()) {
+	delayedQueue <- fun
 }
 
 func processQueue() {
 	for {
-		(<-queryQueue)()
+		var fun func()
+		select {
+		case fun = <-priorityQueue:
+		case fun = <-delayedQueue:
+		}
+		fun()
 	}
 }
 

@@ -7,6 +7,36 @@ import (
 	"github.com/localhots/empact/db"
 )
 
+func SyncUserInfo(token, login string) {
+	defer report(time.Now(), "SyncUserInfo (%s)", login)
+	client := newGithubClient(token)
+
+	var user *github.User
+	var resp *github.Response
+	var err error
+	if user, resp, err = client.Users.Get(login); err != nil {
+		panic(err)
+	}
+	saveResponseMeta(token, resp)
+
+	var name, avatarURL string
+	if user.Name != nil {
+		name = *user.Name
+	}
+	if user.AvatarURL != nil {
+		avatarURL = *user.AvatarURL
+	}
+	u := &db.User{
+		Login:     *user.Login,
+		Name:      name,
+		ID:        *user.ID,
+		AvatarURL: avatarURL,
+	}
+	db.Now(func() { u.Save() })
+
+	return
+}
+
 func SyncOrgRepos(token string, org *db.Org) {
 	defer report(time.Now(), "SyncOrgRepos (%s)", org.Login)
 	client := newGithubClient(token)
@@ -36,7 +66,7 @@ func SyncOrgRepos(token string, org *db.Org) {
 				IsFork:      *repo.Fork,
 			}
 			go SyncContrib(token, org.Login, r)
-			db.Queue(func() { r.Save() })
+			db.Now(func() { r.Save() })
 		}
 		if opt.Page >= resp.LastPage {
 			break
@@ -74,7 +104,7 @@ func SyncContrib(token, owner string, repo *db.Repo) {
 				Additions: *week.Additions,
 				Deletions: *week.Deletions,
 			}
-			db.Queue(func() { c.Save() })
+			db.Now(func() { c.Save() })
 		}
 	}
 }
@@ -111,7 +141,7 @@ func SyncUserOrgs(token string) {
 			go SyncOrgTeams(token, o)
 			go SyncOrgMembers(token, o)
 			go SyncOrgRepos(token, o)
-			db.Queue(func() { o.Save() })
+			db.Now(func() { o.Save() })
 		}
 		if opt.Page >= resp.LastPage {
 			break
@@ -146,7 +176,7 @@ func SyncOrgTeams(token string, org *db.Org) {
 			}
 			go SyncTeamMembers(token, t)
 			go SyncTeamRepos(token, t)
-			db.Queue(func() { t.Save() })
+			db.Now(func() { t.Save() })
 		}
 		if opt.Page >= resp.LastPage {
 			break
@@ -180,7 +210,7 @@ func SyncOrgMembers(token string, org *db.Org) {
 			break
 		}
 	}
-	db.Queue(func() { db.SaveOrgMembers(org.ID, ids) })
+	db.Now(func() { db.SaveOrgMembers(org.ID, ids) })
 
 	return
 }
@@ -208,7 +238,7 @@ func SyncTeamMembers(token string, team *db.Team) {
 			break
 		}
 	}
-	db.Queue(func() { db.SaveTeamMembers(team.OrgID, team.ID, ids) })
+	db.Now(func() { db.SaveTeamMembers(team.OrgID, team.ID, ids) })
 
 	return
 }
@@ -236,7 +266,7 @@ func SyncTeamRepos(token string, team *db.Team) {
 			break
 		}
 	}
-	db.Queue(func() { db.SaveTeamRepos(team.OrgID, team.ID, ids) })
+	db.Now(func() { db.SaveTeamRepos(team.OrgID, team.ID, ids) })
 
 	return
 }

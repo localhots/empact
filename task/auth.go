@@ -26,15 +26,13 @@ func Authenticate(code string) (token, login string, err error) {
 		return
 	}
 	login = user.Login
-	log.Println("Saving user", user)
-	db.Queue(func() { user.Save() })
+	db.Later(func() { user.Save() })
 
 	tok := &db.Token{
 		User:  login,
 		Token: token,
 	}
-	log.Println("Saving token", tok)
-	db.Queue(func() { tok.Save() })
+	db.Later(func() { tok.Save() })
 
 	return
 }
@@ -64,6 +62,7 @@ func FetchAccessToken(code string) (token string, err error) {
 	if token = pairs.Get("access_token"); token == "" {
 		err = fmt.Errorf("Failed to fetch access token usign code %q: %s", code, pairs.Get("error_description"))
 	}
+
 	return
 }
 
