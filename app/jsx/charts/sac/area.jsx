@@ -22,6 +22,7 @@ var Area = React.createClass({
                 className={'path path-'+ this.props.i}
                 d={this.state.lastd || this.props.d}
                 fill={this.props.color}
+                onClick={this.props.onClick}
                 onMouseOver={this.props.onMouseOver}
                 shapeRendering="optimizeQuality" />
         );

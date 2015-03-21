@@ -195,6 +195,7 @@ var StackedAreaChart = React.createClass({
                     item={item} i={i}
                     d={roundPathCorners(this.buildPathD(path), 3)}
                     color={Colors[i]}
+                    onClick={this.handleClick.bind(this, item)}
                     onMouseOver={this.handleFocusIn.bind(this, i)} />
             );
         }.bind(this);
