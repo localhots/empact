@@ -39,9 +39,7 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        border-bottom: #fff 1px solid;
     }
     .menu .nav a.active {
         color: #000;
-        border-bottom: #000 1px solid;
     }

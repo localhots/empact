@@ -114,7 +114,6 @@
 .selector li.active {
     color: #000;
     cursor: default;
-    border-bottom: #000 1px solid;
 }
 
 .whatsgoingon {
