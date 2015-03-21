@@ -27,9 +27,8 @@ func SaveOrgMembers(orgID int, members []int) {
 		values = append(values, fmt.Sprintf("(%d, %d)", orgID, id))
 	}
 	tx.MustExec(`
-        insert into org_members (org_id, user_id)
+        insert ignore into org_members (org_id, user_id)
         values ` + strings.Join(values, ", ") + `
-        on duplicate key update org_id = org_id
     `)
 
 	if err := tx.Commit(); err != nil {
@@ -58,9 +57,8 @@ func SaveTeamMembers(orgID, teamID int, members []int) {
 		values = append(values, fmt.Sprintf("(%d, %d, %d)", orgID, teamID, id))
 	}
 	tx.MustExec(`
-        insert into team_members (org_id, team_id, user_id)
+        insert ignore into team_members (org_id, team_id, user_id)
         values ` + strings.Join(values, ", ") + `
-        on duplicate key update org_id = org_id
     `)
 
 	if err := tx.Commit(); err != nil {
@@ -89,9 +87,8 @@ func SaveTeamRepos(orgID, teamID int, repos []int) {
 		values = append(values, fmt.Sprintf("(%d, %d, %d)", orgID, teamID, id))
 	}
 	tx.MustExec(`
-        insert into team_repos (org_id, team_id, repo_id)
+        insert ignore into team_repos (org_id, team_id, repo_id)
         values ` + strings.Join(values, ", ") + `
-        on duplicate key update org_id = org_id
     `)
 
 	if err := tx.Commit(); err != nil {
