@@ -22,10 +22,10 @@ func init() {
 	http.HandleFunc("/auth/callback", authCallbackHandler)
 
 	http.HandleFunc("/api/", authHandler)
-	http.HandleFunc("/api/orgs", apiOrgsHandler)
-	http.HandleFunc("/api/teams", apiTeamsHandler)
-	http.HandleFunc("/api/users", apiUsersHandler)
-	http.HandleFunc("/api/repos", apiReposHandler)
+	http.HandleFunc("/api/orgs", apiUserOrgsHandler)
+	http.HandleFunc("/api/teams", apiOrgTeamsHandler)
+	http.HandleFunc("/api/users", apiOrgUsersHandler)
+	http.HandleFunc("/api/repos", apiOrgReposHandler)
 	http.HandleFunc("/api/weeks", apiOrgWeekRangeHandler)
 
 	http.HandleFunc("/api/stat/orgs/top", statOrgTopHandler)

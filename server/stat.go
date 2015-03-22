@@ -9,48 +9,48 @@ import (
 
 func statOrgTopHandler(w http.ResponseWriter, r *http.Request) {
 	req, stat := parseRequest(w, r)
-	top := db.StatOrgTop(structs.Map(stat))
+	top := db.StatOrgTop(req.login, structs.Map(stat))
 	req.respondWith(top)
 }
 
 func statOrgActivityHandler(w http.ResponseWriter, r *http.Request) {
 	req, stat := parseRequest(w, r)
-	activity := db.StatOrgActivity(structs.Map(stat))
+	activity := db.StatOrgActivity(req.login, structs.Map(stat))
 	req.respondWith(activity)
 }
 
 func statTeamTopHandler(w http.ResponseWriter, r *http.Request) {
 	req, stat := parseRequest(w, r)
-	top := db.StatTeamTop(structs.Map(stat))
+	top := db.StatTeamTop(req.login, structs.Map(stat))
 	req.respondWith(top)
 }
 
 func statTeamActivityHandler(w http.ResponseWriter, r *http.Request) {
 	req, stat := parseRequest(w, r)
-	activity := db.StatTeamActivity(structs.Map(stat))
+	activity := db.StatTeamActivity(req.login, structs.Map(stat))
 	req.respondWith(activity)
 }
 
 func statUserTopHandler(w http.ResponseWriter, r *http.Request) {
 	req, stat := parseRequest(w, r)
-	top := db.StatUserTop(structs.Map(stat))
+	top := db.StatUserTop(req.login, structs.Map(stat))
 	req.respondWith(top)
 }
 
 func statUserActivityHandler(w http.ResponseWriter, r *http.Request) {
 	req, stat := parseRequest(w, r)
-	activity := db.StatUserActivity(structs.Map(stat))
+	activity := db.StatUserActivity(req.login, structs.Map(stat))
 	req.respondWith(activity)
 }
 
 func statRepoTopHandler(w http.ResponseWriter, r *http.Request) {
 	req, stat := parseRequest(w, r)
-	top := db.StatRepoTop(structs.Map(stat))
+	top := db.StatRepoTop(req.login, structs.Map(stat))
 	req.respondWith(top)
 }
 
 func statRepoActivityHandler(w http.ResponseWriter, r *http.Request) {
 	req, stat := parseRequest(w, r)
-	activity := db.StatRepoActivity(structs.Map(stat))
+	activity := db.StatRepoActivity(req.login, structs.Map(stat))
 	req.respondWith(activity)
 }

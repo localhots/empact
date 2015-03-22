@@ -41,7 +41,14 @@ func parseRequest(w http.ResponseWriter, r *http.Request) (*request, *statReques
 		token: token,
 		login: login,
 	}
-	return req, parseStatRequest(r)
+	sr := parseStatRequest(r)
+
+	// XXX: Hack for demo account
+	if req.login == "" {
+		req.login = "andrewarrow"
+	}
+
+	return req, sr
 }
 
 func (r *request) authorize(token, login string) {

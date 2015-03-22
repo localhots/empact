@@ -30,7 +30,7 @@ join users u on
 join repos r on
     c.repo_id = r.id`
 
-func StatOrgTop(p map[string]interface{}) (res []StatItem) {
+func StatOrgTop(login string, p map[string]interface{}) (res []StatItem) {
 	defer measure(time.Now(), "StatOrgTop")
 	mustSelectN(&res, fmt.Sprintf(`
         select
@@ -41,6 +41,7 @@ func StatOrgTop(p map[string]interface{}) (res []StatItem) {
         `+joinContribFT+`
         where
             o.login = :org and
+            c.repo_id in `+reposScope(login)+` and
             c.week >= :from and
             c.week <= :to
         group by item
@@ -49,7 +50,7 @@ func StatOrgTop(p map[string]interface{}) (res []StatItem) {
 	return
 }
 
-func StatOrgActivity(p map[string]interface{}) (res []StatPoint) {
+func StatOrgActivity(login string, p map[string]interface{}) (res []StatPoint) {
 	defer measure(time.Now(), "StatOrgActivity")
 	mustSelectN(&res, fmt.Sprintf(`
         select
@@ -61,6 +62,7 @@ func StatOrgActivity(p map[string]interface{}) (res []StatPoint) {
         `+joinContribFT+`
         where
             o.login = :org and
+            c.repo_id in `+reposScope(login)+` and
             c.week >= :from and
             c.week <= :to
         group by item, week
@@ -69,7 +71,7 @@ func StatOrgActivity(p map[string]interface{}) (res []StatPoint) {
 	return
 }
 
-func StatTeamTop(p map[string]interface{}) (res []StatItem) {
+func StatTeamTop(login string, p map[string]interface{}) (res []StatItem) {
 	defer measure(time.Now(), "StatTeamTop")
 	mustSelectN(&res, fmt.Sprintf(`
         select
@@ -80,6 +82,7 @@ func StatTeamTop(p map[string]interface{}) (res []StatItem) {
         `+joinContribFT+`
         where
             o.login = :org and
+            c.repo_id in `+reposScope(login)+` and
             t.name = :team and
             c.week >= :from and
             c.week <= :to
@@ -89,7 +92,7 @@ func StatTeamTop(p map[string]interface{}) (res []StatItem) {
 	return
 }
 
-func StatTeamActivity(p map[string]interface{}) (res []StatPoint) {
+func StatTeamActivity(login string, p map[string]interface{}) (res []StatPoint) {
 	defer measure(time.Now(), "StatTeamActivity")
 	mustSelectN(&res, fmt.Sprintf(`
         select
@@ -101,6 +104,7 @@ func StatTeamActivity(p map[string]interface{}) (res []StatPoint) {
         `+joinContribFT+`
         where
             o.login = :org and
+            c.repo_id in `+reposScope(login)+` and
             t.name = :team and
             c.week >= :from and
             c.week <= :to
@@ -110,7 +114,7 @@ func StatTeamActivity(p map[string]interface{}) (res []StatPoint) {
 	return
 }
 
-func StatUserTop(p map[string]interface{}) (res []StatItem) {
+func StatUserTop(login string, p map[string]interface{}) (res []StatItem) {
 	defer measure(time.Now(), "StatUserTop")
 	mustSelectN(&res, `
         select
@@ -126,6 +130,7 @@ func StatUserTop(p map[string]interface{}) (res []StatItem) {
             c.repo_id = r.id
         where
             o.login = :org and
+            c.repo_id in `+reposScope(login)+` and
             u.login = :user and
             c.week >= :from and
             c.week <= :to
@@ -135,7 +140,7 @@ func StatUserTop(p map[string]interface{}) (res []StatItem) {
 	return
 }
 
-func StatUserActivity(p map[string]interface{}) (res []StatPoint) {
+func StatUserActivity(login string, p map[string]interface{}) (res []StatPoint) {
 	defer measure(time.Now(), "StatUserActivity")
 	mustSelectN(&res, `
         select
@@ -152,6 +157,7 @@ func StatUserActivity(p map[string]interface{}) (res []StatPoint) {
             c.repo_id = r.id
         where
             o.login = :org and
+            c.repo_id in `+reposScope(login)+` and
             u.login = :user and
             c.week >= :from and
             c.week <= :to
@@ -161,7 +167,7 @@ func StatUserActivity(p map[string]interface{}) (res []StatPoint) {
 	return
 }
 
-func StatRepoTop(p map[string]interface{}) (res []StatItem) {
+func StatRepoTop(login string, p map[string]interface{}) (res []StatItem) {
 	defer measure(time.Now(), "StatRepoTop")
 	mustSelectN(&res, fmt.Sprintf(`
         select
@@ -172,6 +178,7 @@ func StatRepoTop(p map[string]interface{}) (res []StatItem) {
         `+joinContribFT+`
         where
             o.login = :org and
+            c.repo_id in `+reposScope(login)+` and
             r.name = :repo and
             c.week >= :from and
             c.week <= :to
@@ -181,7 +188,7 @@ func StatRepoTop(p map[string]interface{}) (res []StatItem) {
 	return
 }
 
-func StatRepoActivity(p map[string]interface{}) (res []StatPoint) {
+func StatRepoActivity(login string, p map[string]interface{}) (res []StatPoint) {
 	defer measure(time.Now(), "StatRepoActivity")
 	mustSelectN(&res, fmt.Sprintf(`
         select
@@ -193,6 +200,7 @@ func StatRepoActivity(p map[string]interface{}) (res []StatPoint) {
         `+joinContribFT+`
         where
             o.login = :org and
+            c.repo_id in `+reposScope(login)+` and
             r.name = :repo and
             c.week >= :from and
             c.week <= :to
@@ -200,4 +208,13 @@ func StatRepoActivity(p map[string]interface{}) (res []StatPoint) {
         order by commits desc
     `, p["item"]), p)
 	return
+}
+
+func reposScope(login string) string {
+	return fmt.Sprintf(`(
+        select repo_id
+        from team_repos tr
+        join team_members tm on tr.team_id = tm.team_id
+        join users u on u.login = %q
+    )`, login)
 }
