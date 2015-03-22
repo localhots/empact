@@ -17,19 +17,6 @@ type (
 	}
 )
 
-const joinContribFT = `
-join team_members tm on
-    c.user_id = tm.user_id and
-    c.org_id = tm.org_id
-join orgs o on
-    c.org_id = o.id
-join teams t on
-    tm.team_id = t.id
-join users u on
-    c.user_id = u.id
-join repos r on
-    c.repo_id = r.id`
-
 func StatOrgTop(login string, p map[string]interface{}) (res []StatItem) {
 	defer measure(time.Now(), "StatOrgTop")
 	mustSelectN(&res, fmt.Sprintf(`
@@ -38,7 +25,9 @@ func StatOrgTop(login string, p map[string]interface{}) (res []StatItem) {
             sum(c.commits) as commits,
             sum(c.additions) - sum(c.deletions) as delta
         from contribs c
-        `+joinContribFT+`
+        join orgs o
+            on o.id = c.org_id
+        `+joinContribFT(p["item"])+`
         where
             o.login = :org and
             c.repo_id in `+reposScope(login)+` and
@@ -59,7 +48,9 @@ func StatOrgActivity(login string, p map[string]interface{}) (res []StatPoint) {
             sum(c.additions) - sum(c.deletions) as delta,
             c.week as week
         from contribs c
-        `+joinContribFT+`
+        join orgs o on
+            o.id = c.org_id
+        `+joinContribFT(p["item"])+`
         where
             o.login = :org and
             c.repo_id in `+reposScope(login)+` and
@@ -79,7 +70,14 @@ func StatTeamTop(login string, p map[string]interface{}) (res []StatItem) {
             sum(c.commits) as commits,
             sum(c.additions) - sum(c.deletions) as delta
         from contribs c
-        `+joinContribFT+`
+        join orgs o on
+            o.id = c.org_id
+        join team_members tm on
+            c.user_id = tm.user_id and
+            c.org_id = tm.org_id
+        join teams t on
+            t.id = tm.team_id
+        `+joinContribFT(p["item"])+`
         where
             o.login = :org and
             c.repo_id in `+reposScope(login)+` and
@@ -101,7 +99,14 @@ func StatTeamActivity(login string, p map[string]interface{}) (res []StatPoint) 
             sum(c.additions) - sum(c.deletions) as delta,
             c.week as week
         from contribs c
-        `+joinContribFT+`
+        join orgs o on
+            o.id = c.org_id
+        join team_members tm on
+            c.user_id = tm.user_id and
+            c.org_id = tm.org_id
+        join teams t on
+            tm.team_id = t.id
+        `+joinContribFT(p["item"])+`
         where
             o.login = :org and
             c.repo_id in `+reposScope(login)+` and
@@ -123,7 +128,7 @@ func StatUserTop(login string, p map[string]interface{}) (res []StatItem) {
             sum(c.additions) - sum(c.deletions) as delta
         from contribs c
         join orgs o on
-            c.org_id = o.id
+            o.id = c.org_id
         join users u on
             c.user_id = u.id
         join repos r on
@@ -150,7 +155,7 @@ func StatUserActivity(login string, p map[string]interface{}) (res []StatPoint) 
             sum(c.additions) - sum(c.deletions) as delta
         from contribs c
         join orgs o on
-            c.org_id = o.id
+            o.id = c.org_id
         join users u on
             c.user_id = u.id
         join repos r on
@@ -175,7 +180,11 @@ func StatRepoTop(login string, p map[string]interface{}) (res []StatItem) {
             sum(c.commits) as commits,
             sum(c.additions) - sum(c.deletions) as delta
         from contribs c
-        `+joinContribFT+`
+        join orgs o on
+            o.id = c.org_id
+        join repos r on
+            c.repo_id = r.id
+        `+joinContribFT(p["item"])+`
         where
             o.login = :org and
             c.repo_id in `+reposScope(login)+` and
@@ -197,7 +206,11 @@ func StatRepoActivity(login string, p map[string]interface{}) (res []StatPoint) 
             sum(c.commits) as commits,
             sum(c.additions) - sum(c.deletions) as delta
         from contribs c
-        `+joinContribFT+`
+        join orgs o on
+            o.id = c.org_id
+        join repos r on
+            c.repo_id = r.id
+        `+joinContribFT(p["item"])+`
         where
             o.login = :org and
             c.repo_id in `+reposScope(login)+` and
@@ -210,11 +223,32 @@ func StatRepoActivity(login string, p map[string]interface{}) (res []StatPoint) 
 	return
 }
 
+func joinContribFT(item interface{}) string {
+	switch item {
+	case "r.name":
+		return "join repos r on c.repo_id = r.id"
+	case "u.login":
+		return "join users u on c.user_id = u.id"
+	case "t.name":
+		return `
+            join team_members tm on
+                tm.user_id = c.user_id and
+                tm.org_id = c.org_id
+            join teams t on
+                t.id = tm.team_id`
+	default:
+		panic("unreachable")
+	}
+}
+
 func reposScope(login string) string {
 	return fmt.Sprintf(`(
-        select repo_id
+        select
+            distinct(repo_id)
         from team_repos tr
-        join team_members tm on tr.team_id = tm.team_id
-        join users u on u.login = %q
+        join team_members tm on
+            tm.team_id = tr.team_id
+        join users u on
+            u.login = %q
     )`, login)
 }
