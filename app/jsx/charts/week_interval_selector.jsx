@@ -2,29 +2,37 @@ var WeekIntervalSelector = React.createClass({
     mixins: [ReactRouter.Navigation, ReactRouter.State],
 
     getInitialState: function() {
-        var ms = 1000,
-            daySeconds = 86400,
-            weekSeconds = daySeconds*7,
-            today = new Date(),
-            sunday = new Date(today - daySeconds*ms*today.getDay()),
-            perfectSunday = new Date(Date.UTC(sunday.getFullYear(), sunday.getMonth(), sunday.getDate())),
-            lastWeek = perfectSunday.setHours(0)/ms,
-            firstWeek = lastWeek - 51*weekSeconds;
-
-        var weeks = [];
-        for (var i = lastWeek; i >= firstWeek; i -= weekSeconds) {
-            weeks.push(i);
-        };
-
         return {
-            weeks: weeks.sort()
+            weeks: []
         };
+    },
+
+    componentDidMount: function() {
+        this.loadWeekRange(this.props.org);
+    },
+
+    componentWillReceiveProps: function(newProps) {
+        this.loadWeekRange(newProps.org);
     },
 
     handleChange: function(thing, e) {
         var params = this.getQuery();
         params[thing.slice(0, 1)] = e.target.value/100;
         this.transitionTo(document.location.pathname, null, params);
+    },
+
+    loadWeekRange: function(org) {
+        getURL("/api/weeks", {org: org}, function(res){
+            var weeks = [],
+                min = res[0],
+                max = res[1];
+            for (var i = min; i <= max; i += 86400*7) {
+                weeks.push(i);
+            };
+            this.setState({
+                weeks: weeks
+            });
+        }.bind(this));
     },
 
     render: function() {

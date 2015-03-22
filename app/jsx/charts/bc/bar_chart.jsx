@@ -143,7 +143,7 @@ var BarChart = React.createClass({
         return (
             <div className="barchart-container">
                 <div className="whatsgoingon">
-                    This bar chart shows <em>{words.values[this.state.sort]}</em> {words.actions[this.state.item +'-'+ this.state.sort]} <em>{words.items[this.state.item]}</em> {words.whatHappened[this.state.item +'-'+ target]} <em>{subject}</em> {words.targetSuffix[target]}<br /><WeekIntervalSelector />
+                    This bar chart shows <em>{words.values[this.state.sort]}</em> {words.actions[this.state.item +'-'+ this.state.sort]} <em>{words.items[this.state.item]}</em> {words.whatHappened[this.state.item +'-'+ target]} <em>{subject}</em> {words.targetSuffix[target]}<br /><WeekIntervalSelector org={this.getParams().org} />
                 </div>
                 <div className="filters">
                     <Selector thing="sort"

@@ -26,6 +26,7 @@ func init() {
 	http.HandleFunc("/api/teams", apiTeamsHandler)
 	http.HandleFunc("/api/users", apiUsersHandler)
 	http.HandleFunc("/api/repos", apiReposHandler)
+	http.HandleFunc("/api/weeks", apiOrgWeekRangeHandler)
 
 	http.HandleFunc("/api/stat/orgs/top", statOrgTopHandler)
 	http.HandleFunc("/api/stat/orgs/activity", statOrgActivityHandler)

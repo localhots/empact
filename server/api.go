@@ -29,3 +29,9 @@ func apiReposHandler(w http.ResponseWriter, r *http.Request) {
 	repos := db.OrgRepos(stat.Org)
 	req.respondWith(repos)
 }
+
+func apiOrgWeekRangeHandler(w http.ResponseWriter, r *http.Request) {
+	req, stat := parseRequest(w, r)
+	min, max := db.OrgWeekRange(stat.Org)
+	req.respondWith([]int{min, max})
+}

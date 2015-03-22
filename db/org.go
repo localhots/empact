@@ -36,3 +36,18 @@ func UserOrgs(login string) (orgs []*Org) {
 	`, login)
 	return
 }
+
+func OrgWeekRange(login string) (min int, max int) {
+	row := db.QueryRow(`
+		select
+			min(c.week) as min,
+			max(c.week) as max
+		from contribs c
+		join orgs o on o.id = c.org_id
+		where o.login = ?
+	`, login)
+	if err := row.Scan(&min, &max); err != nil {
+		panic(err)
+	}
+	return
+}
