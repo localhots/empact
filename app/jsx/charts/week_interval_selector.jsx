@@ -12,7 +12,9 @@ var WeekIntervalSelector = React.createClass({
     },
 
     componentWillReceiveProps: function(newProps) {
-        this.loadWeekRange(newProps.org);
+        if (this.props.org !== newProps.org) {
+            this.loadWeekRange(newProps.org);
+        }
     },
 
     handleChange: function(thing, e) {
