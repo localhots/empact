@@ -17,8 +17,8 @@ type Repo struct {
 func (r *Repo) Save() {
 	defer measure(time.Now(), "SaveRepo")
 	mustExecN(`
-		insert into repos (org_id, name, description, is_private, is_fork, updated_at)
-		values (:org_id, :name, :description, :is_private, :is_fork, now())
+		insert into repos (id, org_id, name, description, is_private, is_fork, updated_at)
+		values (:id, :org_id, :name, :description, :is_private, :is_fork, now())
 		on duplicate key update
 			org_id = values(org_id),
 			name = values(name),
