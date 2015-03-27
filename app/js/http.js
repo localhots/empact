@@ -1,18 +1,24 @@
-function getXHR(){
-    var xhr;
+try {
+    new ActiveXObject("Msxml2.XMLHTTP");
+    getXHR = function() {
+        return new ActiveXObject("Msxml2.XMLHTTP");
+    }
+} catch (e) {
     try {
-        xhr = new ActiveXObject("Msxml2.XMLHTTP");
+        new ActiveXObject("Microsoft.XMLHTTP");
+        getXHR = function() {
+            return new ActiveXObject("Microsoft.XMLHTTP");
+        }
     } catch (e) {
-        try {
-            xhr = new ActiveXObject("Microsoft.XMLHTTP");
-        } catch (e) {
-            xhr = false;
+        if (typeof XMLHttpRequest !== 'undefined') {
+            getXHR = function() {
+                return new XMLHttpRequest();
+            }
+        } else {
+            alert("Something went really wrong!");
+            console.log("XHR is not available");
         }
     }
-    if (!xhr && typeof XMLHttpRequest !== 'undefined') {
-        xhr = new XMLHttpRequest();
-    }
-    return xhr;
 }
 
 function getURL(url, params, callback) {
