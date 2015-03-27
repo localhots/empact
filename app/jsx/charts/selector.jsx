@@ -8,7 +8,7 @@ var Selector = React.createClass({
     },
 
     renderItem: function(item, i) {
-        var itemClass = (item === this.props.value ? 'active' : ''),
+        var itemClass = (item === this.props.value ? 'active state-button' : 'state-button'),
             clickEvent = null;
         if (this.props.onChange) {
             clickEvent = this.props.onChange.bind(this, i);

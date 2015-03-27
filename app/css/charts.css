@@ -97,7 +97,7 @@
     width: auto;
     float: left;
     font-weight: 600;
-    margin-right: 8px;
+    margin-right: 1px;
 }
 .selector .items {
     display: block;
@@ -107,13 +107,7 @@
 }
 .selector li {
     display: inline-block;
-    color: #aaa;
-    cursor: pointer;
-    margin-right: 8px;
-}
-.selector li.active {
-    color: #000;
-    cursor: default;
+    margin: 0 0 0 5px;
 }
 
 .whatsgoingon {

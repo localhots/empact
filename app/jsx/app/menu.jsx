@@ -7,7 +7,8 @@ var Menu = React.createClass({
                 <li key={'org-'+ org.login} className="nav org">
                     <ReactRouter.Link to="org"
                         params={{org: org.login}}
-                        query={this.getQuery()}>
+                        query={this.getQuery()}
+                        className="state-button">
                         {org.login}
                     </ReactRouter.Link>
                 </li>
@@ -18,7 +19,8 @@ var Menu = React.createClass({
                 <li key={'team-'+ team.name} className="nav team">
                     <ReactRouter.Link to="team"
                         params={{org: this.getParams().org, team: team.name}}
-                        query={this.getQuery()}>
+                        query={this.getQuery()}
+                        className="state-button">
                         {team.name}
                     </ReactRouter.Link>
                 </li>
