@@ -22,20 +22,16 @@ type (
 )
 
 var (
+	path string
 	conf Config
 )
 
-// Config is immutable and is always returned by value
-func C() Config {
-	return conf
+func init() {
+	flag.StringVar(&path, "config", "config.json", "Path to configuration file")
 }
 
-func init() {
+func Load() {
 	var err error
-	var path string
-	flag.StringVar(&path, "config", "config.json", "Path to configuration file")
-	flag.Parse()
-
 	var fd *os.File
 	if fd, err = os.Open(path); err != nil {
 		panic(err)
@@ -50,4 +46,9 @@ func init() {
 
 	log.SetOutput(os.Stderr)
 	log.SetFlags(log.Ldate | log.Ltime)
+}
+
+// Config is immutable and is always returned by value
+func C() Config {
+	return conf
 }
