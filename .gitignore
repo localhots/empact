@@ -11,4 +11,5 @@
 
 // Compiled
 /app/jsx/build
-/build
+/build/app.css
+/build/app.js
