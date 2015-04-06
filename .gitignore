@@ -8,6 +8,7 @@
 
 // Workspace documents and notes
 *.txt
+/app/images/userpics
 
 // Compiled
 /app/jsx/build
