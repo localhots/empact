@@ -1,0 +1,16 @@
+// Packages
+/node_modules
+/app/bower_components
+
+// Config files
+/config.json
+/config/*/*
+
+// Workspace documents and notes
+*.txt
+/app/images/userpics
+
+// Compiled
+/app/jsx/build
+/build/app.css
+/build/app.js
