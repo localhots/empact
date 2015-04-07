@@ -5,11 +5,12 @@ CSSMIN = ./node_modules/clean-css/bin/cleancss
 cloc:
 	cloc . --exclude-dir=node_modules,app/bower_components,app/jsx/build/.module_cache
 
-dist:
+jsx:
 	# Compiling JSX
 	rm -rf app/jsx/build
 	$(JSX) --extension jsx app/jsx app/jsx/build
 
+js:
 	# Compressing JS
 	#
 	# Get all script tags
@@ -31,6 +32,7 @@ dist:
 	| xargs cat \
 	| $(JSMIN) > build/app.js
 
+css:
 	# Compressing CSS
 	#
 	# Get all style tags
@@ -41,9 +43,13 @@ dist:
 	# Minification
 	cat app/app.html \
 	| grep stylesheet \
-	| grep -v fonts.googleapis.com \
 	| grep -v opensans \
 	| cut -d '"' -f 4 \
 	| sed -e 's/^/app/' \
 	| xargs cat \
 	| $(CSSMIN) -o build/app.css
+
+upload:
+	scp -r build www@empact.io:~/empact/build
+
+deploy: jsx js css upload
