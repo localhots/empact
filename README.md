@@ -13,5 +13,3 @@ The back-end server is written in Go. The front-end application is built with Re
 At this point, the project is a working prototype, although most of its features are already complete. Data synchronization is mostly done, keeping data up-to-date is yet to be implemented.
 
 **Works best in Google Chrome**, Safari has animation issues, Firefox and others have not been thoroughly tested yet. 
-
-Demo account of Phony organization is [available here](http://empact.io/app/Phony).
